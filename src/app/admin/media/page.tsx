@@ -195,7 +195,7 @@ export default function AdminMediaPage() {
       >
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Add Media</span>
@@ -211,7 +211,7 @@ export default function AdminMediaPage() {
               onClick={() => setFilterCategory(cat)}
               className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors shrink-0 ${
                 filterCategory === cat
-                  ? "bg-white text-black font-semibold"
+                  ? "bg-white text-black font-normal"
                   : "bg-neutral-900 text-neutral-400 hover:text-white"
               }`}
             >
@@ -319,7 +319,7 @@ export default function AdminMediaPage() {
                     <span className="text-[10px] font-mono uppercase text-dk-yellow block mb-1">
                       {item.category}
                     </span>
-                    <h3 className="text-sm font-heading font-bold uppercase text-white truncate mb-1">
+                    <h3 className="text-sm font-heading font-light uppercase text-white truncate mb-1">
                       {item.title}
                     </h3>
                     {item.description && (
@@ -554,7 +554,7 @@ export default function AdminMediaPage() {
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-6 py-2 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
+              className="px-6 py-2 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
             >
               {actionLoading ? "Saving..." : "Save Media"}
             </button>

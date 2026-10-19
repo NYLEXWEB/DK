@@ -30,13 +30,13 @@ export default async function OnlineClassesPage() {
         {/* Header */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-20">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="w-8 h-[2px] bg-dk-yellow" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
               <span className="editorial-eyebrow text-neutral-400">
                 WORLDWIDE DIGITAL TRAINING
               </span>
             </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extrabold uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Online Classes
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
@@ -62,12 +62,12 @@ export default async function OnlineClassesPage() {
                   {onlineData.features.map((feat) => (
                     <div
                       key={feat}
-                      className="flex items-center gap-4 p-4 bg-neutral-950 border border-neutral-800"
+                      className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] shadow-sm"
                     >
-                      <div className="w-6 h-6 rounded-full bg-dk-yellow/10 text-dk-yellow flex items-center justify-center shrink-0">
+                      <div className="w-6 h-6 rounded-full bg-dk-yellow/15 text-dk-yellow flex items-center justify-center shrink-0 border border-dk-yellow/30">
                         <Check className="w-3.5 h-3.5 text-dk-yellow" />
                       </div>
-                      <span className="text-sm font-heading font-medium uppercase tracking-wide text-white">
+                      <span className="text-sm font-heading font-light uppercase tracking-wide text-white">
                         {feat}
                       </span>
                     </div>
@@ -76,26 +76,26 @@ export default async function OnlineClassesPage() {
               </FadeUp>
 
               <FadeUp delay={0.2}>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-neutral-900 text-center">
-                  <div className="p-4 bg-neutral-950 border border-neutral-900">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-white/[0.08] text-center">
+                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] shadow-sm">
                     <Globe className="w-5 h-5 text-neutral-400 mx-auto mb-2" />
                     <span className="text-[10px] font-mono uppercase text-neutral-400 block">
                       Global Access
                     </span>
                   </div>
-                  <div className="p-4 bg-neutral-950 border border-neutral-900">
+                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] shadow-sm">
                     <Video className="w-5 h-5 text-neutral-400 mx-auto mb-2" />
                     <span className="text-[10px] font-mono uppercase text-neutral-400 block">
                       HD 2-Way Video
                     </span>
                   </div>
-                  <div className="p-4 bg-neutral-950 border border-neutral-900">
+                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] shadow-sm">
                     <Clock className="w-5 h-5 text-neutral-400 mx-auto mb-2" />
                     <span className="text-[10px] font-mono uppercase text-neutral-400 block">
                       Flexible Zones
                     </span>
                   </div>
-                  <div className="p-4 bg-neutral-950 border border-neutral-900">
+                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] shadow-sm">
                     <ShieldCheck className="w-5 h-5 text-neutral-400 mx-auto mb-2" />
                     <span className="text-[10px] font-mono uppercase text-neutral-400 block">
                       Certified DKDC
@@ -105,7 +105,7 @@ export default async function OnlineClassesPage() {
               </FadeUp>
             </div>
 
-            <div className="lg:col-span-6 relative aspect-[4/5] bg-neutral-950 overflow-hidden border border-neutral-800">
+            <div className="lg:col-span-6 relative aspect-[4/5] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
               <RevealImage className="w-full h-full relative">
                 <Image
                   src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80"
@@ -126,7 +126,7 @@ export default async function OnlineClassesPage() {
             <span className="editorial-eyebrow text-dk-yellow block mb-2">
               DIGITAL ADMISSIONS
             </span>
-            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold uppercase tracking-tight text-white mb-4">
+            <h2 className="text-3xl sm:text-5xl font-heading font-light uppercase tracking-tight text-white mb-4">
               Enquire For Online Classes
             </h2>
             <p className="text-sm text-neutral-400 max-w-md mx-auto">

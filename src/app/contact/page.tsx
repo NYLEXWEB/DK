@@ -27,13 +27,13 @@ export default async function ContactPage() {
         {/* Header */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-16">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="w-8 h-[2px] bg-dk-yellow" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
               <span className="editorial-eyebrow text-neutral-400">
                 GET IN TOUCH
               </span>
             </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extrabold uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Contact Us
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
@@ -47,16 +47,16 @@ export default async function ContactPage() {
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
             {/* Left: Contact Info */}
-            <div className="lg:col-span-5 space-y-12">
+            <div className="lg:col-span-5 space-y-10">
               <FadeUp delay={0.1}>
-                <div>
-                  <span className="editorial-eyebrow text-dk-red block mb-3">
+                <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] shadow-xl">
+                  <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-dk-red/10 text-dk-red border border-dk-red/20 mb-4">
                     Head Office
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-heading font-bold uppercase tracking-tight text-white mb-4">
+                  <h2 className="text-2xl sm:text-3xl font-heading font-light uppercase tracking-tight text-white mb-6">
                     Kozhikode, Kerala, India
                   </h2>
-                  <div className="space-y-4 text-sm text-neutral-300">
+                  <div className="space-y-4 text-sm text-neutral-300 font-light">
                     <div className="flex items-start gap-3">
                       <MapPin className="w-4 h-4 text-neutral-500 shrink-0 mt-1" />
                       <span>{settings.contact.address}</span>
@@ -88,21 +88,21 @@ export default async function ContactPage() {
               </FadeUp>
 
               <FadeUp delay={0.2}>
-                <div className="p-6 bg-neutral-950 border border-neutral-900">
-                  <span className="editorial-eyebrow text-dk-yellow block mb-2">
+                <div className="p-7 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] shadow-xl relative overflow-hidden">
+                  <span className="text-xs font-mono uppercase tracking-widest text-dk-yellow block mb-2">
                     Direct Leadership
                   </span>
-                  <h3 className="text-lg font-heading font-bold uppercase text-white mb-1">
+                  <h3 className="text-xl font-heading font-light uppercase text-white mb-1">
                     Director Dhanesh Krishnan
                   </h3>
-                  <p className="text-xs text-neutral-400 mb-4">
+                  <p className="text-xs text-neutral-400 mb-5 font-light">
                     Artistic Director & Head Choreographer
                   </p>
                   <a
                     href={`https://wa.me/${settings.contact.whatsapp}?text=${encodeURIComponent("Hello Director Dhanesh Krishnan, I would like to enquire about DK Dance Company.")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs font-mono uppercase text-[#25D366] hover:underline"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366]/10 border border-[#25D366]/30 text-xs font-mono uppercase text-[#25D366] hover:bg-[#25D366]/20 transition-all duration-300"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
                     <span>WhatsApp Direct Desk</span>
@@ -119,9 +119,9 @@ export default async function ContactPage() {
                     {branches.map((b) => (
                       <div
                         key={b.slug}
-                        className="p-3 bg-neutral-950 border border-neutral-900"
+                        className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all"
                       >
-                        <span className="text-white block font-heading">{b.name}</span>
+                        <span className="text-white block font-heading font-light">{b.name}</span>
                         <span className="text-neutral-500 text-[10px]">{b.city}</span>
                       </div>
                     ))}
@@ -134,10 +134,10 @@ export default async function ContactPage() {
             <div className="lg:col-span-7">
               <FadeUp delay={0.15}>
                 <div className="mb-6">
-                  <span className="editorial-eyebrow text-dk-yellow block mb-2">
+                  <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-dk-yellow/10 text-dk-yellow border border-dk-yellow/20 mb-3">
                     ADMISSIONS DESK
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-heading font-bold uppercase tracking-tight text-white">
+                  <h2 className="text-2xl sm:text-3xl font-heading font-light uppercase tracking-tight text-white">
                     Submit Admission Enquiry
                   </h2>
                 </div>

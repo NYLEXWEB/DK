@@ -11,7 +11,6 @@ const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Styles", href: "/dance-styles" },
-  { label: "Classes", href: "/classes" },
   { label: "Branches", href: "/branches" },
   { label: "Gallery", href: "/gallery" },
   { label: "Online", href: "/online-classes" },
@@ -61,10 +60,10 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
           isScrolled
-            ? "bg-black/95 border-b border-neutral-900 py-3.5 backdrop-blur-md"
-            : "bg-transparent py-6"
+            ? "bg-black/60 backdrop-blur-2xl border-b border-white/[0.08] py-4 shadow-[0_10px_35px_-5px_rgba(0,0,0,0.8)]"
+            : "bg-gradient-to-b from-black/80 via-black/20 to-transparent py-6 backdrop-blur-[2px]"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
@@ -88,7 +87,7 @@ export function Navbar() {
           {/* Desktop Navigation Links */}
           <nav
             aria-label="Main Navigation"
-            className="hidden lg:flex items-center gap-8"
+            className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-white/[0.02] border border-white/[0.06] backdrop-blur-md"
           >
             {NAV_LINKS.map((link) => {
               const isActive =
@@ -100,15 +99,15 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-xs uppercase tracking-widest font-medium transition-all duration-200 relative py-1 ${
+                  className={`text-xs uppercase tracking-widest font-light transition-all duration-300 relative py-1.5 px-4 rounded-full ${
                     isActive
-                      ? "text-white font-semibold"
-                      : "text-neutral-400 hover:text-white"
+                      ? "text-white font-normal bg-white/[0.08] shadow-sm border border-white/10"
+                      : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                   }`}
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-dk-yellow" />
+                    <span className="absolute bottom-0 left-4 right-4 h-[1.5px] bg-gradient-to-r from-transparent via-dk-yellow to-transparent" />
                   )}
                 </Link>
               );
@@ -140,13 +139,13 @@ export function Navbar() {
 
       {/* Mobile Drawer Menu */}
       <div
-        className={`fixed inset-0 z-30 bg-black flex flex-col justify-between px-8 py-24 transition-all duration-500 lg:hidden ${
+        className={`fixed inset-0 z-30 bg-black/95 backdrop-blur-2xl flex flex-col justify-between px-6 sm:px-8 pt-24 pb-8 overflow-y-auto overscroll-contain transition-all duration-300 lg:hidden ${
           mobileMenuOpen
             ? "opacity-100 pointer-events-auto translate-y-0"
-            : "opacity-0 pointer-events-none -translate-y-8"
+            : "opacity-0 pointer-events-none -translate-y-4"
         }`}
       >
-        <nav aria-label="Mobile Navigation" className="flex flex-col gap-6 mt-8">
+        <nav aria-label="Mobile Navigation" className="flex flex-col gap-4 sm:gap-5 mt-2">
           <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-mono">
             Navigation
           </span>
@@ -160,7 +159,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-2xl sm:text-3xl font-heading uppercase tracking-tight flex items-center justify-between transition-colors duration-200 ${
+                className={`text-xl sm:text-2xl font-heading font-light uppercase tracking-tight flex items-center justify-between py-2 transition-colors duration-200 ${
                   isActive
                     ? "text-dk-yellow pl-2 border-l-2 border-dk-yellow"
                     : "text-neutral-300 hover:text-white"
@@ -173,13 +172,15 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex flex-col gap-4 pt-8 border-t border-neutral-900">
+        <div className="flex flex-col gap-4 pt-6 mt-6 border-t border-white/[0.08]">
           <Button href="/contact" variant="primary" size="md" icon className="w-full">
             Enquire Now
           </Button>
-          <div className="flex items-center justify-between text-xs text-neutral-500 pt-2 font-mono">
+          <div className="flex items-center justify-between text-xs text-neutral-500 pt-1 font-mono">
             <span>Kozhikode • Bournemouth</span>
-            <span>+91 9995 272 083</span>
+            <a href="tel:+919995272083" className="hover:text-white transition-colors">
+              +91 9995 272 083
+            </a>
           </div>
         </div>
       </div>

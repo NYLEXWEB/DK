@@ -23,13 +23,13 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
           <div>
             <FadeUp>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-8 h-[2px] bg-dk-yellow" />
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
                 <span className="editorial-eyebrow text-neutral-400">
-                  05 — NETWORK & STUDIOS
+                  04 — NETWORK & STUDIOS
                 </span>
               </div>
-              <h2 className="text-4xl sm:text-6xl font-heading font-extrabold uppercase tracking-tight text-white">
+              <h2 className="text-4xl sm:text-6xl font-heading font-light uppercase tracking-tight text-white">
                 Branch Presence
               </h2>
             </FadeUp>
@@ -53,7 +53,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
 
             return (
               <FadeUp key={branch.slug} delay={index * 0.08}>
-                <div className="bg-neutral-950 border border-neutral-800 hover:border-neutral-600 transition-all duration-300 flex flex-col justify-between h-full group overflow-hidden">
+                <div className="rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 flex flex-col justify-between h-full group overflow-hidden shadow-xl">
                   {/* Branch Image Preview */}
                   <div className="relative aspect-[16/10] bg-neutral-900 overflow-hidden">
                     <Image
@@ -71,13 +71,13 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                     {/* International Badge */}
                     {isInternational && (
                       <div className="absolute top-4 left-4 z-10">
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-2.5 py-1 bg-dk-yellow text-black font-bold">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-dk-yellow text-black font-normal shadow-md">
                           International Branch
                         </span>
                       </div>
                     )}
 
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono uppercase tracking-widest text-neutral-300">
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs font-mono uppercase tracking-widest text-neutral-200 px-3.5 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
                       <span>{branch.city}</span>
                       <span>{branch.country}</span>
                     </div>
@@ -90,24 +90,24 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                         <MapPin className="w-3.5 h-3.5 text-dk-red" />
                         <span>{branch.city}, {branch.country}</span>
                       </div>
-                      <h3 className="text-2xl font-heading font-bold uppercase tracking-tight text-white mb-3">
+                      <h3 className="text-2xl font-heading font-light uppercase tracking-tight text-white mb-3">
                         {branch.name}
                       </h3>
                       {branch.description && (
-                        <p className="text-xs text-neutral-400 leading-relaxed mb-6 line-clamp-3">
+                        <p className="text-xs text-neutral-400 leading-relaxed mb-6 line-clamp-3 font-light">
                           {branch.description}
                         </p>
                       )}
                       {branch.classTimings && (
-                        <div className="text-[11px] font-mono text-neutral-500 mb-6 bg-black p-3 border border-neutral-900">
-                          <span className="text-neutral-400 block mb-1">Schedule:</span>
+                        <div className="text-[11px] font-mono text-neutral-400 mb-6 bg-white/[0.02] p-3.5 rounded-2xl border border-white/[0.06] backdrop-blur-sm">
+                          <span className="text-neutral-300 block mb-1">Schedule:</span>
                           {branch.classTimings}
                         </div>
                       )}
                     </div>
 
                     {/* Action Links */}
-                    <div className="pt-4 border-t border-neutral-900 flex items-center justify-between gap-3">
+                    <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3">
                       {branch.googleMapsUrl ? (
                         <a
                           href={branch.googleMapsUrl}
@@ -130,7 +130,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Enquire via WhatsApp for ${branch.name}`}
-                          className="p-2 border border-neutral-800 text-neutral-400 hover:text-[#25D366] hover:border-[#25D366] transition-colors duration-200"
+                          className="p-2.5 rounded-full border border-white/10 text-neutral-400 hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/10 transition-all duration-200"
                         >
                           <MessageCircle className="w-4 h-4" />
                         </a>

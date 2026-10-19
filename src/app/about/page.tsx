@@ -55,13 +55,13 @@ export default async function AboutPage() {
         {/* Header Section */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="w-8 h-[2px] bg-dk-yellow" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
               <span className="editorial-eyebrow text-neutral-400">
                 THE INSTITUTION
               </span>
             </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extrabold uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Movement As An Art Form.
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
@@ -75,7 +75,7 @@ export default async function AboutPage() {
         {/* Story & Asymmetrical Image */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-32">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            <div className="lg:col-span-6 relative aspect-[4/5] bg-neutral-950 overflow-hidden border border-neutral-900">
+            <div className="lg:col-span-6 relative aspect-[4/5] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
               <RevealImage className="w-full h-full relative">
                 <Image
                   src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80"
@@ -86,7 +86,7 @@ export default async function AboutPage() {
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-xs font-mono uppercase tracking-widest text-neutral-300">
+                <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-xs font-mono uppercase tracking-widest text-neutral-200 px-4 py-2.5 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 shadow-lg">
                   <span>Founded by Dhanesh Krishnan</span>
                   <span>Kozhikode • Bournemouth</span>
                 </div>
@@ -95,13 +95,13 @@ export default async function AboutPage() {
 
             <div className="lg:col-span-6 flex flex-col justify-between">
               <FadeUp delay={0.1}>
-                <span className="editorial-eyebrow text-dk-red block mb-4">
+                <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-dk-red/10 text-dk-red border border-dk-red/20 mb-4">
                   Welcome To DKDC
                 </span>
                 <p className="text-neutral-300 text-base sm:text-lg leading-relaxed mb-6 font-light">
                   {settings.intro}
                 </p>
-                <p className="text-neutral-400 text-sm leading-relaxed mb-8">
+                <p className="text-neutral-400 text-sm leading-relaxed mb-8 font-light">
                   From absolute beginners taking their first steps to advanced
                   performers conditioning for international stages, our curriculum
                   is crafted with anatomical precision, musical depth, and
@@ -110,24 +110,26 @@ export default async function AboutPage() {
               </FadeUp>
 
               {/* Mission & Vision Blocks */}
-              <div className="space-y-6 pt-6 border-t border-neutral-900">
+              <div className="space-y-4 pt-6 border-t border-white/[0.08]">
                 <FadeUp delay={0.2}>
-                  <div className="border-l-2 border-dk-yellow pl-6">
+                  <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-yellow/40 transition-all duration-500">
+                    <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-dk-yellow to-transparent" />
                     <span className="editorial-eyebrow text-dk-yellow block mb-2">
                       Our Mission
                     </span>
-                    <p className="text-lg font-heading text-white">
+                    <p className="text-lg font-heading text-white font-light">
                       {settings.mission}
                     </p>
                   </div>
                 </FadeUp>
 
                 <FadeUp delay={0.3}>
-                  <div className="border-l-2 border-dk-red pl-6">
+                  <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-red/40 transition-all duration-500">
+                    <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-dk-red to-transparent" />
                     <span className="editorial-eyebrow text-dk-red block mb-2">
                       Our Vision
                     </span>
-                    <p className="text-lg font-heading text-white">
+                    <p className="text-lg font-heading text-white font-light">
                       {settings.vision}
                     </p>
                   </div>
@@ -138,15 +140,15 @@ export default async function AboutPage() {
         </section>
 
         {/* Leadership: Director Dhanesh Krishnan */}
-        <section className="bg-neutral-950 py-24 border-y border-neutral-900 mb-32">
+        <section className="bg-neutral-950/60 py-24 border-y border-white/[0.08] mb-32 relative">
           <div className="max-w-7xl mx-auto px-6 sm:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-7">
                 <FadeUp>
-                  <span className="editorial-eyebrow text-neutral-500 block mb-3">
+                  <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-white/[0.03] text-neutral-400 border border-white/[0.08] mb-4">
                     Artistic Direction
                   </span>
-                  <h2 className="text-3xl sm:text-5xl font-heading font-extrabold uppercase tracking-tight text-white mb-6">
+                  <h2 className="text-3xl sm:text-5xl font-heading font-light uppercase tracking-tight text-white mb-6">
                     Dhanesh Krishnan
                   </h2>
                   <p className="text-neutral-300 text-base sm:text-lg font-light leading-relaxed mb-6">
@@ -156,14 +158,14 @@ export default async function AboutPage() {
                     athleticism and geometry of modern contemporary and commercial
                     dance.
                   </p>
-                  <p className="text-neutral-400 text-sm leading-relaxed mb-8">
+                  <p className="text-neutral-400 text-sm leading-relaxed mb-8 font-light">
                     Overseeing training programs across Kozhikode and our
                     international branch in Bournemouth, United Kingdom, Dhanesh
                     Krishnan personally establishes the pedagogy, teacher
                     training standards, and artistic direction for every company
                     production.
                   </p>
-                  <div className="flex items-center gap-6 text-xs font-mono text-neutral-500 uppercase">
+                  <div className="flex items-center gap-4 text-xs font-mono text-neutral-400 uppercase px-4 py-2 rounded-full bg-white/[0.02] border border-white/[0.06] inline-flex">
                     <div>Head Office: Kozhikode, Kerala</div>
                     <div>•</div>
                     <div>Branch: Bournemouth, UK</div>
@@ -171,7 +173,7 @@ export default async function AboutPage() {
                 </FadeUp>
               </div>
 
-              <div className="lg:col-span-5 relative aspect-square bg-black border border-neutral-800 overflow-hidden">
+              <div className="lg:col-span-5 relative aspect-square bg-black border border-white/[0.08] overflow-hidden rounded-3xl shadow-2xl">
                 <Image
                   src="https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=1000&q=80"
                   alt="Dhanesh Krishnan Director of DK Dance Company"
@@ -188,10 +190,13 @@ export default async function AboutPage() {
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-32">
           <div className="max-w-3xl mb-16">
             <FadeUp>
-              <span className="editorial-eyebrow text-dk-yellow block mb-3">
-                Curriculum Foundations
-              </span>
-              <h2 className="text-3xl sm:text-5xl font-heading font-extrabold uppercase tracking-tight text-white mb-4">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
+                <span className="editorial-eyebrow text-neutral-400">
+                  Curriculum Foundations
+                </span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-heading font-light uppercase tracking-tight text-white mb-4">
                 What We Train
               </h2>
               <p className="text-neutral-400 text-sm sm:text-base font-light">
@@ -201,14 +206,14 @@ export default async function AboutPage() {
             </FadeUp>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {trainingFocus.map((item, idx) => (
               <FadeUp key={item.title} delay={idx * 0.06}>
-                <div className="p-8 bg-neutral-950 border border-neutral-900 hover:border-neutral-700 transition-colors duration-300">
+                <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl">
                   <span className="text-xs font-mono text-dk-yellow block mb-4">
                     PILLAR 0{idx + 1}
                   </span>
-                  <h3 className="text-xl font-heading font-bold uppercase text-white mb-3">
+                  <h3 className="text-xl font-heading font-light uppercase text-white mb-3">
                     {item.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-light">
@@ -221,18 +226,21 @@ export default async function AboutPage() {
         </section>
 
         {/* Bottom CTA */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 text-center pt-12 border-t border-neutral-900">
+        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-20">
           <FadeUp>
-            <h2 className="text-3xl sm:text-5xl font-heading font-bold uppercase tracking-tight text-white mb-6">
-              Ready to begin?
-            </h2>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Button href="/classes" variant="primary" size="lg" icon>
-                Explore Classes & Fees
-              </Button>
-              <Button href="/contact" variant="secondary" size="lg">
-                Contact Admissions
-              </Button>
+            <div className="p-6 sm:p-16 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] text-center shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-1/2 translate-x-1/2 w-96 h-96 bg-dk-yellow/5 rounded-full blur-3xl pointer-events-none" />
+              <h2 className="text-2xl sm:text-5xl font-heading font-light uppercase tracking-tight text-white mb-6">
+                Ready to begin?
+              </h2>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-sm sm:max-w-none mx-auto relative z-10">
+                <Button href="/dance-styles" variant="primary" size="lg" icon className="w-full sm:w-auto">
+                  Explore Dance Styles
+                </Button>
+                <Button href="/contact" variant="secondary" size="lg" className="w-full sm:w-auto">
+                  Contact Admissions
+                </Button>
+              </div>
             </div>
           </FadeUp>
         </section>

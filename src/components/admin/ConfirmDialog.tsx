@@ -58,7 +58,7 @@ export function ConfirmDialog({
             type="button"
             disabled={isLoading}
             onClick={onConfirm}
-            className={`px-5 py-2.5 text-xs font-mono uppercase font-bold transition-all disabled:opacity-50 ${
+            className={`px-5 py-2.5 text-xs font-mono uppercase font-normal transition-all disabled:opacity-50 ${
               isDestructive
                 ? "bg-dk-red text-white hover:bg-red-700"
                 : "bg-white text-black hover:bg-dk-yellow"

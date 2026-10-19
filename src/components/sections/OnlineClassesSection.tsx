@@ -34,16 +34,16 @@ export function OnlineClassesSection({ onlineData }: OnlineClassesSectionProps) 
           {/* Content Column */}
           <div className="lg:col-span-7">
             <FadeUp>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-8 h-[2px] bg-dk-yellow" />
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
                 <span className="editorial-eyebrow text-neutral-400">
                   07 — GLOBAL DIGITAL STUDIO
                 </span>
               </div>
-              <h2 className="text-4xl sm:text-6xl font-heading font-extrabold uppercase tracking-tight text-white mb-6">
+              <h2 className="text-4xl sm:text-6xl font-heading font-light uppercase tracking-tight text-white mb-6">
                 Online Classes
               </h2>
-              <p className="text-xl text-neutral-300 font-heading font-medium leading-snug mb-4">
+              <p className="text-xl text-neutral-300 font-heading font-light leading-snug mb-4">
                 {data.headline}
               </p>
               <p className="text-sm sm:text-base text-neutral-400 font-light leading-relaxed mb-8">
@@ -57,12 +57,12 @@ export function OnlineClassesSection({ onlineData }: OnlineClassesSectionProps) 
                 {data.features.map((feature) => (
                   <div
                     key={feature}
-                    className="flex items-start gap-3 p-4 bg-neutral-950 border border-neutral-900"
+                    className="flex items-start gap-3 p-4 sm:p-5 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 transition-all duration-300 shadow-sm"
                   >
-                    <div className="w-5 h-5 rounded-full bg-dk-yellow/10 text-dk-yellow flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 text-dk-yellow" />
+                    <div className="w-6 h-6 rounded-full bg-dk-yellow/15 text-dk-yellow flex items-center justify-center shrink-0 mt-0.5 border border-dk-yellow/30">
+                      <Check className="w-3.5 h-3.5 text-dk-yellow" />
                     </div>
-                    <span className="text-xs font-mono uppercase tracking-wide text-neutral-300">
+                    <span className="text-xs font-mono uppercase tracking-wide text-neutral-300 font-light">
                       {feature}
                     </span>
                   </div>
@@ -76,7 +76,7 @@ export function OnlineClassesSection({ onlineData }: OnlineClassesSectionProps) 
                 <Button href="/contact?mode=online" variant="accent" size="lg" icon>
                   Enquire For Online Classes
                 </Button>
-                <span className="text-xs font-mono text-neutral-500 uppercase">
+                <span className="text-xs font-mono text-neutral-500 uppercase px-3 py-1 rounded-full bg-white/[0.02] border border-white/[0.05]">
                   Available Worldwide • Flexible Timings
                 </span>
               </div>
@@ -84,7 +84,7 @@ export function OnlineClassesSection({ onlineData }: OnlineClassesSectionProps) 
           </div>
 
           {/* Visual Column */}
-          <div className="lg:col-span-5 relative aspect-[4/5] bg-neutral-950 overflow-hidden border border-neutral-800">
+          <div className="lg:col-span-5 relative aspect-[4/5] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
             <RevealImage className="w-full h-full relative">
               <Image
                 src="https://images.unsplash.com/photo-1535525153412-5a42439a210d?auto=format&fit=crop&w=1200&q=80"
@@ -94,11 +94,11 @@ export function OnlineClassesSection({ onlineData }: OnlineClassesSectionProps) 
                 sizes="(max-width: 1024px) 100vw, 40vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-              <div className="absolute bottom-6 left-6 right-6">
+              <div className="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 shadow-lg">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-dk-yellow block mb-1">
                   Global Reach
                 </span>
-                <span className="text-base font-heading font-bold uppercase text-white">
+                <span className="text-base font-heading font-light uppercase text-white">
                   Live Interactive Digital Masterclasses
                 </span>
               </div>

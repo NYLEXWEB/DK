@@ -421,7 +421,7 @@ export default function AdminSettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50"
             >
               {saving ? (
                 <>

@@ -10,17 +10,17 @@ export function Footer() {
   const pathname = usePathname();
 
   // Hide footer on admin panel pages
-  if (pathname.startsWith("/admin")) {
+  if (pathname?.startsWith("/admin")) {
     return null;
   }
 
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-black border-t border-neutral-900 pt-20 pb-12 text-white">
+    <footer className="relative z-20 bg-black border-t border-white/[0.08] pt-16 sm:pt-20 pb-24 sm:pb-12 text-white">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         {/* Top Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 pb-16 border-b border-neutral-900">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 pb-16 border-b border-white/[0.08]">
           {/* Brand Column */}
           <div className="lg:col-span-5 flex flex-col justify-between">
             <div>
@@ -33,7 +33,7 @@ export function Footer() {
                   sizes="192px"
                 />
               </Link>
-              <p className="text-neutral-400 text-sm leading-relaxed max-w-sm mb-6">
+              <p className="text-neutral-400 text-sm leading-relaxed max-w-sm mb-6 font-light">
                 DK Dance Company (DKDC) is a premier contemporary and commercial
                 dance training institution founded by Director Dhanesh Krishnan.
                 Dedicated to developing technique, creative expression, and stage
@@ -45,13 +45,13 @@ export function Footer() {
             </div>
 
             {/* Social Links */}
-            <div className="flex items-center gap-4 mt-8">
+            <div className="flex items-center gap-3 mt-8">
               <a
                 href={process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com/dkdancecompany"}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on Instagram"
-                className="w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow transition-colors duration-200"
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-300"
               >
                 <Instagram className="w-4 h-4" />
               </a>
@@ -60,7 +60,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on Facebook"
-                className="w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow transition-colors duration-200"
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-300"
               >
                 <Facebook className="w-4 h-4" />
               </a>
@@ -69,7 +69,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on YouTube"
-                className="w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow transition-colors duration-200"
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-300"
               >
                 <Youtube className="w-4 h-4" />
               </a>
@@ -78,7 +78,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Chat on WhatsApp"
-                className="w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-[#25D366] hover:border-[#25D366] transition-colors duration-200"
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/10 transition-all duration-300"
               >
                 <MessageCircle className="w-4 h-4" />
               </a>
@@ -99,11 +99,6 @@ export function Footer() {
               <li>
                 <Link href="/dance-styles" className="hover:text-white transition-colors duration-150">
                   Dance Styles
-                </Link>
-              </li>
-              <li>
-                <Link href="/classes" className="hover:text-white transition-colors duration-150">
-                  Classes & Fees
                 </Link>
               </li>
               <li>
@@ -207,18 +202,18 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 text-center sm:text-left">
           <div>
             © {currentYear} DK Dance Company (DKDC). All rights reserved.
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="/privacy" className="hover:text-neutral-300 transition-colors duration-150">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            <Link href="/privacy" className="hover:text-neutral-300 transition-colors duration-150 py-1">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-neutral-300 transition-colors duration-150">
+            <Link href="/terms" className="hover:text-neutral-300 transition-colors duration-150 py-1">
               Terms & Conditions
             </Link>
-            <Link href="/admin/login" className="hover:text-neutral-300 transition-colors duration-150">
+            <Link href="/admin/login" className="hover:text-neutral-300 transition-colors duration-150 py-1">
               Admin Access
             </Link>
           </div>

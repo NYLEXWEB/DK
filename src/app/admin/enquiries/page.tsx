@@ -117,7 +117,7 @@ export default function AdminEnquiriesPage() {
                 onClick={() => setStatusFilter(status)}
                 className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 ${
                   statusFilter === status
-                    ? "bg-white text-black font-semibold"
+                    ? "bg-white text-black font-normal"
                     : "bg-neutral-900 text-neutral-400 hover:text-white"
                 }`}
               >
@@ -225,7 +225,7 @@ export default function AdminEnquiriesPage() {
                                 e.target.value as EnquiryStatus
                               )
                             }
-                            className={`px-2 py-1 text-[10px] uppercase font-bold bg-black border ${
+                            className={`px-2 py-1 text-[10px] uppercase font-normal bg-black border ${
                               enq.status === "new"
                                 ? "border-dk-yellow text-dk-yellow"
                                 : enq.status === "contacted"
@@ -294,7 +294,7 @@ export default function AdminEnquiriesPage() {
                 <span className="text-neutral-500 block uppercase mb-1">
                   Current Status
                 </span>
-                <span className="text-dk-yellow uppercase font-bold">
+                <span className="text-dk-yellow uppercase font-normal">
                   {selectedEnquiry.status}
                 </span>
               </div>
@@ -305,7 +305,7 @@ export default function AdminEnquiriesPage() {
                 <span className="text-neutral-500 uppercase block mb-1">
                   Full Name
                 </span>
-                <p className="text-sm font-heading font-bold text-white uppercase">
+                <p className="text-sm font-heading font-light text-white uppercase">
                   {selectedEnquiry.name}
                 </p>
               </div>
@@ -361,7 +361,7 @@ export default function AdminEnquiriesPage() {
                 <span className="text-neutral-500 uppercase block mb-1">
                   Preferred Dance Style
                 </span>
-                <span className="text-dk-yellow font-heading font-semibold">
+                <span className="text-dk-yellow font-heading font-light">
                   {selectedEnquiry.danceStyle}
                 </span>
               </div>
@@ -387,7 +387,7 @@ export default function AdminEnquiriesPage() {
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#25D366] text-black font-heading font-bold text-xs uppercase"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#25D366] text-black font-heading font-light text-xs uppercase"
               >
                 <MessageCircle className="w-4 h-4 fill-black" />
                 <span>Respond via WhatsApp</span>

@@ -17,23 +17,23 @@ export default function TermsPage() {
       <main className="min-h-screen bg-black text-white pt-32 pb-24">
         <section className="max-w-4xl mx-auto px-6 sm:px-8 mb-16">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="w-8 h-[2px] bg-dk-yellow" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
               <span className="editorial-eyebrow text-neutral-400">
                 TERMS OF SERVICE
               </span>
             </div>
-            <h1 className="text-4xl sm:text-6xl font-heading font-extrabold uppercase tracking-tight text-white mb-8">
+            <h1 className="text-4xl sm:text-6xl font-heading font-extralight sm:font-thin uppercase tracking-tight text-white mb-6">
               Terms & Conditions
             </h1>
-            <p className="text-neutral-400 text-sm font-mono uppercase tracking-widest mb-12">
+            <p className="text-neutral-500 text-xs font-mono uppercase tracking-widest mb-10">
               Last Updated: October 2026
             </p>
           </FadeUp>
 
-          <div className="space-y-10 text-neutral-300 text-sm sm:text-base leading-relaxed font-light">
+          <div className="p-8 sm:p-12 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] shadow-2xl space-y-10 text-neutral-300 text-sm sm:text-base leading-relaxed font-light">
             <FadeUp delay={0.1}>
-              <h2 className="text-xl font-heading font-bold uppercase text-white mb-3">
+              <h2 className="text-xl font-heading font-light uppercase text-white mb-3">
                 1. Institutional Agreement
               </h2>
               <p>
@@ -45,7 +45,7 @@ export default function TermsPage() {
             </FadeUp>
 
             <FadeUp delay={0.15}>
-              <h2 className="text-xl font-heading font-bold uppercase text-white mb-3">
+              <h2 className="text-xl font-heading font-light uppercase text-white mb-3">
                 2. Admission & Monthly Tuition
               </h2>
               <p>
@@ -57,7 +57,7 @@ export default function TermsPage() {
             </FadeUp>
 
             <FadeUp delay={0.2}>
-              <h2 className="text-xl font-heading font-bold uppercase text-white mb-3">
+              <h2 className="text-xl font-heading font-light uppercase text-white mb-3">
                 3. Physical Activity & Liability Release
               </h2>
               <p>
@@ -69,7 +69,7 @@ export default function TermsPage() {
             </FadeUp>
 
             <FadeUp delay={0.25}>
-              <h2 className="text-xl font-heading font-bold uppercase text-white mb-3">
+              <h2 className="text-xl font-heading font-light uppercase text-white mb-3">
                 4. Intellectual Property & Choreography
               </h2>
               <p>
@@ -82,7 +82,7 @@ export default function TermsPage() {
             </FadeUp>
 
             <FadeUp delay={0.3}>
-              <h2 className="text-xl font-heading font-bold uppercase text-white mb-3">
+              <h2 className="text-xl font-heading font-light uppercase text-white mb-3">
                 5. Media & Performance Rights
               </h2>
               <p>

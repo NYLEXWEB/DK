@@ -58,13 +58,13 @@ export default function RulesPage() {
         {/* Header */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-20">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="w-8 h-[2px] bg-dk-yellow" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
               <span className="editorial-eyebrow text-neutral-400">
                 INSTITUTIONAL STANDARDS
               </span>
             </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extrabold uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Rules & Regulations
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
@@ -80,14 +80,14 @@ export default function RulesPage() {
           <div className="space-y-6">
             {RULES.map((rule, idx) => (
               <FadeUp key={rule.number} delay={idx * 0.05}>
-                <div className="p-8 sm:p-10 bg-neutral-950 border border-neutral-900 hover:border-neutral-700 transition-colors duration-300 grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline">
+                <div className="p-8 sm:p-10 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 shadow-sm hover:shadow-xl grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline">
                   <div className="md:col-span-2">
-                    <span className="font-mono text-xs text-dk-yellow uppercase tracking-widest">
+                    <span className="font-mono text-xs text-dk-yellow uppercase tracking-widest px-3 py-1 rounded-full bg-dk-yellow/10 border border-dk-yellow/20 inline-block">
                       CLAUSE {rule.number}
                     </span>
                   </div>
                   <div className="md:col-span-4">
-                    <h2 className="text-xl sm:text-2xl font-heading font-bold uppercase tracking-tight text-white">
+                    <h2 className="text-xl sm:text-2xl font-heading font-light uppercase tracking-tight text-white">
                       {rule.title}
                     </h2>
                   </div>
@@ -103,19 +103,21 @@ export default function RulesPage() {
         </section>
 
         {/* CTA */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 text-center pt-12 border-t border-neutral-900">
+        <section className="max-w-7xl mx-auto px-6 sm:px-8 text-center mb-20">
           <FadeUp>
-            <p className="text-neutral-400 text-sm mb-6 max-w-md mx-auto">
-              Have questions regarding specific branch rules, fee schedules, or
-              makeup classes?
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Button href="/contact" variant="primary" size="md">
-                Contact Administration
-              </Button>
-              <Button href="/classes" variant="secondary" size="md">
-                View Classes & Fees
-              </Button>
+            <div className="p-10 sm:p-14 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] text-center shadow-xl">
+              <p className="text-neutral-400 text-sm mb-6 max-w-md mx-auto font-light">
+                Have questions regarding specific branch rules, fee schedules, or
+                makeup classes?
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <Button href="/contact" variant="primary" size="md">
+                  Contact Administration
+                </Button>
+                <Button href="/dance-styles" variant="secondary" size="md">
+                  View Dance Styles
+                </Button>
+              </div>
             </div>
           </FadeUp>
         </section>

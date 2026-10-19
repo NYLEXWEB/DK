@@ -70,7 +70,7 @@ export default async function AdminDashboardPage() {
               <MapPin className="w-4 h-4 text-dk-yellow" />
             </div>
             <div>
-              <span className="text-4xl font-heading font-black text-white block">
+              <span className="text-4xl font-heading font-extralight text-white block">
                 {branches.length}
               </span>
               <Link
@@ -90,7 +90,7 @@ export default async function AdminDashboardPage() {
               <ImageIcon className="w-4 h-4 text-white" />
             </div>
             <div>
-              <span className="text-4xl font-heading font-black text-white block">
+              <span className="text-4xl font-heading font-extralight text-white block">
                 {publishedImages}
               </span>
               <Link
@@ -110,7 +110,7 @@ export default async function AdminDashboardPage() {
               <Video className="w-4 h-4 text-dk-red" />
             </div>
             <div>
-              <span className="text-4xl font-heading font-black text-white block">
+              <span className="text-4xl font-heading font-extralight text-white block">
                 {publishedVideos}
               </span>
               <Link
@@ -131,7 +131,7 @@ export default async function AdminDashboardPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-heading font-black text-white">
+                <span className="text-4xl font-heading font-extralight text-white">
                   {newEnquiriesCount}
                 </span>
                 <span className="text-xs font-mono text-neutral-500">
@@ -152,7 +152,7 @@ export default async function AdminDashboardPage() {
         <div className="bg-neutral-950 border border-neutral-800 p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-heading font-bold uppercase tracking-tight text-white">
+              <h2 className="text-lg font-heading font-light uppercase tracking-tight text-white">
                 Recent Admission Enquiries
               </h2>
               <p className="text-xs font-mono text-neutral-400 mt-1">
@@ -197,7 +197,7 @@ export default async function AdminDashboardPage() {
                       <td className="py-3 text-neutral-400">{enq.danceStyle}</td>
                       <td className="py-3">
                         <span
-                          className={`px-2 py-0.5 text-[10px] uppercase font-bold ${
+                          className={`px-2 py-0.5 text-[10px] uppercase font-normal ${
                             enq.status === "new"
                               ? "bg-dk-yellow text-black"
                               : enq.status === "contacted"

@@ -100,10 +100,10 @@ export function GalleryGrid({
                   setSelectedCategory(cat);
                   setActiveItemIndex(null);
                 }}
-                className={`whitespace-nowrap px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all duration-200 ${
+                className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-all duration-300 ${
                   isSelected
-                    ? "bg-white text-black font-semibold"
-                    : "bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-800"
+                    ? "bg-white text-black font-normal shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                    : "bg-white/[0.03] text-neutral-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm"
                 }`}
               >
                 {cat}
@@ -115,7 +115,7 @@ export function GalleryGrid({
 
       {/* Empty State */}
       {displayItems.length === 0 && (
-        <div className="py-24 text-center border border-neutral-900 bg-neutral-950 p-8">
+        <div className="py-24 text-center rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 glass-panel">
           <p className="text-neutral-500 font-mono text-xs uppercase tracking-widest mb-2">
             No media found in this category
           </p>
@@ -138,23 +138,23 @@ export function GalleryGrid({
             >
               <div
                 onClick={() => setActiveItemIndex(idx)}
-                className="group relative aspect-[4/3] w-full bg-neutral-950 border border-neutral-900 overflow-hidden cursor-pointer"
+                className="group relative aspect-[4/3] w-full bg-neutral-950 border border-white/[0.08] rounded-3xl overflow-hidden cursor-pointer shadow-xl"
               >
                 {item.type === "video" ? (
                   <div className="relative w-full h-full bg-neutral-900 flex items-center justify-center">
                     {item.thumbnailUrl ? (
                       <Image
                         src={item.thumbnailUrl}
-                        alt={item.title}
+                        alt={item.title || "DK Dance Video"}
                         fill
-                        className="object-cover object-center grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                        className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-neutral-900" />
                     )}
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300" />
-                    <div className="relative z-10 w-12 h-12 rounded-full bg-white/90 text-black flex items-center justify-center group-hover:bg-dk-yellow group-hover:scale-110 transition-all duration-300">
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/15 transition-colors duration-300" />
+                    <div className="relative z-10 w-12 h-12 rounded-full bg-white/90 text-black flex items-center justify-center group-hover:bg-dk-yellow group-hover:scale-110 transition-all duration-300 shadow-lg">
                       <Play className="w-5 h-5 fill-black ml-0.5" />
                     </div>
                   </div>
@@ -165,34 +165,18 @@ export function GalleryGrid({
                       alt={item.title || "DK Dance Company Gallery Media"}
                       fill
                       loading="lazy"
-                      className="object-cover object-center grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                      className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                   </div>
                 )}
 
-                {/* Info Overlay */}
-                <div className="absolute inset-0 p-6 flex flex-col justify-between pointer-events-none">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 bg-black/80 text-dk-yellow border border-neutral-800">
-                      {item.category}
-                    </span>
-                    <span className="text-neutral-400 group-hover:text-white transition-colors duration-200">
-                      <Eye className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-base sm:text-lg font-heading font-bold uppercase text-white tracking-tight mb-1">
-                      {item.title}
-                    </h3>
-                    {item.description && (
-                      <p className="text-xs text-neutral-300 line-clamp-2 font-light">
-                        {item.description}
-                      </p>
-                    )}
-                  </div>
+                {/* Subtle Hover Action Indicator */}
+                <div className="absolute top-4 right-4 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span className="w-9 h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/15 flex items-center justify-center text-white shadow-lg">
+                    <Eye className="w-4 h-4" />
+                  </span>
                 </div>
               </div>
             </FadeUp>
@@ -211,9 +195,9 @@ export function GalleryGrid({
           <button
             onClick={handleClose}
             aria-label="Close media dialog"
-            className="absolute top-6 right-6 z-50 p-2 text-neutral-400 hover:text-white bg-neutral-900 border border-neutral-800 transition-colors"
+            className="absolute top-6 right-6 z-50 p-3 rounded-full text-neutral-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md transition-all shadow-lg"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
 
           {/* Navigation Controls */}
@@ -222,16 +206,16 @@ export function GalleryGrid({
               <button
                 onClick={handlePrev}
                 aria-label="Previous item"
-                className="absolute left-6 top-1/2 -translate-y-1/2 z-50 p-3 text-neutral-400 hover:text-white bg-neutral-900/80 border border-neutral-800 hover:border-dk-yellow transition-all"
+                className="absolute left-6 top-1/2 -translate-y-1/2 z-50 p-3.5 rounded-full text-neutral-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/10 hover:border-dk-yellow backdrop-blur-md transition-all shadow-lg"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={handleNext}
                 aria-label="Next item"
-                className="absolute right-6 top-1/2 -translate-y-1/2 z-50 p-3 text-neutral-400 hover:text-white bg-neutral-900/80 border border-neutral-800 hover:border-dk-yellow transition-all"
+                className="absolute right-6 top-1/2 -translate-y-1/2 z-50 p-3.5 rounded-full text-neutral-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/10 hover:border-dk-yellow backdrop-blur-md transition-all shadow-lg"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </>
           )}
@@ -239,7 +223,7 @@ export function GalleryGrid({
           {/* Main Media Content */}
           <div className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center">
             {currentItem.type === "video" ? (
-              <div className="w-full aspect-video bg-black border border-neutral-800 overflow-hidden">
+              <div className="w-full aspect-video bg-black border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
                 <video
                   src={currentItem.url}
                   controls
@@ -248,7 +232,7 @@ export function GalleryGrid({
                 />
               </div>
             ) : (
-              <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center">
+              <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
                 <Image
                   src={currentItem.url}
                   alt={currentItem.title}
@@ -265,7 +249,7 @@ export function GalleryGrid({
                 <span className="text-xs font-mono uppercase text-dk-yellow mr-3">
                   {currentItem.category}
                 </span>
-                <span className="text-sm font-heading font-bold uppercase">
+                <span className="text-sm font-heading font-light uppercase">
                   {currentItem.title}
                 </span>
                 {currentItem.description && (

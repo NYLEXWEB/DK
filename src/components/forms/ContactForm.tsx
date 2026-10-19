@@ -75,16 +75,16 @@ export function ContactForm({
   };
 
   return (
-    <div className="bg-neutral-950 border border-neutral-800 p-8 sm:p-12">
+    <div className="rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] p-5 sm:p-8 md:p-12 shadow-2xl">
       {status === "success" ? (
         <div className="py-12 text-center flex flex-col items-center">
-          <div className="w-16 h-16 rounded-full bg-dk-yellow/10 text-dk-yellow flex items-center justify-center mb-6">
+          <div className="w-16 h-16 rounded-full bg-dk-yellow/10 text-dk-yellow flex items-center justify-center mb-6 border border-dk-yellow/20">
             <CheckCircle2 className="w-8 h-8 text-dk-yellow" />
           </div>
-          <h3 className="text-2xl font-heading font-bold uppercase tracking-tight text-white mb-3">
+          <h3 className="text-2xl font-heading font-light uppercase tracking-tight text-white mb-3">
             Enquiry Received
           </h3>
-          <p className="text-sm text-neutral-300 max-w-md leading-relaxed mb-8">
+          <p className="text-sm text-neutral-300 max-w-md leading-relaxed mb-8 font-light">
             Thank you for reaching out to DK Dance Company. Director Dhanesh
             Krishnan or our branch admissions coordinator will contact you
             promptly via Phone or WhatsApp.
@@ -115,7 +115,7 @@ export function ContactForm({
           {status === "error" && (
             <div
               role="alert"
-              className="flex items-center gap-3 p-4 bg-dk-red/10 border border-dk-red/30 text-white text-xs"
+              className="flex items-center gap-3 p-4 rounded-2xl bg-dk-red/10 border border-dk-red/30 text-white text-xs"
             >
               <AlertCircle className="w-4 h-4 text-dk-red shrink-0" />
               <span>{errorMessage}</span>
@@ -140,7 +140,7 @@ export function ContactForm({
                   setFormData({ ...formData, name: e.target.value })
                 }
                 placeholder="Full Name"
-                className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors placeholder:text-neutral-600"
+                className="w-full rounded-2xl bg-white/[0.03] border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 focus:bg-white/[0.06] transition-all duration-300 placeholder:text-neutral-500 font-light"
               />
             </div>
 
@@ -160,7 +160,7 @@ export function ContactForm({
                   setFormData({ ...formData, phone: e.target.value })
                 }
                 placeholder="+91 9995 272 083"
-                className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors placeholder:text-neutral-600"
+                className="w-full rounded-2xl bg-white/[0.03] border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 focus:bg-white/[0.06] transition-all duration-300 placeholder:text-neutral-500 font-light"
               />
             </div>
           </div>
@@ -183,7 +183,7 @@ export function ContactForm({
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder="email@example.com"
-                className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors placeholder:text-neutral-600"
+                className="w-full rounded-2xl bg-white/[0.03] border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 focus:bg-white/[0.06] transition-all duration-300 placeholder:text-neutral-500 font-light"
               />
             </div>
 
@@ -202,7 +202,7 @@ export function ContactForm({
                   setFormData({ ...formData, age: e.target.value })
                 }
                 placeholder="e.g. 14 or Adult"
-                className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors placeholder:text-neutral-600"
+                className="w-full rounded-2xl bg-white/[0.03] border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 focus:bg-white/[0.06] transition-all duration-300 placeholder:text-neutral-500 font-light"
               />
             </div>
           </div>
@@ -225,7 +225,7 @@ export function ContactForm({
                     mode: e.target.value as "offline" | "online",
                   })
                 }
-                className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors"
+                className="w-full rounded-2xl bg-neutral-900 border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 transition-all duration-300 font-light"
               >
                 <option value="offline">Studio Offline Classes</option>
                 <option value="online">Online Digital Classes</option>
@@ -245,7 +245,7 @@ export function ContactForm({
                 onChange={(e) =>
                   setFormData({ ...formData, branch: e.target.value })
                 }
-                className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors"
+                className="w-full rounded-2xl bg-neutral-900 border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 transition-all duration-300 font-light"
               >
                 <option value="General / Not Sure">General / Undecided</option>
                 {branches.length > 0 ? (
@@ -282,7 +282,7 @@ export function ContactForm({
               onChange={(e) =>
                 setFormData({ ...formData, danceStyle: e.target.value })
               }
-              className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors"
+              className="w-full rounded-2xl bg-neutral-900 border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 transition-all duration-300 font-light"
             >
               <option value="All Styles / General">All Styles / General Training</option>
               {DANCE_STYLES.map((style) => (
@@ -311,7 +311,7 @@ export function ContactForm({
                 setFormData({ ...formData, message: e.target.value })
               }
               placeholder="Tell us about your dance goals, schedule preferences, or questions..."
-              className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors placeholder:text-neutral-600 resize-none"
+              className="w-full rounded-2xl bg-white/[0.03] border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 focus:bg-white/[0.06] transition-all duration-300 placeholder:text-neutral-500 resize-none font-light"
             />
           </div>
 
@@ -319,7 +319,7 @@ export function ContactForm({
           <button
             type="submit"
             disabled={status === "loading"}
-            className="w-full py-4 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50"
+            className="w-full py-4 rounded-full bg-white text-black hover:bg-dk-yellow hover:shadow-[0_0_25px_rgba(255,215,0,0.25)] font-heading font-light text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50 active:scale-[0.99]"
           >
             {status === "loading" ? (
               <>

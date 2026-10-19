@@ -39,13 +39,13 @@ export function PerformanceSection() {
         {/* Header */}
         <div className="max-w-3xl mb-20">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-[2px] bg-dk-red" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
               <span className="editorial-eyebrow text-neutral-400">
-                06 — PRODUCTION & STAGE
+                05 — PRODUCTION & STAGE
               </span>
             </div>
-            <h2 className="text-4xl sm:text-6xl font-heading font-extrabold uppercase tracking-tight text-white mb-6">
+            <h2 className="text-4xl sm:text-6xl font-heading font-light uppercase tracking-tight text-white mb-6">
               Performance & Choreography
             </h2>
             <p className="text-neutral-400 text-sm sm:text-base font-light leading-relaxed">
@@ -58,7 +58,7 @@ export function PerformanceSection() {
 
         {/* Editorial Composition: Left Visual, Right Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center mb-16">
-          <div className="lg:col-span-5 relative aspect-[3/4] bg-neutral-900 overflow-hidden">
+          <div className="lg:col-span-5 relative aspect-[3/4] bg-neutral-900 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
             <RevealImage className="w-full h-full relative">
               <Image
                 src="https://images.unsplash.com/photo-1518834107812-67b0b7c58434?auto=format&fit=crop&w=1200&q=80"
@@ -68,25 +68,25 @@ export function PerformanceSection() {
                 sizes="(max-width: 1024px) 100vw, 40vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70" />
-              <div className="absolute bottom-6 left-6 right-6">
+              <div className="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 shadow-lg">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-dk-yellow block mb-1">
                   Artistic Direction
                 </span>
-                <span className="text-lg font-heading font-bold uppercase text-white">
+                <span className="text-lg font-heading font-light uppercase text-white">
                   Dhanesh Krishnan Choreography
                 </span>
               </div>
             </RevealImage>
           </div>
 
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
             {PERFORMANCE_CATEGORIES.map((cat, idx) => (
               <FadeUp key={cat.title} delay={idx * 0.08}>
-                <div className="p-6 bg-black border border-neutral-900 hover:border-neutral-700 transition-colors duration-300">
-                  <span className="text-[11px] font-mono text-neutral-600 block mb-2">
+                <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl">
+                  <span className="text-[11px] font-mono text-neutral-500 block mb-2 group-hover:text-dk-yellow transition-colors duration-300">
                     0{idx + 1}
                   </span>
-                  <h3 className="text-xl font-heading font-bold uppercase text-white mb-2">
+                  <h3 className="text-xl font-heading font-light uppercase text-white mb-2">
                     {cat.title}
                   </h3>
                   <p className="text-xs text-neutral-400 leading-relaxed font-light">
@@ -100,18 +100,21 @@ export function PerformanceSection() {
 
         {/* Strong CTA */}
         <FadeUp delay={0.2}>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 sm:p-10 bg-neutral-900/60 border border-neutral-800">
-            <div>
-              <h3 className="text-2xl font-heading font-bold uppercase tracking-tight text-white mb-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 sm:p-10 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.03] shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-dk-yellow/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10">
+              <h3 className="text-2xl font-heading font-light uppercase tracking-tight text-white mb-2">
                 Have an upcoming show, event or choreography project?
               </h3>
               <p className="text-xs sm:text-sm text-neutral-400 font-light">
                 Let our choreography directors design an unforgettable, high-impact performance.
               </p>
             </div>
-            <Button href="/contact?type=choreography" variant="accent" size="lg" icon>
-              Enquire About Choreography
-            </Button>
+            <div className="relative z-10">
+              <Button href="/contact?type=choreography" variant="accent" size="lg" icon>
+                Enquire About Choreography
+              </Button>
+            </div>
           </div>
         </FadeUp>
       </div>

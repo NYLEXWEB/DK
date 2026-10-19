@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateMedia, deleteMedia } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
-import { deleteUploadThingFile } from "@/lib/uploadthing";
+import { deleteUploadThingFile } from "@/lib/uploadthing-server";
 
 export async function PATCH(
   req: NextRequest,

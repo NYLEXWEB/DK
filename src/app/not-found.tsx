@@ -13,7 +13,7 @@ export default function NotFound() {
           <span className="text-xs font-mono uppercase tracking-widest text-dk-yellow block mb-4">
             404 // ROUTE NOT FOUND
           </span>
-          <h1 className="text-6xl sm:text-8xl font-heading font-black uppercase tracking-tight text-white mb-6">
+          <h1 className="text-6xl sm:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight text-white mb-6">
             Off Beat.
           </h1>
           <p className="text-neutral-400 text-sm sm:text-base leading-relaxed mb-8 font-light">
@@ -24,8 +24,8 @@ export default function NotFound() {
             <Button href="/" variant="primary" size="md">
               Return Home
             </Button>
-            <Button href="/classes" variant="secondary" size="md">
-              Explore Classes
+            <Button href="/dance-styles" variant="secondary" size="md">
+              Explore Styles
             </Button>
           </div>
         </div>

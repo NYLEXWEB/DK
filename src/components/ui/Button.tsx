@@ -22,23 +22,23 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center font-medium transition-all duration-300 tracking-wider uppercase text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dk-yellow select-none disabled:opacity-50 disabled:pointer-events-none";
+    "inline-flex items-center justify-center font-light transition-all duration-300 tracking-wider uppercase text-xs rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dk-yellow select-none disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] min-h-[42px] sm:min-h-[44px] touch-manipulation";
 
   const sizeStyles = {
-    sm: "px-4 py-2.5 text-[11px] gap-1.5",
-    md: "px-6 py-3.5 text-xs gap-2",
-    lg: "px-8 py-4 text-xs gap-2.5",
+    sm: "px-5 py-2 text-[11px] gap-1.5",
+    md: "px-7 py-3 text-xs gap-2",
+    lg: "px-9 py-3.5 text-xs gap-2.5",
   };
 
   const variantStyles = {
     primary:
-      "bg-white text-black hover:bg-dk-yellow hover:text-black font-semibold",
+      "bg-white text-black hover:bg-neutral-100 hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] font-normal border border-white/20",
     secondary:
-      "bg-transparent text-white border border-neutral-700 hover:border-dk-yellow hover:text-dk-yellow",
+      "bg-white/[0.04] text-white border border-white/10 hover:border-white/30 hover:bg-white/[0.08] backdrop-blur-md",
     accent:
-      "bg-dk-yellow text-black hover:bg-white hover:text-black font-semibold",
+      "bg-dk-yellow text-black hover:bg-[#fff433] hover:shadow-[0_0_30px_rgba(255,241,2,0.35)] font-normal border border-dk-yellow/40",
     ghost:
-      "bg-transparent text-white hover:text-dk-yellow underline-offset-8 hover:underline p-0 border-none",
+      "bg-transparent text-neutral-400 hover:text-white underline-offset-8 hover:underline p-0 border-none",
   };
 
   const content = (

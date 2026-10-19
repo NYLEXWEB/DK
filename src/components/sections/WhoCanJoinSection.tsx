@@ -43,13 +43,13 @@ export function WhoCanJoinSection() {
         {/* Header */}
         <div className="max-w-2xl mb-20">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-[2px] bg-dk-red" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
               <span className="editorial-eyebrow text-neutral-400">
-                04 — ELIGIBILITY & INCLUSIVITY
+                03 — ELIGIBILITY & INCLUSIVITY
               </span>
             </div>
-            <h2 className="text-4xl sm:text-6xl font-heading font-extrabold uppercase tracking-tight text-white mb-6">
+            <h2 className="text-4xl sm:text-6xl font-heading font-light uppercase tracking-tight text-white mb-6">
               Who Can Join
             </h2>
             <p className="text-neutral-400 text-sm sm:text-base font-light leading-relaxed">
@@ -60,19 +60,21 @@ export function WhoCanJoinSection() {
         </div>
 
         {/* Sophisticated Typographic Composition */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {AUDIENCE_GROUPS.map((group, index) => (
             <FadeUp key={group.title} delay={index * 0.08}>
-              <div className="border-t border-neutral-800 pt-6">
-                <span className="text-[11px] font-mono text-neutral-600 block mb-2">
-                  0{index + 1} // STUDENT PROFILE
-                </span>
-                <h3 className="text-2xl font-heading font-bold uppercase tracking-tight text-white mb-3">
-                  {group.title}
-                </h3>
-                <p className="text-sm text-neutral-400 leading-relaxed font-light">
-                  {group.description}
-                </p>
+              <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl flex flex-col justify-between h-full">
+                <div>
+                  <span className="text-[11px] font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors duration-300">
+                    0{index + 1} // STUDENT PROFILE
+                  </span>
+                  <h3 className="text-2xl font-heading font-light uppercase tracking-tight text-white mb-3">
+                    {group.title}
+                  </h3>
+                  <p className="text-sm text-neutral-400 leading-relaxed font-light">
+                    {group.description}
+                  </p>
+                </div>
               </div>
             </FadeUp>
           ))}

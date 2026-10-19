@@ -25,13 +25,7 @@ export default async function GalleryPage() {
         {/* Header */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-16">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="w-8 h-[2px] bg-dk-yellow" />
-              <span className="editorial-eyebrow text-neutral-400">
-                VISUAL ARCHIVE
-              </span>
-            </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extrabold uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Gallery
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">

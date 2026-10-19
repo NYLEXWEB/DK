@@ -208,7 +208,7 @@ export default function AdminBranchesPage() {
       >
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Branch</span>
@@ -258,7 +258,7 @@ export default function AdminBranchesPage() {
                     <button
                       onClick={() => handleToggleActive(b)}
                       title={b.isActive ? "Active (Click to deactivate)" : "Inactive (Click to activate)"}
-                      className={`px-2 py-1 text-[10px] font-mono uppercase font-bold ${
+                      className={`px-2 py-1 text-[10px] font-mono uppercase font-normal ${
                         b.isActive
                           ? "bg-black/90 text-[#25D366] border border-[#25D366]/40"
                           : "bg-black/90 text-neutral-500 border border-neutral-800"
@@ -281,7 +281,7 @@ export default function AdminBranchesPage() {
                       <MapPin className="w-3 h-3 text-dk-red" />
                       <span>{b.city}, {b.country}</span>
                     </div>
-                    <h3 className="text-lg font-heading font-bold uppercase text-white mb-2">
+                    <h3 className="text-lg font-heading font-light uppercase text-white mb-2">
                       {b.name}
                     </h3>
                     <p className="text-xs text-neutral-400 line-clamp-2 mb-3">
@@ -580,7 +580,7 @@ export default function AdminBranchesPage() {
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-6 py-2 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
+              className="px-6 py-2 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
             >
               {actionLoading ? "Saving..." : "Save Branch"}
             </button>

@@ -7,46 +7,50 @@ import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 
 export function EnquiryCTASection() {
   return (
-    <section className="bg-black text-white py-32 sm:py-44 border-t border-neutral-900 relative overflow-hidden">
+    <section className="bg-black text-white py-20 sm:py-36 border-t border-neutral-900 relative overflow-hidden">
       {/* Background Subtle Accent Aura */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-dk-yellow/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-dk-yellow/10 via-dk-red/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 text-center">
-        <FadeUp>
-          <div className="inline-flex items-center gap-3 mb-6">
-            <span className="w-8 h-[2px] bg-dk-yellow" />
-            <span className="editorial-eyebrow text-dk-yellow">
-              BEGIN YOUR MOVEMENT JOURNEY
-            </span>
-            <span className="w-8 h-[2px] bg-dk-yellow" />
-          </div>
-        </FadeUp>
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-8">
+        <div className="p-6 sm:p-14 md:p-20 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] text-center shadow-2xl relative overflow-hidden">
+          <div className="absolute -top-24 -left-24 w-72 h-72 bg-dk-yellow/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-dk-red/10 rounded-full blur-3xl pointer-events-none" />
 
-        <FadeUp delay={0.15}>
-          <h2 className="text-4xl sm:text-6xl md:text-7xl font-heading font-black uppercase tracking-tight text-white leading-[0.95] mb-8">
-            Step onto the stage. <br />
-            Train with DK Dance Company.
-          </h2>
-        </FadeUp>
+          <FadeUp>
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6 sm:mb-8">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
+              <span className="editorial-eyebrow text-dk-yellow tracking-widest text-[10px] sm:text-xs">
+                BEGIN YOUR MOVEMENT JOURNEY
+              </span>
+            </div>
+          </FadeUp>
 
-        <FadeUp delay={0.25}>
-          <p className="text-neutral-400 text-sm sm:text-lg max-w-2xl mx-auto font-light leading-relaxed mb-12">
-            Admissions are open for our Kozhikode studio branches and
-            international programs. Begin with structured training under Director
-            Dhanesh Krishnan.
-          </p>
-        </FadeUp>
+          <FadeUp delay={0.15}>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-heading font-extralight uppercase tracking-tight text-white leading-[1.05] sm:leading-[1.0] mb-6 sm:mb-8">
+              Step onto the stage. <br className="hidden sm:inline" />
+              Train with DK Dance Company.
+            </h2>
+          </FadeUp>
 
-        <FadeUp delay={0.35}>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            <Button href="/contact" variant="primary" size="lg" icon>
-              Enquire For Admission
-            </Button>
-            <WhatsAppButton variant="button">
-              WhatsApp Our Desk
-            </WhatsAppButton>
-          </div>
-        </FadeUp>
+          <FadeUp delay={0.25}>
+            <p className="text-neutral-400 text-xs sm:text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed mb-8 sm:mb-12">
+              Admissions are open for our Kozhikode studio branches and
+              international programs. Begin with structured training under Director
+              Dhanesh Krishnan.
+            </p>
+          </FadeUp>
+
+          <FadeUp delay={0.35}>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-6 max-w-sm sm:max-w-none mx-auto">
+              <Button href="/contact" variant="primary" size="lg" icon className="w-full sm:w-auto">
+                Enquire For Admission
+              </Button>
+              <WhatsAppButton variant="button" className="w-full sm:w-auto justify-center">
+                WhatsApp Our Desk
+              </WhatsAppButton>
+            </div>
+          </FadeUp>
+        </div>
       </div>
     </section>
   );

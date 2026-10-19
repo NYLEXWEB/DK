@@ -58,7 +58,7 @@ export default async function BranchDetailPage({
         <div className="max-w-7xl mx-auto px-6 sm:px-8 mb-8">
           <Link
             href="/branches"
-            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-400 hover:text-dk-yellow transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-400 hover:text-white px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md transition-all duration-300"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>All Branches</span>
@@ -70,13 +70,13 @@ export default async function BranchDetailPage({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-7">
               <FadeUp>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="w-8 h-[2px] bg-dk-yellow" />
+                <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
                   <span className="editorial-eyebrow text-neutral-400">
                     {isInternational ? "INTERNATIONAL STUDIO" : "KERALA STUDIO"}
                   </span>
                 </div>
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heading font-extrabold uppercase tracking-tight text-white mb-6">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heading font-extralight sm:font-thin uppercase tracking-tight text-white mb-6">
                   {branch.name}
                 </h1>
                 <div className="flex items-center gap-2 text-neutral-400 text-sm font-mono uppercase mb-6">
@@ -91,13 +91,13 @@ export default async function BranchDetailPage({
                 </p>
 
                 {/* CTAs */}
-                <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 max-w-md sm:max-w-none">
                   {branch.googleMapsUrl && (
                     <a
                       href={branch.googleMapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-all duration-300"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-all duration-300 shadow-md text-center"
                     >
                       <span>View Location</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -107,7 +107,7 @@ export default async function BranchDetailPage({
                     href={`https://wa.me/${branch.whatsapp || "919995272083"}?text=${encodeURIComponent(`Hello DK Dance Company, I would like to enquire about the ${branch.name} branch.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3.5 bg-neutral-900 border border-neutral-800 text-white hover:border-[#25D366] hover:text-[#25D366] text-xs font-mono uppercase tracking-wider transition-all duration-300"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white/[0.04] border border-white/10 text-white hover:border-[#25D366]/60 hover:text-[#25D366] hover:bg-[#25D366]/10 text-xs font-mono uppercase tracking-wider transition-all duration-300 backdrop-blur-md text-center"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>WhatsApp Enquiry</span>
@@ -117,7 +117,7 @@ export default async function BranchDetailPage({
             </div>
 
             {/* Visual */}
-            <div className="lg:col-span-5 relative aspect-[4/3] bg-neutral-950 overflow-hidden border border-neutral-800">
+            <div className="lg:col-span-5 relative aspect-[4/3] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
               <RevealImage className="w-full h-full relative">
                 <Image
                   src={
@@ -137,12 +137,12 @@ export default async function BranchDetailPage({
 
         {/* Branch Info Cards */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 bg-neutral-950 border border-neutral-800">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] shadow-xl">
               <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 block mb-2">
                 Address & Location
               </span>
-              <p className="text-sm text-neutral-300 leading-relaxed mb-4">
+              <p className="text-sm text-neutral-300 leading-relaxed mb-4 font-light">
                 {branch.address || `${branch.name}, ${branch.city}, ${branch.country}`}
               </p>
               {branch.googleMapsUrl && (
@@ -158,23 +158,23 @@ export default async function BranchDetailPage({
               )}
             </div>
 
-            <div className="p-8 bg-neutral-950 border border-neutral-800">
+            <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] shadow-xl">
               <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 block mb-2">
                 Class Timetable
               </span>
-              <p className="text-sm text-neutral-300 leading-relaxed mb-4 font-mono">
+              <p className="text-sm text-neutral-300 leading-relaxed mb-4 font-mono font-light">
                 {branch.classTimings || "Batch schedules confirmed upon admission consultation."}
               </p>
-              <span className="text-xs text-neutral-500">
+              <span className="text-xs text-neutral-500 font-light">
                 Weekend & weekday batches available
               </span>
             </div>
 
-            <div className="p-8 bg-neutral-950 border border-neutral-800">
+            <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] shadow-xl">
               <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 block mb-2">
                 Direct Contact
               </span>
-              <div className="space-y-2 text-sm text-neutral-300 font-mono">
+              <div className="space-y-2 text-sm text-neutral-300 font-mono font-light">
                 <div className="flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5 text-neutral-500" />
                   <span>{branch.phone || "+91 9995 272 083"}</span>
@@ -194,7 +194,7 @@ export default async function BranchDetailPage({
             <span className="editorial-eyebrow text-dk-yellow block mb-2">
               ADMISSION CONSULTATION
             </span>
-            <h2 className="text-3xl sm:text-4xl font-heading font-bold uppercase tracking-tight text-white mb-4">
+            <h2 className="text-3xl sm:text-4xl font-heading font-light uppercase tracking-tight text-white mb-4">
               Enquire For {branch.name} Studio
             </h2>
             <p className="text-sm text-neutral-400 max-w-md mx-auto">

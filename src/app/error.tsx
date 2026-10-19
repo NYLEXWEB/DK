@@ -20,7 +20,7 @@ export default function ErrorBoundary({
         <span className="text-xs font-mono uppercase tracking-widest text-dk-red block mb-4">
           SYSTEM NOTICE // UNEXPECTED STATE
         </span>
-        <h1 className="text-4xl sm:text-6xl font-heading font-black uppercase tracking-tight text-white mb-6">
+        <h1 className="text-4xl sm:text-6xl font-heading font-extralight sm:font-thin uppercase tracking-tight text-white mb-6">
           Performance Interrupted.
         </h1>
         <p className="text-neutral-400 text-sm leading-relaxed mb-8">
