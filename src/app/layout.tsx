@@ -1,20 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Syne, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-
-const syne = Syne({
-  subsets: ["latin"],
-  variable: "--font-heading",
-  weight: ["500", "700", "800"],
-  display: "swap",
-});
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-body",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   themeColor: "#000000",
@@ -128,8 +113,14 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${syne.variable} ${plusJakartaSans.variable}`}>
+    <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@500;700;800&display=swap"
+          rel="stylesheet"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
