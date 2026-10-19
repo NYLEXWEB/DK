@@ -1,0 +1,114 @@
+export type MediaType = "image" | "video";
+
+export type MediaCategory =
+  | "Classes"
+  | "Performances"
+  | "Stage Shows"
+  | "Competitions"
+  | "School Programs"
+  | "Cultural Events"
+  | "Workshops"
+  | "Special Training"
+  | "Branch Activities"
+  | "Bournemouth";
+
+export interface MediaItem {
+  _id?: string;
+  type: MediaType;
+  url: string;
+  key?: string;
+  name?: string;
+  title: string;
+  description?: string;
+  category: MediaCategory;
+  thumbnailUrl?: string;
+  published: boolean;
+  displayOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Branch {
+  _id?: string;
+  name: string;
+  slug: string;
+  country: string;
+  state?: string;
+  city: string;
+  address?: string;
+  phone?: string;
+  whatsapp?: string;
+  googleMapsUrl?: string;
+  latitude?: number;
+  longitude?: number;
+  description?: string;
+  imageUrl?: string;
+  imageKey?: string;
+  classTimings?: string;
+  isActive: boolean;
+  displayOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type EnquiryStatus = "new" | "read" | "contacted" | "closed";
+
+export interface Enquiry {
+  _id?: string;
+  name: string;
+  phone: string;
+  email: string;
+  age?: string;
+  branch: string;
+  danceStyle: string;
+  mode: "offline" | "online";
+  message?: string;
+  status: EnquiryStatus;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SiteSettings {
+  _id?: string;
+  siteName: string;
+  tagline: string;
+  director: string;
+  headOffice: string;
+  internationalBranch: string;
+  intro: string;
+  mission: string;
+  vision: string;
+  fees: {
+    admissionFee: string;
+    weeklyOneClassFee: string;
+    weeklyTwoClassesFee: string;
+    disclaimer: string;
+    paymentNote: string;
+  };
+  onlineClasses: {
+    headline: string;
+    description: string;
+    features: string[];
+  };
+  contact: {
+    phone: string;
+    whatsapp: string;
+    email: string;
+    address: string;
+    website: string;
+  };
+  socialLinks: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    tiktok?: string;
+  };
+  updatedAt?: string;
+}
+
+export interface AuthSession {
+  username: string;
+  role: "admin";
+  exp: number;
+  iat: number;
+}
