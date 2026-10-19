@@ -259,9 +259,9 @@ export async function deleteMedia(id: string): Promise<MediaItem | null> {
 
   try {
     if (!ObjectId.isValid(id)) return null;
-    const item = await db
-      .collection<MediaItem>("media")
-      .findOne({ _id: new ObjectId(id) });
+    const item = (await db
+      .collection("media")
+      .findOne({ _id: new ObjectId(id) })) as any;
     if (!item) return null;
 
     await db.collection("media").deleteOne({ _id: new ObjectId(id) });
