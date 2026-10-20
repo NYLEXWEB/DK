@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { label: "Styles", href: "/dance-styles" },
   { label: "Branches", href: "/branches" },
   { label: "Gallery", href: "/gallery" },
+  { label: "Reviews", href: "/reviews" },
   { label: "Online", href: "/online-classes" },
   { label: "Contact", href: "/contact" },
 ];

@@ -108,11 +108,11 @@ export default async function OnlineClassesPage() {
             <div className="lg:col-span-6 relative aspect-[4/5] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
               <RevealImage className="w-full h-full relative">
                 <Image
-                  src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80"
+                  src="/images/styles/lyrical.jpg"
                   alt="Online dance learning with DK Dance Company"
                   fill
                   priority
-                  className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+                  className="object-cover object-center transition-all duration-700 ease-out"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </RevealImage>

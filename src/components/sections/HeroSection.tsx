@@ -1,30 +1,71 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
+import React, { useRef, useEffect } from "react";
 import { FadeUp } from "@/components/ui/Motion";
 import { Button } from "@/components/ui/Button";
 
 export function HeroSection() {
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    [desktopVideoRef.current, mobileVideoRef.current].forEach((video) => {
+      if (video) {
+        video.defaultMuted = true;
+        video.muted = true;
+        video.play().catch(() => {
+          // Autoplay handled silently
+        });
+      }
+    });
+  }, []);
+
   return (
     <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden bg-transparent pt-24 sm:pt-28 pb-16 lg:pb-14">
-      {/* Fixed Back Banner (Fixed background behind hero) */}
-      <div className="fixed inset-0 z-0 pointer-events-none select-none">
-        <Image
-          src="/images/hero-bg.png"
-          alt="DK Dance Company Contemporary Movement"
-          fill
-          priority
-          className="object-cover object-[75%_center] sm:object-right md:object-[80%_center] opacity-90 sm:opacity-85"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/75" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 md:via-black/55 to-transparent" />
+      {/* Fixed Background Video (Responsive: 1920x1080 on Desktop, 1080x1920 on Mobile) */}
+      <div className="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden bg-black">
+        {/* Mobile Background Video (< md: 1080x1920 Portrait) */}
+        <video
+          ref={mobileVideoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster="/images/hero-bg.png"
+          className="md:hidden w-full h-full object-cover opacity-85 transition-opacity duration-700"
+          style={{ objectPosition: "center 25%" }}
+        >
+          <source
+            src="/images/videos/8688823-hd_1080_1920_25fps.mp4"
+            type="video/mp4"
+          />
+        </video>
+
+        {/* Desktop Background Video (>= md: 1920x1080 Landscape Full HD) */}
+        <video
+          ref={desktopVideoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster="/images/hero-bg.png"
+          className="hidden md:block w-full h-full object-cover object-center opacity-90 transition-opacity duration-700"
+        >
+          <source
+            src="/images/videos/8688453-hd_1920_1080_25fps.mp4"
+            type="video/mp4"
+          />
+        </video>
+
+        {/* Natural overlay gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent via-40% to-black/60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/75 via-25% to-transparent to-55% pointer-events-none" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 w-full text-left my-auto">
         <div className="max-w-3xl">
-
           {/* Main Statement */}
           <FadeUp delay={0.25} duration={0.8}>
             <h1 className="text-[2.5rem] xs:text-5xl sm:text-6xl md:text-7xl lg:text-[5.25rem] font-heading font-light sm:font-thin text-white tracking-tight leading-[0.92] uppercase mb-4 sm:mb-5">
@@ -78,20 +119,6 @@ export function HeroSection() {
               </Button>
             </div>
           </FadeUp>
-        </div>
-      </div>
-
-      {/* Subtle Bottom Bar indicator */}
-      <div className="absolute bottom-4 sm:bottom-5 left-0 right-0 z-10 max-w-7xl mx-auto px-6 sm:px-8 hidden md:flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-neutral-400">
-        <div className="px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/[0.06]">
-          Director: Dhanesh Krishnan
-        </div>
-        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/[0.06]">
-          <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
-          <span>India • United Kingdom</span>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/[0.06]">
-          Scroll to explore ↓
         </div>
       </div>
     </section>

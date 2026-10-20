@@ -112,6 +112,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/reviews" className="hover:text-white transition-colors duration-150">
+                  Google Reviews
+                </Link>
+              </li>
+              <li>
                 <Link href="/online-classes" className="hover:text-white transition-colors duration-150">
                   Online Classes
                 </Link>

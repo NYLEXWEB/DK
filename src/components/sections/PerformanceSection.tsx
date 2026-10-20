@@ -61,10 +61,10 @@ export function PerformanceSection() {
           <div className="lg:col-span-5 relative aspect-[3/4] bg-neutral-900 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
             <RevealImage className="w-full h-full relative">
               <Image
-                src="https://images.unsplash.com/photo-1518834107812-67b0b7c58434?auto=format&fit=crop&w=1200&q=80"
+                src="/images/styles/western.jpg"
                 alt="Live stage show choreography by DK Dance Company"
                 fill
-                className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+                className="object-cover object-center transition-all duration-700 ease-out"
                 sizes="(max-width: 1024px) 100vw, 40vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70" />

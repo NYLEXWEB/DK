@@ -59,11 +59,11 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                     <Image
                       src={
                         branch.imageUrl ||
-                        "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80"
+                        "/images/branches/kunduparamba.jpg"
                       }
                       alt={`${branch.name} branch of DK Dance Company`}
                       fill
-                      className="object-cover object-center grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                      className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent opacity-80" />

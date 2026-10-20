@@ -9,6 +9,7 @@ import { WhoCanJoinSection } from "@/components/sections/WhoCanJoinSection";
 import { BranchesSection } from "@/components/sections/BranchesSection";
 import { PerformanceSection } from "@/components/sections/PerformanceSection";
 import { OnlineClassesSection } from "@/components/sections/OnlineClassesSection";
+import { GoogleReviewsSection } from "@/components/sections/GoogleReviewsSection";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { EnquiryCTASection } from "@/components/sections/EnquiryCTASection";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
@@ -76,7 +77,10 @@ export default async function HomePage() {
           {/* 8. Online Classes */}
           <OnlineClassesSection onlineData={siteSettings.onlineClasses} />
 
-          {/* 9. Strong Enquiry Call-to-Action */}
+          {/* 9. Verified Google Reviews Showcase */}
+          <GoogleReviewsSection />
+
+          {/* 10. Strong Enquiry Call-to-Action */}
           <EnquiryCTASection />
 
           {/* 10. Global Site Footer */}

@@ -42,14 +42,14 @@ export function BrandIntroSection() {
                 accomplished competitive artists.
               </p>
               <div className="mb-8 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm">
-                <span className="text-xs uppercase font-mono tracking-widest text-neutral-500 block mb-1">
-                  Artistic Director
+                <span className="text-xs uppercase font-mono tracking-widest text-dk-yellow block mb-1">
+                  Choreographer & Founder Director
                 </span>
                 <span className="text-xl font-heading font-light text-white tracking-wide block">
-                  Dhanesh Krishnan
+                  Dhanesh Krishnan K
                 </span>
                 <span className="text-xs text-neutral-400 font-mono">
-                  Kozhikode, India • Bournemouth, UK
+                  DKDC Founder • Kozhikode, India • Bournemouth, UK
                 </span>
               </div>
               <Button href="/about" variant="secondary" size="sm" icon>
@@ -61,20 +61,21 @@ export function BrandIntroSection() {
 
         {/* Asymmetrical Editorial Composition: Image & Mission/Vision */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Editorial Visual */}
+          {/* Editorial Visual: Founder & Director */}
           <div className="lg:col-span-6 relative aspect-[4/5] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
             <RevealImage className="w-full h-full relative">
               <Image
-                src="https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=1200&q=80"
-                alt="Dancer during contemporary performance at DK Dance Company"
+                src="/images/dhanesh-krishnan.png"
+                alt="Dhanesh Krishnan K - Choreographer & Founder Director of DK Dance Company"
                 fill
-                className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+                priority
+                className="object-cover object-[center_20%] transition-all duration-700 ease-out"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-75" />
               <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-xs font-mono uppercase tracking-widest text-white/90 px-4 py-2.5 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 shadow-lg">
-                <span>DKDC Movement Lab</span>
-                <span>Est. Kozhikode</span>
+                <span className="font-medium text-white">Dhanesh Krishnan K</span>
+                <span className="text-dk-yellow">Founder & Director</span>
               </div>
             </RevealImage>
           </div>

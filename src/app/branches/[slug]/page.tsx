@@ -122,12 +122,12 @@ export default async function BranchDetailPage({
                 <Image
                   src={
                     branch.imageUrl ||
-                    "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80"
+                    "/images/branches/kunduparamba.jpg"
                   }
                   alt={`${branch.name} Studio`}
                   fill
                   priority
-                  className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+                  className="object-cover object-center transition-all duration-700 ease-out"
                   sizes="(max-width: 1024px) 100vw, 40vw"
                 />
               </RevealImage>

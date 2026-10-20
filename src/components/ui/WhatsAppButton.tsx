@@ -3,6 +3,7 @@
 import React from "react";
 import { MessageCircle } from "lucide-react";
 import { formatWhatsAppUrl } from "@/lib/utils";
+import { FloatingSocials } from "@/components/ui/FloatingSocials";
 
 interface WhatsAppButtonProps {
   phone?: string;
@@ -33,20 +34,11 @@ export function WhatsAppButton({
 
   if (variant === "floating") {
     return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat on WhatsApp with DK Dance Company"
-        className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3.5 bg-[#25D366] text-black font-normal text-xs tracking-wider uppercase rounded-full shadow-[0_8px_30px_rgb(37,211,102,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 ${className}`}
-      >
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-black"></span>
-        </span>
-        <MessageCircle className="w-4 h-4 fill-black" />
-        <span className="font-heading hidden sm:inline">WhatsApp Us</span>
-      </a>
+      <FloatingSocials
+        phone={targetPhone}
+        message={text}
+        className={className}
+      />
     );
   }
 

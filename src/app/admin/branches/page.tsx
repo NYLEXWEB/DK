@@ -247,7 +247,7 @@ export default function AdminBranchesPage() {
                   <Image
                     src={
                       b.imageUrl ||
-                      "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80"
+                      "/images/branches/kunduparamba.jpg"
                     }
                     alt={b.name}
                     fill

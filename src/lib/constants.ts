@@ -64,7 +64,7 @@ export const INITIAL_BRANCHES: Branch[] = [
     isActive: true,
     displayOrder: 1,
     imageUrl:
-      "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80",
+      "/images/branches/kunduparamba.jpg",
   },
   {
     name: "Westhill",
@@ -82,7 +82,7 @@ export const INITIAL_BRANCHES: Branch[] = [
     isActive: true,
     displayOrder: 2,
     imageUrl:
-      "https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=1200&q=80",
+      "/images/branches/westhill.jpg",
   },
   {
     name: "Balussery",
@@ -100,7 +100,7 @@ export const INITIAL_BRANCHES: Branch[] = [
     isActive: true,
     displayOrder: 3,
     imageUrl:
-      "https://images.unsplash.com/photo-1518834107812-67b0b7c58434?auto=format&fit=crop&w=1200&q=80",
+      "/images/branches/balussery.jpg",
   },
   {
     name: "Kottooli",
@@ -118,7 +118,7 @@ export const INITIAL_BRANCHES: Branch[] = [
     isActive: true,
     displayOrder: 4,
     imageUrl:
-      "https://images.unsplash.com/photo-1535525153412-5a42439a210d?auto=format&fit=crop&w=1200&q=80",
+      "/images/branches/kottooli.jpg",
   },
   {
     name: "Parambilbazar (Cheruvatta)",
@@ -136,7 +136,7 @@ export const INITIAL_BRANCHES: Branch[] = [
     isActive: true,
     displayOrder: 5,
     imageUrl:
-      "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?auto=format&fit=crop&w=1200&q=80",
+      "/images/branches/parambilbazar.jpg",
   },
   {
     name: "Bournemouth",
@@ -154,7 +154,7 @@ export const INITIAL_BRANCHES: Branch[] = [
     isActive: true,
     displayOrder: 6,
     imageUrl:
-      "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+      "/images/branches/bournemouth.jpg",
   },
 ];
 
@@ -167,7 +167,7 @@ export const DANCE_STYLES = [
     description:
       "Blending Indian theatrical expression with contemporary and commercial movement. High-octane choreography designed to build stamina, expressive stage presence, and musicality.",
     image:
-      "https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=1200&q=80",
+      "/images/styles/bollywood.jpg",
     features: [
       "Cinematic Expression & Storytelling",
       "Dynamic Footwork & Hand Gestures",
@@ -183,7 +183,7 @@ export const DANCE_STYLES = [
     description:
       "Authentic urban dance styles focusing on bounce, groove, body isolations, rhythm control, and personal style evolution.",
     image:
-      "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80",
+      "/images/styles/hip-hop.jpg",
     features: [
       "Groove Conditioning & Musicality",
       "Body Isolations & Popping Foundations",
@@ -199,7 +199,7 @@ export const DANCE_STYLES = [
     description:
       "An artistic exploration of momentum, gravity, contraction, release, and fluid transitions between vertical and horizontal movement.",
     image:
-      "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?auto=format&fit=crop&w=1200&q=80",
+      "/images/styles/contemporary.jpg",
     features: [
       "Floorwork & Weight Transfer",
       "Breath Control & Momentum",
@@ -215,7 +215,7 @@ export const DANCE_STYLES = [
     description:
       "Merging technical precision with raw storytelling. Dancers translate lyrics, melodies, and emotional narratives into expressive kinetic art.",
     image:
-      "https://images.unsplash.com/photo-1518834107812-67b0b7c58434?auto=format&fit=crop&w=1200&q=80",
+      "/images/styles/lyrical.jpg",
     features: [
       "Lyric Interpretation & Musical Nuance",
       "Controlled Extensions & Balances",
@@ -231,7 +231,7 @@ export const DANCE_STYLES = [
     description:
       "Commercial western stage routines combining jazz technique, synchronization, stage presence, and precision ensemble performance.",
     image:
-      "https://images.unsplash.com/photo-1535525153412-5a42439a210d?auto=format&fit=crop&w=1200&q=80",
+      "/images/styles/western.jpg",
     features: [
       "Ensemble Synchronization & Line Discipline",
       "Stage Spatial Awareness",
@@ -247,7 +247,7 @@ export const DANCE_STYLES = [
     description:
       "Empowering dancers to break free from choreographic boundaries, trust their muscle memory, and respond authentically to any beat in real-time.",
     image:
-      "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+      "/images/styles/freestyle.jpg",
     features: [
       "Spontaneous Rhythm Adaptation",
       "Individual Signature Moves",
@@ -290,7 +290,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     title: "Stage Choreography Showcase",
     category: "Performances",
     description: "DKDC senior company dancers performing contemporary routine.",
-    url: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80",
+    url: "/images/styles/lyrical.jpg",
     published: true,
     displayOrder: 1,
   },
@@ -299,7 +299,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     title: "Hip-Hop Intensive Workshop",
     category: "Workshops",
     description: "Studio session exploring isolation techniques and rhythm grooves.",
-    url: "https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=1200&q=80",
+    url: "/images/styles/hip-hop.jpg",
     published: true,
     displayOrder: 2,
   },
@@ -308,7 +308,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     title: "Bournemouth UK Cultural Exchange",
     category: "Bournemouth",
     description: "International collaboration and masterclass sessions in Bournemouth, UK.",
-    url: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+    url: "/images/branches/bournemouth.jpg",
     published: true,
     displayOrder: 3,
   },
@@ -317,7 +317,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     title: "Annual Stage Extravaganza",
     category: "Stage Shows",
     description: "Lighting and synchronization during our Kozhikode grand stage show.",
-    url: "https://images.unsplash.com/photo-1518834107812-67b0b7c58434?auto=format&fit=crop&w=1200&q=80",
+    url: "/images/styles/western.jpg",
     published: true,
     displayOrder: 4,
   },
@@ -326,7 +326,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     title: "Studio Movement & Flexibility Training",
     category: "Special Training",
     description: "Students conditioning acrobatics and stretching drills.",
-    url: "https://images.unsplash.com/photo-1535525153412-5a42439a210d?auto=format&fit=crop&w=1200&q=80",
+    url: "/images/branches/westhill.jpg",
     published: true,
     displayOrder: 5,
   },
@@ -335,7 +335,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     title: "State Level Dance Championship",
     category: "Competitions",
     description: "DKDC competition team performing winning routine.",
-    url: "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?auto=format&fit=crop&w=1200&q=80",
+    url: "/images/styles/bollywood.jpg",
     published: true,
     displayOrder: 6,
   },

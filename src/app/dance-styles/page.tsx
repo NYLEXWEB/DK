@@ -63,7 +63,7 @@ export default function DanceStylesPage() {
                       src={style.image}
                       alt={style.name}
                       fill
-                      className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+                      className="object-cover object-center transition-all duration-700 ease-out"
                       sizes="(max-width: 1024px) 100vw, 50vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />

@@ -1,47 +1,74 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp } from "@/components/ui/Motion";
 
-const AUDIENCE_GROUPS = [
+interface EligibilityItem {
+  number: string;
+  category: string;
+  question: string;
+  answer: string;
+}
+
+const ELIGIBILITY_QUESTIONS: EligibilityItem[] = [
   {
-    title: "Beginners",
-    description:
-      "No prior experience needed. We provide foundational posture, rhythm conditioning, and step-by-step guidance.",
+    number: "01",
+    category: "Beginners",
+    question: "Can beginners with no prior dance experience join?",
+    answer:
+      "Absolutely! No prior dance experience is needed. We provide foundational posture training, rhythm conditioning, muscle memory, and step-by-step guidance so you can build confidence from day one.",
   },
   {
-    title: "Children & Teenagers",
-    description:
-      "Building confidence, discipline, kinetic coordination, and artistic expression in a structured, inspiring environment.",
+    number: "02",
+    category: "Children & Teenagers",
+    question: "Are there dedicated batches for children and teenagers?",
+    answer:
+      "Yes. We offer specialized, age-appropriate batches that focus on building confidence, stage presence, kinetic coordination, discipline, and artistic expression in a structured, inspiring environment.",
   },
   {
-    title: "Adults",
-    description:
-      "Open to dance enthusiasts looking to learn technique, enhance stamina, stay fit, and express themselves through movement.",
+    number: "03",
+    category: "Adults",
+    question: "Can adults join for fitness, flexibility, or as a creative hobby?",
+    answer:
+      "Dance has no age limit! Our adult batches welcome enthusiasts looking to learn technique, enhance stamina, improve flexibility, de-stress, and express themselves freely through movement.",
   },
   {
-    title: "Aspiring Performers",
-    description:
-      "Advanced choreography training, stage spatial awareness, and camera angles for serious upcoming artists.",
+    number: "04",
+    category: "Aspiring Performers",
+    question: "Do you provide advanced training for aspiring performers and artists?",
+    answer:
+      "Yes. For dancers aiming to perform on professional stages, we provide advanced choreography training, stage spatial awareness, camera projection, and performance dynamics.",
   },
   {
-    title: "Competition Students",
-    description:
-      "Rigorously conditioned teams prepared for state, national, and international dance championships and showcases.",
+    number: "05",
+    category: "Competition Students",
+    question: "Can students prepare for stage shows, championships, and dance competitions?",
+    answer:
+      "Yes. DKDC trains rigorously conditioned teams and audition-selected crews prepared for state, national, and international dance championships, battle arenas, and premier showcases.",
   },
   {
-    title: "Students Improving Technique",
-    description:
-      "Dancers looking to sharpen their footwork, body flexibility, tutting precision, and lyrical emotional execution.",
+    number: "06",
+    category: "Technique Improvement",
+    question: "Can experienced dancers join to sharpen specific techniques and styles?",
+    answer:
+      "Definitely. Dancers of any background looking to sharpen their footwork precision, body isolations, tutting geometry, and lyrical emotional execution can enroll in our intensive technique-focused sessions.",
   },
 ];
 
 export function WhoCanJoinSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggleItem = (index: number) => {
+    setOpenIndex((prev) => (prev === index ? null : index));
+  };
+
   return (
-    <section className="bg-neutral-950 text-white py-28 sm:py-36 border-t border-neutral-900 relative">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+    <section className="bg-neutral-950 text-white py-24 sm:py-32 border-t border-neutral-900 relative">
+      <div className="max-w-5xl mx-auto px-6 sm:px-8">
         {/* Header */}
-        <div className="max-w-2xl mb-20">
+        <div className="max-w-2xl mb-16 sm:mb-20">
           <FadeUp>
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
@@ -59,25 +86,80 @@ export function WhoCanJoinSection() {
           </FadeUp>
         </div>
 
-        {/* Sophisticated Typographic Composition */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {AUDIENCE_GROUPS.map((group, index) => (
-            <FadeUp key={group.title} delay={index * 0.08}>
-              <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl flex flex-col justify-between h-full">
-                <div>
-                  <span className="text-[11px] font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors duration-300">
-                    0{index + 1} // STUDENT PROFILE
-                  </span>
-                  <h3 className="text-2xl font-heading font-light uppercase tracking-tight text-white mb-3">
-                    {group.title}
-                  </h3>
-                  <p className="text-sm text-neutral-400 leading-relaxed font-light">
-                    {group.description}
-                  </p>
+        {/* Q&A Accordion List */}
+        <div className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
+          {ELIGIBILITY_QUESTIONS.map((item, index) => {
+            const isOpen = openIndex === index;
+
+            return (
+              <FadeUp key={item.number} delay={index * 0.05}>
+                <div
+                  className={`group transition-colors duration-300 ${
+                    isOpen ? "bg-white/[0.02]" : "hover:bg-white/[0.01]"
+                  }`}
+                >
+                  {/* Question Row / Toggle Button */}
+                  <button
+                    type="button"
+                    onClick={() => toggleItem(index)}
+                    aria-expanded={isOpen}
+                    className="w-full py-6 sm:py-8 flex items-center justify-between gap-4 sm:gap-6 text-left cursor-pointer transition-all"
+                  >
+                    <div className="flex items-start sm:items-center gap-4 sm:gap-6 flex-1 min-w-0">
+                      {/* Numbering: 01, 02, etc. */}
+                      <span className="font-mono text-xs sm:text-sm text-neutral-500 group-hover:text-dk-yellow transition-colors shrink-0 pt-1 sm:pt-0">
+                        {item.number}
+                      </span>
+
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4 flex-1 min-w-0">
+                        <span className="text-[11px] font-mono tracking-wider text-neutral-400 uppercase sm:hidden">
+                          {item.category}
+                        </span>
+                        <h3 className="text-lg sm:text-2xl font-heading font-light uppercase tracking-tight text-white group-hover:text-dk-yellow transition-colors leading-snug">
+                          {item.question}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Arrow Button */}
+                    <div
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border flex items-center justify-center shrink-0 transition-all duration-300 ${
+                        isOpen
+                          ? "bg-white/10 border-dk-yellow/50 text-dk-yellow"
+                          : "border-white/10 bg-white/[0.02] text-neutral-400 group-hover:text-white group-hover:border-white/20 group-hover:bg-white/[0.05]"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      <ChevronDown
+                        className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ease-out ${
+                          isOpen ? "rotate-180 text-dk-yellow" : ""
+                        }`}
+                      />
+                    </div>
+                  </button>
+
+                  {/* Collapsible Answer */}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pb-7 sm:pb-9 pl-8 sm:pl-12 pr-4 sm:pr-14">
+                          <p className="text-neutral-300 text-sm sm:text-base font-light leading-relaxed border-l-2 border-dk-yellow/40 pl-4 py-1">
+                            {item.answer}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-            </FadeUp>
-          ))}
+              </FadeUp>
+            );
+          })}
         </div>
       </div>
     </section>

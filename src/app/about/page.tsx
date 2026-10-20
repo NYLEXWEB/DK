@@ -78,11 +78,11 @@ export default async function AboutPage() {
             <div className="lg:col-span-6 relative aspect-[4/5] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
               <RevealImage className="w-full h-full relative">
                 <Image
-                  src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80"
+                  src="/images/branches/balussery.jpg"
                   alt="DK Dance Company studio practice session"
                   fill
                   priority
-                  className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+                  className="object-cover object-center transition-all duration-700 ease-out"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
@@ -145,14 +145,14 @@ export default async function AboutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-7">
                 <FadeUp>
-                  <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-white/[0.03] text-neutral-400 border border-white/[0.08] mb-4">
-                    Artistic Direction
+                  <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-white/[0.03] text-dk-yellow border border-white/[0.08] mb-4">
+                    Choreographer • Founder & Artistic Director
                   </span>
                   <h2 className="text-3xl sm:text-5xl font-heading font-light uppercase tracking-tight text-white mb-6">
-                    Dhanesh Krishnan
+                    Dhanesh Krishnan K
                   </h2>
                   <p className="text-neutral-300 text-base sm:text-lg font-light leading-relaxed mb-6">
-                    Under the visionary direction of Dhanesh Krishnan, DK Dance
+                    Under the visionary direction of Dhanesh Krishnan K, DK Dance
                     Company has developed a distinct movement vocabulary that
                     bridges traditional Indian emotional storytelling with the
                     athleticism and geometry of modern contemporary and commercial
@@ -173,14 +173,20 @@ export default async function AboutPage() {
                 </FadeUp>
               </div>
 
-              <div className="lg:col-span-5 relative aspect-square bg-black border border-white/[0.08] overflow-hidden rounded-3xl shadow-2xl">
+              <div className="lg:col-span-5 relative aspect-[4/5] bg-black border border-white/[0.08] overflow-hidden rounded-3xl shadow-2xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=1000&q=80"
-                  alt="Dhanesh Krishnan Director of DK Dance Company"
+                  src="/images/dhanesh-krishnan.png"
+                  alt="Dhanesh Krishnan K - Choreographer, Founder & Director of DK Dance Company"
                   fill
-                  className="object-cover object-top grayscale hover:grayscale-0 transition-all duration-700"
+                  priority
+                  className="object-cover object-[center_20%] transition-all duration-700"
                   sizes="(max-width: 1024px) 100vw, 40vw"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono uppercase tracking-widest text-white/90 px-4 py-2 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
+                  <span>Dhanesh Krishnan K</span>
+                  <span className="text-dk-yellow">Founder & Director</span>
+                </div>
               </div>
             </div>
           </div>

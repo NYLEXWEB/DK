@@ -78,7 +78,7 @@ export function DanceStylesSection() {
                   src={style.image}
                   alt={style.name}
                   fill
-                  className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-500"
+                  className="object-cover object-center transition-all duration-500"
                   sizes="100vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent" />
@@ -183,7 +183,7 @@ export function DanceStylesSection() {
                   src={style.image}
                   alt={style.name}
                   fill
-                  className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
+                  className="object-cover object-center transition-all duration-700"
                   sizes="(max-width: 1024px) 100vw, 40vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
