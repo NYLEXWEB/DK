@@ -13,12 +13,15 @@ import {
   Plus,
   Loader2,
   Check,
+  AlertCircle,
+  Film,
+  FileCheck2,
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
 import { MediaItem, MediaCategory, MediaType } from "@/types";
-import { UploadButton } from "@/lib/uploadthing";
+import { UploadDropzone, UploadButton } from "@/lib/uploadthing";
 
 const CATEGORIES: MediaCategory[] = [
   "Classes",
@@ -43,6 +46,8 @@ export default function AdminMediaPage() {
   const [editingItem, setEditingItem] = useState<MediaItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadSuccess, setUploadSuccess] = useState("");
 
   // Add / Edit Form State
   const [formData, setFormData] = useState({
@@ -77,6 +82,8 @@ export default function AdminMediaPage() {
   }, []);
 
   const handleOpenAdd = () => {
+    setUploadError("");
+    setUploadSuccess("");
     setFormData({
       title: "",
       description: "",
@@ -92,6 +99,8 @@ export default function AdminMediaPage() {
   };
 
   const handleOpenEdit = (item: MediaItem) => {
+    setUploadError("");
+    setUploadSuccess("");
     setEditingItem(item);
     setFormData({
       title: item.title,
@@ -108,36 +117,42 @@ export default function AdminMediaPage() {
 
   const handleSaveMedia = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.url || !formData.title.trim()) {
-      alert("Please provide both a media URL and a title.");
+    if (!formData.url.trim() || !formData.title.trim()) {
+      setUploadError("Please upload or enter a media URL and give it a title.");
       return;
     }
 
     setActionLoading(true);
+    setUploadError("");
+
     try {
       if (editingItem) {
-        // Update
         const res = await fetch(`/api/media/${editingItem._id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        if (!res.ok) throw new Error("Update failed");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || "Update failed");
+        }
       } else {
-        // Create
         const res = await fetch("/api/media", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        if (!res.ok) throw new Error("Creation failed");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || "Creation failed");
+        }
       }
 
       setIsAddModalOpen(false);
       setEditingItem(null);
       await fetchMedia();
     } catch (err: any) {
-      alert(err.message || "Failed to save media item.");
+      setUploadError(err.message || "Failed to save media item.");
     } finally {
       setActionLoading(false);
     }
@@ -195,7 +210,7 @@ export default function AdminMediaPage() {
       >
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Add Media</span>
@@ -211,7 +226,7 @@ export default function AdminMediaPage() {
               onClick={() => setFilterCategory(cat)}
               className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors shrink-0 ${
                 filterCategory === cat
-                  ? "bg-white text-black font-normal"
+                  ? "bg-white text-black font-semibold"
                   : "bg-neutral-900 text-neutral-400 hover:text-white"
               }`}
             >
@@ -319,7 +334,7 @@ export default function AdminMediaPage() {
                     <span className="text-[10px] font-mono uppercase text-dk-yellow block mb-1">
                       {item.category}
                     </span>
-                    <h3 className="text-sm font-heading font-light uppercase text-white truncate mb-1">
+                    <h3 className="text-sm font-heading font-bold uppercase text-white truncate mb-1">
                       {item.title}
                     </h3>
                     {item.description && (
@@ -366,56 +381,134 @@ export default function AdminMediaPage() {
           setEditingItem(null);
         }}
         title={editingItem ? "Edit Media Item" : "Add Media Item"}
-        maxWidth="md"
+        maxWidth="lg"
       >
-        <form onSubmit={handleSaveMedia} className="space-y-4">
-          {/* UploadThing Upload Section */}
-          <div className="p-4 bg-black border border-neutral-800 text-center">
-            <span className="text-xs font-mono uppercase text-neutral-400 block mb-2">
-              Upload New Asset via UploadThing
-            </span>
-            <div className="flex justify-center my-2">
-              <UploadButton
-                endpoint={formData.type === "video" ? "videoUploader" : "imageUploader"}
+        <form onSubmit={handleSaveMedia} className="space-y-5">
+          {/* Error Message */}
+          {uploadError && (
+            <div
+              role="alert"
+              className="flex items-center gap-2.5 p-3.5 bg-dk-red/10 border border-dk-red/30 text-white text-xs font-mono"
+            >
+              <AlertCircle className="w-4 h-4 text-dk-red shrink-0" />
+              <span>{uploadError}</span>
+            </div>
+          )}
+
+          {/* Success Notification */}
+          {uploadSuccess && (
+            <div className="flex items-center gap-2.5 p-3.5 bg-[#25D366]/10 border border-[#25D366]/30 text-white text-xs font-mono">
+              <FileCheck2 className="w-4 h-4 text-[#25D366] shrink-0" />
+              <span>{uploadSuccess}</span>
+            </div>
+          )}
+
+          {/* UploadThing UploadDropzone Section */}
+          <div className="p-5 bg-black border border-neutral-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono uppercase tracking-wider text-white">
+                Upload Media via UploadThing
+              </span>
+              <span className="text-[10px] font-mono text-dk-yellow uppercase">
+                Direct Cloud Storage
+              </span>
+            </div>
+
+            {/* Formats Supported Badges */}
+            <div className="flex flex-wrap gap-2 text-[10px] font-mono uppercase">
+              <span className="px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-300">
+                Photos: JPG, PNG, WEBP, GIF, SVG (up to 16MB)
+              </span>
+              <span className="px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-300">
+                Videos: MP4, MOV, WEBM, M4V (up to 256MB)
+              </span>
+            </div>
+
+            {/* Dropzone Component */}
+            <div className="pt-2">
+              <UploadDropzone
+                endpoint="mediaUploader"
+                appearance={{
+                  container:
+                    "border border-dashed border-neutral-700 bg-neutral-950 hover:border-dk-yellow transition-colors py-8 px-4 cursor-pointer",
+                  button:
+                    "bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest px-6 py-2.5 rounded-none transition-colors ut-uploading:bg-neutral-800",
+                  label: "text-neutral-300 font-heading text-sm uppercase tracking-wide hover:text-white",
+                  allowedContent: "text-neutral-500 font-mono text-[11px]",
+                }}
                 onClientUploadComplete={(res) => {
                   if (res && res[0]) {
-                    setFormData({
-                      ...formData,
-                      url: res[0].url,
-                      key: res[0].key,
-                      title: formData.title || res[0].name.replace(/\.[^/.]+$/, ""),
-                    });
+                    const uploaded = res[0];
+                    const isVideo = Boolean(
+                      uploaded.name.match(/\.(mp4|mov|webm|m4v)$/i)
+                    );
+                    const cleanTitle = uploaded.name.replace(/\.[^/.]+$/, "");
+
+                    setFormData((prev) => ({
+                      ...prev,
+                      url: uploaded.url,
+                      key: uploaded.key,
+                      type: isVideo ? "video" : "image",
+                      title: prev.title.trim() ? prev.title : cleanTitle,
+                    }));
+
+                    setUploadSuccess(
+                      `File uploaded successfully: ${uploaded.name} (${isVideo ? "Video" : "Photo"})`
+                    );
+                    setUploadError("");
                   }
                 }}
                 onUploadError={(error: Error) => {
-                  alert(`Upload error: ${error.message}`);
+                  console.error("UploadThing upload error:", error);
+                  setUploadError(
+                    `Upload error: ${error.message || "Failed to upload file. Please check file format and network."}`
+                  );
                 }}
               />
             </div>
+
+            {/* Live Upload Preview Box */}
             {formData.url && (
-              <div className="text-[11px] font-mono text-dk-yellow mt-2 truncate">
-                Asset Ready: {formData.url}
+              <div className="p-3 bg-neutral-900/60 border border-neutral-800 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2 truncate">
+                  {formData.type === "video" ? (
+                    <Film className="w-4 h-4 text-dk-red shrink-0" />
+                  ) : (
+                    <ImageIcon className="w-4 h-4 text-dk-yellow shrink-0" />
+                  )}
+                  <span className="font-mono text-white truncate">{formData.url}</span>
+                </div>
+                <span className="text-[10px] font-mono text-[#25D366] uppercase font-bold shrink-0">
+                  Ready
+                </span>
               </div>
             )}
           </div>
 
+          {/* Direct URL input fallback */}
           <div>
             <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-              Direct Media URL (or CDN link)
+              Direct Media URL (Auto-filled on upload or paste manually)
             </label>
             <input
               type="url"
               required
               value={formData.url}
-              onChange={(e) =>
-                setFormData({ ...formData, url: e.target.value })
-              }
-              placeholder="https://..."
-              className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
+              onChange={(e) => {
+                const url = e.target.value;
+                const isVideo = Boolean(url.match(/\.(mp4|mov|webm|m4v)/i));
+                setFormData({
+                  ...formData,
+                  url,
+                  type: isVideo ? "video" : formData.type,
+                });
+              }}
+              placeholder="https://utfs.io/f/... or https://..."
+              className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
                 Media Type
@@ -425,7 +518,7 @@ export default function AdminMediaPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, type: e.target.value as MediaType })
                 }
-                className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
+                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow"
               >
                 <option value="image">Photo / Image</option>
                 <option value="video">Video Reel</option>
@@ -444,7 +537,7 @@ export default function AdminMediaPage() {
                     category: e.target.value as MediaCategory,
                   })
                 }
-                className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
+                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow"
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -457,7 +550,7 @@ export default function AdminMediaPage() {
 
           <div>
             <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-              Title
+              Title / Caption *
             </label>
             <input
               type="text"
@@ -467,7 +560,7 @@ export default function AdminMediaPage() {
                 setFormData({ ...formData, title: e.target.value })
               }
               placeholder="e.g. Kozhikode Stage Show Choreography"
-              className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
+              className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow"
             />
           </div>
 
@@ -481,7 +574,7 @@ export default function AdminMediaPage() {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              placeholder="Brief editorial caption..."
+              placeholder="Brief performance or class description..."
               className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow resize-none"
             />
           </div>
@@ -489,7 +582,7 @@ export default function AdminMediaPage() {
           {formData.type === "video" && (
             <div>
               <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                Video Thumbnail Image URL (Optional)
+                Video Thumbnail Image URL (Optional poster image)
               </label>
               <input
                 type="url"
@@ -498,7 +591,7 @@ export default function AdminMediaPage() {
                   setFormData({ ...formData, thumbnailUrl: e.target.value })
                 }
                 placeholder="https://..."
-                className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
+                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
               />
             </div>
           )}
@@ -517,7 +610,7 @@ export default function AdminMediaPage() {
                     displayOrder: Number(e.target.value),
                   })
                 }
-                className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
+                className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
               />
             </div>
 
@@ -535,7 +628,7 @@ export default function AdminMediaPage() {
                 htmlFor="published"
                 className="text-xs font-mono uppercase text-neutral-300"
               >
-                Publish on Live Site
+                Publish to Live Gallery
               </label>
             </div>
           </div>
@@ -547,16 +640,16 @@ export default function AdminMediaPage() {
                 setIsAddModalOpen(false);
                 setEditingItem(null);
               }}
-              className="px-4 py-2 text-xs font-mono uppercase text-neutral-400 hover:text-white"
+              className="px-4 py-2.5 text-xs font-mono uppercase text-neutral-400 hover:text-white"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-6 py-2 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
+              className="px-6 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
             >
-              {actionLoading ? "Saving..." : "Save Media"}
+              {actionLoading ? "Saving..." : "Save Media Item"}
             </button>
           </div>
         </form>
