@@ -22,8 +22,8 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden bg-transparent pt-24 sm:pt-28 pb-16 lg:pb-14">
-      {/* Fixed Background Video (Responsive: 1920x1080 on Desktop, 1080x1920 on Mobile) */}
-      <div className="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden bg-black">
+      {/* Background Video (Responsive: 1920x1080 on Desktop, 1080x1920 on Mobile) */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden bg-black">
         {/* Mobile Background Video (< md: 1080x1920 Portrait) */}
         <video
           ref={mobileVideoRef}
