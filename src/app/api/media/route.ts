@@ -7,9 +7,13 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category") || undefined;
+    const type = searchParams.get("type") || undefined;
     const includeUnpublished = searchParams.get("all") === "true";
 
-    const items = await getMedia(category);
+    let items = await getMedia(category);
+    if (type) {
+      items = items.filter((m) => m.type === type);
+    }
     const filtered = includeUnpublished ? items : items.filter((m) => m.published);
 
     return NextResponse.json({ success: true, data: filtered });
@@ -39,6 +43,8 @@ export async function POST(req: NextRequest) {
       description,
       category = "Classes",
       thumbnailUrl,
+      duration,
+      featuredOnHome = type === "video",
       published = true,
       displayOrder = 0,
     } = body;
@@ -59,6 +65,8 @@ export async function POST(req: NextRequest) {
       description,
       category: category as MediaCategory,
       thumbnailUrl,
+      duration,
+      featuredOnHome: Boolean(featuredOnHome),
       published: Boolean(published),
       displayOrder: Number(displayOrder) || 0,
     });

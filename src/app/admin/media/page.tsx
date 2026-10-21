@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Upload,
   Trash2,
@@ -216,6 +217,8 @@ export default function AdminMediaPage() {
 
   const filteredMedia = mediaItems.filter((item) => {
     if (filterCategory === "All") return true;
+    if (filterCategory === "Videos") return item.type === "video";
+    if (filterCategory === "Photos") return item.type === "image";
     return item.category === filterCategory;
   });
 
@@ -225,19 +228,28 @@ export default function AdminMediaPage() {
         title="Media Management"
         subtitle="Upload, categorize, and organize photos & video performance reels"
       >
-        <button
-          onClick={handleOpenAdd}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Media</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/videos"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors"
+          >
+            <Film className="w-3.5 h-3.5 text-dk-red" />
+            <span>Video Showcase</span>
+          </Link>
+          <button
+            onClick={handleOpenAdd}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Media</span>
+          </button>
+        </div>
       </AdminHeader>
 
       <main className="p-6 sm:p-8 space-y-6 flex-1">
         {/* Filter Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {["All", ...CATEGORIES].map((cat) => (
+          {["All", "Videos", "Photos", ...CATEGORIES].map((cat) => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}

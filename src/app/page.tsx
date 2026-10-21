@@ -8,21 +8,23 @@ import { DanceStylesSection } from "@/components/sections/DanceStylesSection";
 import { WhoCanJoinSection } from "@/components/sections/WhoCanJoinSection";
 import { BranchesSection } from "@/components/sections/BranchesSection";
 import { PerformanceSection } from "@/components/sections/PerformanceSection";
+import { HomeVideoSection } from "@/components/sections/HomeVideoSection";
 import { OnlineClassesSection } from "@/components/sections/OnlineClassesSection";
 import { GoogleReviewsSection } from "@/components/sections/GoogleReviewsSection";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { EnquiryCTASection } from "@/components/sections/EnquiryCTASection";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { FadeUp } from "@/components/ui/Motion";
-import { getBranches, getMedia, getSiteSettings } from "@/lib/db-services";
+import { getBranches, getMedia, getSiteSettings, getVideos } from "@/lib/db-services";
 
 export const revalidate = 60; // Revalidate every minute for live CMS updates
 
 export default async function HomePage() {
-  const [branches, mediaItems, siteSettings] = await Promise.all([
+  const [branches, mediaItems, siteSettings, videos] = await Promise.all([
     getBranches(),
     getMedia(),
     getSiteSettings(),
+    getVideos({ onlyPublished: true, onlyFeatured: true }),
   ]);
 
   return (
@@ -49,7 +51,10 @@ export default async function HomePage() {
           {/* 6. Performance & Choreography */}
           <PerformanceSection />
 
-          {/* 7. Visual Gallery Preview */}
+          {/* 7. Video Showcase */}
+          <HomeVideoSection videos={videos} />
+
+          {/* 8. Visual Gallery Preview */}
           <section className="bg-black text-white py-20 sm:py-36 border-t border-white/[0.08]">
             <div className="max-w-7xl mx-auto px-4 sm:px-8">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">

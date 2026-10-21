@@ -182,6 +182,65 @@ export async function getMedia(category?: string): Promise<MediaItem[]> {
   }
 }
 
+export async function getVideos(options?: {
+  onlyPublished?: boolean;
+  onlyFeatured?: boolean;
+}): Promise<MediaItem[]> {
+  const db = await getDb();
+  const query: any = { type: "video" };
+  if (options?.onlyPublished !== false) {
+    query.published = true;
+  }
+  if (options?.onlyFeatured) {
+    query.featuredOnHome = true;
+  }
+
+  const initialSeedVideos = INITIAL_GALLERY_ITEMS.filter((m) => m.type === "video");
+
+  if (!db) {
+    let items = memoryMedia.filter((m) => m.type === "video");
+    if (items.length === 0) items = initialSeedVideos;
+    if (options?.onlyPublished !== false) {
+      items = items.filter((m) => m.published);
+    }
+    if (options?.onlyFeatured) {
+      const feat = items.filter((m) => m.featuredOnHome);
+      if (feat.length > 0) items = feat;
+    }
+    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  try {
+    let videos = await db
+      .collection<MediaItem>("media")
+      .find(query)
+      .sort({ displayOrder: 1, createdAt: -1 })
+      .toArray();
+
+    // If query has onlyFeatured and returned 0, fallback to all published videos
+    if (videos.length === 0 && options?.onlyFeatured) {
+      videos = await db
+        .collection<MediaItem>("media")
+        .find({ type: "video", published: true })
+        .sort({ displayOrder: 1, createdAt: -1 })
+        .toArray();
+    }
+
+    // If still 0 videos in MongoDB (e.g. before admin uploads or seeds videos), fallback to initial seed videos
+    if (videos.length === 0) {
+      return initialSeedVideos;
+    }
+
+    return videos.map((m) => ({
+      ...m,
+      _id: m._id?.toString(),
+    }));
+  } catch (err) {
+    console.error("Error fetching videos:", err);
+    return initialSeedVideos;
+  }
+}
+
 export async function createMedia(data: Omit<MediaItem, "_id">): Promise<MediaItem> {
   const db = await getDb();
   const now = new Date().toISOString();

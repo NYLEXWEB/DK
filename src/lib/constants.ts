@@ -286,13 +286,37 @@ export const SPECIAL_TRAINING_MODULES = [
 
 export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
   {
+    type: "video",
+    title: "DKDC Stage Choreography & Kinetic Routine",
+    category: "Performances",
+    description: "Cinematic contemporary stage choreography showcase directed by Dhanesh Krishnan.",
+    url: "/images/videos/8688453-hd_1920_1080_25fps.mp4",
+    thumbnailUrl: "/images/styles/contemporary.jpg",
+    duration: "0:45",
+    featuredOnHome: true,
+    published: true,
+    displayOrder: 1,
+  },
+  {
+    type: "video",
+    title: "Hip-Hop Urban Freestyle & Isolation Reel",
+    category: "Classes",
+    description: "Advanced rhythm isolation and speed footwork intensive at Kozhikode head studio.",
+    url: "/images/videos/8688823-hd_1080_1920_25fps.mp4",
+    thumbnailUrl: "/images/styles/hip-hop.jpg",
+    duration: "0:30",
+    featuredOnHome: true,
+    published: true,
+    displayOrder: 2,
+  },
+  {
     type: "image",
     title: "Stage Choreography Showcase",
     category: "Performances",
     description: "DKDC senior company dancers performing contemporary routine.",
     url: "/images/styles/lyrical.jpg",
     published: true,
-    displayOrder: 1,
+    displayOrder: 3,
   },
   {
     type: "image",
@@ -301,7 +325,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "Studio session exploring isolation techniques and rhythm grooves.",
     url: "/images/styles/hip-hop.jpg",
     published: true,
-    displayOrder: 2,
+    displayOrder: 4,
   },
   {
     type: "image",
@@ -310,7 +334,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "International collaboration and masterclass sessions in Bournemouth, UK.",
     url: "/images/branches/bournemouth.jpg",
     published: true,
-    displayOrder: 3,
+    displayOrder: 5,
   },
   {
     type: "image",
@@ -319,7 +343,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "Lighting and synchronization during our Kozhikode grand stage show.",
     url: "/images/styles/western.jpg",
     published: true,
-    displayOrder: 4,
+    displayOrder: 6,
   },
   {
     type: "image",
@@ -328,7 +352,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "Students conditioning acrobatics and stretching drills.",
     url: "/images/branches/westhill.jpg",
     published: true,
-    displayOrder: 5,
+    displayOrder: 7,
   },
   {
     type: "image",
@@ -337,6 +361,6 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "DKDC competition team performing winning routine.",
     url: "/images/styles/bollywood.jpg",
     published: true,
-    displayOrder: 6,
+    displayOrder: 8,
   },
 ];
