@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ToastProvider } from "@/context/ToastContext";
 
 export const viewport: Viewport = {
   themeColor: "#000000",
@@ -127,7 +128,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-black text-white font-light tracking-[-0.01em] antialiased selection:bg-[#FFF102] selection:text-black min-h-screen flex flex-col justify-between">
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

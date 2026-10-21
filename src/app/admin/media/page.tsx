@@ -22,6 +22,7 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
 import { MediaItem, MediaCategory, MediaType } from "@/types";
 import { UploadDropzone, UploadButton } from "@/lib/uploadthing";
+import { useToast } from "@/context/ToastContext";
 
 const CATEGORIES: MediaCategory[] = [
   "Classes",
@@ -37,6 +38,7 @@ const CATEGORIES: MediaCategory[] = [
 ];
 
 export default function AdminMediaPage() {
+  const toast = useToast();
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterCategory, setFilterCategory] = useState<string>("All");
@@ -151,8 +153,14 @@ export default function AdminMediaPage() {
       setIsAddModalOpen(false);
       setEditingItem(null);
       await fetchMedia();
+      toast.success(
+        editingItem ? "Media item updated successfully." : "New media item added to archive.",
+        "Media Saved"
+      );
     } catch (err: any) {
-      setUploadError(err.message || "Failed to save media item.");
+      const msg = err.message || "Failed to save media item.";
+      setUploadError(msg);
+      toast.error(msg, "Save Failed");
     } finally {
       setActionLoading(false);
     }
@@ -160,20 +168,28 @@ export default function AdminMediaPage() {
 
   const handleTogglePublish = async (item: MediaItem) => {
     try {
+      const nextState = !item.published;
       const res = await fetch(`/api/media/${item._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ published: !item.published }),
+        body: JSON.stringify({ published: nextState }),
       });
       if (res.ok) {
         setMediaItems((prev) =>
           prev.map((m) =>
-            m._id === item._id ? { ...m, published: !m.published } : m
+            m._id === item._id ? { ...m, published: nextState } : m
           )
         );
+        toast.info(
+          nextState ? `"${item.title}" is now published on live gallery.` : `"${item.title}" moved to draft status.`,
+          "Status Updated"
+        );
+      } else {
+        toast.error("Failed to change publish status.");
       }
     } catch (err) {
       console.error("Toggle publish failed:", err);
+      toast.error("Network error while updating publish status.");
     }
   };
 
@@ -186,12 +202,13 @@ export default function AdminMediaPage() {
       });
       if (res.ok) {
         setMediaItems((prev) => prev.filter((m) => m._id !== deleteTarget._id));
+        toast.success(`"${deleteTarget.title}" deleted from media library and storage.`, "Item Removed");
         setDeleteTarget(null);
       } else {
         throw new Error("Failed to delete media item");
       }
     } catch (err: any) {
-      alert(err.message || "Deletion failed");
+      toast.error(err.message || "Deletion failed", "Error");
     } finally {
       setActionLoading(false);
     }

@@ -10,12 +10,17 @@ async function checkAdminAuth() {
     const token = cookieStore.get(COOKIE_NAME)?.value;
     if (token) {
       const session = await verifySessionToken(token);
-      if (session?.username) {
+      if (session?.username && session.role === "admin") {
         return { username: session.username };
       }
     }
   } catch (err) {
     console.warn("Auth verification warning in uploadthing:", err);
+  }
+
+  // In production, block unauthorized upload attempts strictly
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Unauthorized: Admin authentication required to upload media.");
   }
   return { username: "admin" };
 }

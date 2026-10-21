@@ -5,8 +5,10 @@ import { Save, Loader2, CheckCircle2, RotateCcw } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { SiteSettings } from "@/types";
 import { INITIAL_SITE_SETTINGS } from "@/lib/constants";
+import { useToast } from "@/context/ToastContext";
 
 export default function AdminSettingsPage() {
+  const { toast } = useToast();
   const [settings, setSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -23,12 +25,13 @@ export default function AdminSettingsPage() {
         }
       } catch (err) {
         console.error("Failed to load settings:", err);
+        toast.error("Failed to load settings from database.");
       } finally {
         setLoading(false);
       }
     }
     loadSettings();
-  }, []);
+  }, [toast]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,12 +45,16 @@ export default function AdminSettingsPage() {
         body: JSON.stringify(settings),
       });
 
-      if (!res.ok) throw new Error("Failed to update settings");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to update settings");
+      }
 
       setSuccessMessage("Site settings successfully updated and live.");
+      toast.success("Site settings successfully updated and live.");
       setTimeout(() => setSuccessMessage(""), 4000);
     } catch (err: any) {
-      alert(err.message || "Save failed");
+      toast.error(err.message || "Save failed");
     } finally {
       setSaving(false);
     }
@@ -56,6 +63,7 @@ export default function AdminSettingsPage() {
   const handleResetDefaults = () => {
     if (confirm("Reset dynamic settings to official initial defaults?")) {
       setSettings(INITIAL_SITE_SETTINGS);
+      toast.info("Dynamic settings reset to defaults. Remember to click Publish to save changes.");
     }
   };
 

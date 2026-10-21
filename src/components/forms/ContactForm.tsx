@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { CheckCircle2, AlertCircle, Loader2, ArrowRight } from "lucide-react";
 import { Branch } from "@/types";
 import { DANCE_STYLES } from "@/lib/constants";
+import { useToast } from "@/context/ToastContext";
 
 interface ContactFormProps {
   branches?: Branch[];
@@ -16,6 +17,7 @@ export function ContactForm({
   defaultBranch = "",
   defaultMode = "offline",
 }: ContactFormProps) {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -37,7 +39,9 @@ export function ContactForm({
 
     if (!formData.name.trim() || !formData.phone.trim() || !formData.email.trim()) {
       setStatus("error");
-      setErrorMessage("Please complete all required fields (Name, Phone, Email).");
+      const msg = "Please complete all required fields (Name, Phone, Email).";
+      setErrorMessage(msg);
+      toast.warning(msg);
       return;
     }
 
@@ -57,6 +61,7 @@ export function ContactForm({
       }
 
       setStatus("success");
+      toast.success("Enquiry received! Director Dhanesh Krishnan or our team will contact you soon.");
       setFormData({
         name: "",
         phone: "",
@@ -70,7 +75,9 @@ export function ContactForm({
       });
     } catch (err: any) {
       setStatus("error");
-      setErrorMessage(err.message || "An unexpected error occurred. Please try again.");
+      const msg = err.message || "An unexpected error occurred. Please try again.";
+      setErrorMessage(msg);
+      toast.error(msg);
     }
   };
 

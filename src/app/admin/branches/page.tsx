@@ -16,8 +16,10 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
 import { Branch } from "@/types";
+import { useToast } from "@/context/ToastContext";
 
 export default function AdminBranchesPage() {
+  const toast = useToast();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -129,7 +131,7 @@ export default function AdminBranchesPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.slug.trim()) {
-      alert("Name and slug are required.");
+      toast.error("Branch name and slug are required.", "Validation Error");
       return;
     }
 
@@ -141,21 +143,31 @@ export default function AdminBranchesPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        if (!res.ok) throw new Error("Update failed");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || "Update failed");
+        }
       } else {
         const res = await fetch("/api/branches", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        if (!res.ok) throw new Error("Create failed");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || "Create failed");
+        }
       }
 
       setIsModalOpen(false);
       setEditingBranch(null);
       await fetchBranches();
+      toast.success(
+        editingBranch ? `"${formData.name}" branch updated successfully.` : `"${formData.name}" branch created.`,
+        "Branch Saved"
+      );
     } catch (err: any) {
-      alert(err.message || "Failed to save branch");
+      toast.error(err.message || "Failed to save branch", "Save Failed");
     } finally {
       setActionLoading(false);
     }
@@ -163,20 +175,28 @@ export default function AdminBranchesPage() {
 
   const handleToggleActive = async (branch: Branch) => {
     try {
+      const nextActive = !branch.isActive;
       const res = await fetch(`/api/branches/${branch._id || branch.slug}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isActive: !branch.isActive }),
+        body: JSON.stringify({ isActive: nextActive }),
       });
       if (res.ok) {
         setBranches((prev) =>
           prev.map((b) =>
-            b.slug === branch.slug ? { ...b, isActive: !b.isActive } : b
+            b.slug === branch.slug ? { ...b, isActive: nextActive } : b
           )
         );
+        toast.info(
+          nextActive ? `"${branch.name}" is now active on the public website.` : `"${branch.name}" is now deactivated.`,
+          "Status Updated"
+        );
+      } else {
+        toast.error("Failed to update branch status.");
       }
     } catch (err) {
       console.error("Toggle active status failed:", err);
+      toast.error("Network error while updating branch status.");
     }
   };
 
@@ -189,12 +209,13 @@ export default function AdminBranchesPage() {
       });
       if (res.ok) {
         setBranches((prev) => prev.filter((b) => b.slug !== deleteTarget.slug));
+        toast.success(`"${deleteTarget.name}" branch removed from directory.`, "Branch Deleted");
         setDeleteTarget(null);
       } else {
         throw new Error("Failed to delete branch");
       }
     } catch (err: any) {
-      alert(err.message || "Deletion failed");
+      toast.error(err.message || "Deletion failed", "Error");
     } finally {
       setActionLoading(false);
     }

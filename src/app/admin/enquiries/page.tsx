@@ -18,8 +18,10 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
 import { Enquiry, EnquiryStatus } from "@/types";
 import { formatDate, formatWhatsAppUrl } from "@/lib/utils";
+import { useToast } from "@/context/ToastContext";
 
 export default function AdminEnquiriesPage() {
+  const { toast } = useToast();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -38,6 +40,7 @@ export default function AdminEnquiriesPage() {
       }
     } catch (err) {
       console.error("Failed to fetch enquiries:", err);
+      toast.error("Failed to load enquiries from database.");
     } finally {
       setLoading(false);
     }
@@ -61,9 +64,14 @@ export default function AdminEnquiriesPage() {
         if (selectedEnquiry && selectedEnquiry._id === id) {
           setSelectedEnquiry({ ...selectedEnquiry, status });
         }
+        toast.success(`Enquiry marked as "${status.toUpperCase()}"`);
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to update status");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to update status:", err);
+      toast.error(err.message || "Failed to update enquiry status");
     }
   };
 
@@ -80,11 +88,13 @@ export default function AdminEnquiriesPage() {
         if (selectedEnquiry?._id === deleteTarget._id) {
           setSelectedEnquiry(null);
         }
+        toast.success("Enquiry deleted successfully.");
       } else {
-        throw new Error("Failed to delete enquiry");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to delete enquiry");
       }
     } catch (err: any) {
-      alert(err.message || "Deletion failed");
+      toast.error(err.message || "Deletion failed");
     } finally {
       setActionLoading(false);
     }

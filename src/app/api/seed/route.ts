@@ -1,7 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { seedDatabase } from "@/lib/db-services";
+import { verifyRequestAuth } from "@/lib/auth";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const session = await verifyRequestAuth(req);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized. Admin session required to seed database." }, { status: 401 });
+  }
+
   try {
     const result = await seedDatabase();
     return NextResponse.json({
@@ -18,6 +24,6 @@ export async function POST() {
   }
 }
 
-export async function GET() {
-  return POST();
+export async function GET(req: NextRequest) {
+  return POST(req);
 }
