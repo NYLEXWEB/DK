@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const isValid = validateCredentials(username.trim(), password.trim());
+    const isValid = await validateCredentials(username.trim(), password.trim());
     if (!isValid) {
       return NextResponse.json(
         { error: "Invalid credentials" },

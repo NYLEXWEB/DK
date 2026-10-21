@@ -38,7 +38,7 @@ export function AdminSidebar() {
     { label: "Media Library", href: "/admin/media", icon: ImageIcon },
     { label: "Branches", href: "/admin/branches", icon: MapPin },
     { label: "Enquiries", href: "/admin/enquiries", icon: Inbox },
-    { label: "Site Settings", href: "/admin/settings", icon: Sliders },
+    { label: "Settings & Security", href: "/admin/settings", icon: Sliders },
   ];
 
   return (

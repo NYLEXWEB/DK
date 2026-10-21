@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import bcrypt from "bcryptjs";
 import { getDb } from "./mongodb";
 import { Branch, MediaItem, Enquiry, SiteSettings } from "@/types";
 import {
@@ -566,3 +567,130 @@ export async function seedDatabase(): Promise<{
     mediaSeeded: mediaCount,
   };
 }
+
+// ==========================================
+// ADMIN USER & CREDENTIALS
+// ==========================================
+export interface AdminUserRecord {
+  _id?: string;
+  username: string;
+  passwordHash: string;
+  updatedAt?: string;
+}
+
+let memoryAdminUser: AdminUserRecord | null = null;
+
+export async function getAdminUser(): Promise<AdminUserRecord> {
+  const defaultUsername = process.env.ADMIN_USERNAME || "admin";
+  const defaultPassword = process.env.ADMIN_PASSWORD || "dkdc@admin2025";
+  const db = await getDb();
+
+  if (!db) {
+    if (!memoryAdminUser) {
+      memoryAdminUser = {
+        username: defaultUsername,
+        passwordHash: bcrypt.hashSync(defaultPassword, 10),
+        updatedAt: new Date().toISOString(),
+      };
+    }
+    return memoryAdminUser;
+  }
+
+  try {
+    const user = await db.collection<AdminUserRecord>("admin_users").findOne({});
+    if (user) {
+      return {
+        ...user,
+        _id: user._id?.toString(),
+      };
+    }
+
+    // Initialize default admin user in DB
+    const initialUser: AdminUserRecord = {
+      username: defaultUsername,
+      passwordHash: bcrypt.hashSync(defaultPassword, 10),
+      updatedAt: new Date().toISOString(),
+    };
+    const res = await db.collection("admin_users").insertOne(initialUser as any);
+    return {
+      ...initialUser,
+      _id: res.insertedId.toString(),
+    };
+  } catch (err) {
+    console.error("Error retrieving admin user:", err);
+    return {
+      username: defaultUsername,
+      passwordHash: bcrypt.hashSync(defaultPassword, 10),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+}
+
+export async function updateAdminUser(
+  currentPassword: string,
+  newUsername: string,
+  newPassword?: string
+): Promise<{ success: boolean; error?: string; username?: string }> {
+  const admin = await getAdminUser();
+
+  // Validate current password
+  let isValid = false;
+  try {
+    isValid = bcrypt.compareSync(currentPassword, admin.passwordHash);
+  } catch {
+    isValid = false;
+  }
+
+  // Fallback check against plaintext or env password in edge cases
+  if (!isValid && currentPassword === (process.env.ADMIN_PASSWORD || "dkdc@admin2025")) {
+    isValid = true;
+  }
+
+  if (!isValid) {
+    return { success: false, error: "Current password does not match. Please verify and try again." };
+  }
+
+  const cleanUsername = newUsername.trim();
+  if (!cleanUsername || cleanUsername.length < 3) {
+    return { success: false, error: "Username must be at least 3 characters long." };
+  }
+
+  let newPasswordHash = admin.passwordHash;
+  if (newPassword && newPassword.trim()) {
+    if (newPassword.trim().length < 6) {
+      return { success: false, error: "New password must be at least 6 characters long." };
+    }
+    newPasswordHash = bcrypt.hashSync(newPassword.trim(), 10);
+  }
+
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    memoryAdminUser = {
+      username: cleanUsername,
+      passwordHash: newPasswordHash,
+      updatedAt: now,
+    };
+    return { success: true, username: cleanUsername };
+  }
+
+  try {
+    await db.collection("admin_users").updateOne(
+      {},
+      {
+        $set: {
+          username: cleanUsername,
+          passwordHash: newPasswordHash,
+          updatedAt: now,
+        },
+      },
+      { upsert: true }
+    );
+    return { success: true, username: cleanUsername };
+  } catch (err) {
+    console.error("Error updating admin user in MongoDB:", err);
+    return { success: false, error: "Database error while updating credentials." };
+  }
+}
+

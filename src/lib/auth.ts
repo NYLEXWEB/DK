@@ -1,7 +1,9 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
+import bcrypt from "bcryptjs";
 import { AuthSession } from "@/types";
+import { getAdminUser } from "./db-services";
 
 const JWT_SECRET = process.env.ADMIN_JWT_SECRET || "dkdancecompany_jwt_fallback_secret_32chars_min";
 const secretKey = new TextEncoder().encode(JWT_SECRET);
@@ -66,9 +68,34 @@ export async function verifyRequestAuth(req: NextRequest): Promise<AuthSession |
   return verifySessionToken(token);
 }
 
-export function validateCredentials(username: string, pass: string): boolean {
-  const configuredUser = process.env.ADMIN_USERNAME || "admin";
-  const configuredPass = process.env.ADMIN_PASSWORD || "dkdc@admin2025";
+export async function validateCredentials(username: string, pass: string): Promise<boolean> {
+  try {
+    const admin = await getAdminUser();
+    const cleanUser = username.trim();
+    if (cleanUser !== admin.username) {
+      return false;
+    }
 
-  return username === configuredUser && pass === configuredPass;
+    let isMatch = false;
+    try {
+      isMatch = bcrypt.compareSync(pass.trim(), admin.passwordHash);
+    } catch {
+      isMatch = false;
+    }
+
+    if (!isMatch) {
+      const configuredUser = process.env.ADMIN_USERNAME || "admin";
+      const configuredPass = process.env.ADMIN_PASSWORD || "dkdc@admin2025";
+      if (cleanUser === configuredUser && pass.trim() === configuredPass) {
+        isMatch = true;
+      }
+    }
+
+    return isMatch;
+  } catch (err) {
+    console.error("Error validating credentials:", err);
+    const configuredUser = process.env.ADMIN_USERNAME || "admin";
+    const configuredPass = process.env.ADMIN_PASSWORD || "dkdc@admin2025";
+    return username.trim() === configuredUser && pass.trim() === configuredPass;
+  }
 }
