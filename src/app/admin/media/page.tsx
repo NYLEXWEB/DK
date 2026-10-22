@@ -496,45 +496,45 @@ export default function AdminMediaPage() {
               />
             </div>
 
-            {/* Live Upload Preview Box */}
+            {/* Live Visual Media Preview Box */}
             {formData.url && (
-              <div className="p-3 bg-neutral-900/60 border border-neutral-800 flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2 truncate">
-                  {formData.type === "video" ? (
-                    <Film className="w-4 h-4 text-dk-red shrink-0" />
-                  ) : (
-                    <ImageIcon className="w-4 h-4 text-dk-yellow shrink-0" />
-                  )}
-                  <span className="font-mono text-white truncate">{formData.url}</span>
+              <div className="p-4 bg-neutral-900 border border-neutral-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1.5 font-bold">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>File Attached & Ready</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({ ...prev, url: "", key: "" }))
+                    }
+                    className="text-[10px] font-mono uppercase text-dk-red hover:underline"
+                  >
+                    Change / Re-upload File
+                  </button>
                 </div>
-                <span className="text-[10px] font-mono text-[#25D366] uppercase font-bold shrink-0">
-                  Ready
-                </span>
+
+                {formData.type === "image" ? (
+                  <div className="relative aspect-video max-h-48 w-full bg-black border border-neutral-800 overflow-hidden">
+                    <Image
+                      src={formData.url}
+                      alt={formData.title || "Uploaded photo preview"}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-video max-h-48 w-full bg-black border border-neutral-800 overflow-hidden">
+                    <video
+                      src={formData.url}
+                      controls
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                )}
               </div>
             )}
-          </div>
-
-          {/* Direct URL input fallback */}
-          <div>
-            <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-              Direct Media URL (Auto-filled on upload or paste manually)
-            </label>
-            <input
-              type="url"
-              required
-              value={formData.url}
-              onChange={(e) => {
-                const url = e.target.value;
-                const isVideo = Boolean(url.match(/\.(mp4|mov|webm|m4v)/i));
-                setFormData({
-                  ...formData,
-                  url,
-                  type: isVideo ? "video" : formData.type,
-                });
-              }}
-              placeholder="https://utfs.io/f/... or https://..."
-              className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -609,19 +609,66 @@ export default function AdminMediaPage() {
           </div>
 
           {formData.type === "video" && (
-            <div>
-              <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                Video Thumbnail Image URL (Optional poster image)
-              </label>
-              <input
-                type="url"
-                value={formData.thumbnailUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, thumbnailUrl: e.target.value })
-                }
-                placeholder="https://..."
-                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-              />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-mono uppercase text-neutral-400">
+                  Video Poster / Thumbnail Photo
+                </label>
+                {formData.thumbnailUrl && (
+                  <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1">
+                    <Check className="w-3 h-3" />
+                    <span>Poster Attached</span>
+                  </span>
+                )}
+              </div>
+
+              {formData.thumbnailUrl ? (
+                <div className="relative aspect-video rounded-none overflow-hidden bg-black border border-neutral-800 group h-24">
+                  <Image
+                    src={formData.thumbnailUrl}
+                    alt="Poster preview"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, thumbnailUrl: "" })}
+                      className="px-2.5 py-1 bg-dk-red text-white text-[10px] font-mono uppercase tracking-wider"
+                    >
+                      Remove Poster
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex items-center justify-center">
+                  <UploadButton
+                    endpoint="imageUploader"
+                    appearance={{
+                      button:
+                        "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-4 py-2 rounded-none transition-colors ut-uploading:bg-neutral-800",
+                      allowedContent: "text-neutral-500 font-mono text-[10px]",
+                    }}
+                    content={{
+                      button({ ready }) {
+                        return ready ? "Upload Poster Photo" : "Loading...";
+                      },
+                    }}
+                    onClientUploadComplete={(res) => {
+                      if (res && res[0]) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          thumbnailUrl: res[0].url,
+                        }));
+                        toast.success("Video poster uploaded!");
+                      }
+                    }}
+                    onUploadError={(error: Error) => {
+                      toast.error(error.message || "Failed to upload poster");
+                    }}
+                  />
+                </div>
+              )}
             </div>
           )}
 

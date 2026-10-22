@@ -23,7 +23,7 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
 import { MediaItem, MediaCategory, MediaType } from "@/types";
-import { UploadDropzone } from "@/lib/uploadthing";
+import { UploadDropzone, UploadButton } from "@/lib/uploadthing";
 import { useToast } from "@/context/ToastContext";
 
 const CATEGORIES: MediaCategory[] = [
@@ -619,17 +619,67 @@ export default function AdminVideosPage() {
               />
             </div>
 
+            {/* Video Poster / Thumbnail Upload */}
             <div>
-              <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                Thumbnail Image URL (Optional poster)
-              </label>
-              <input
-                type="url"
-                value={formData.thumbnailUrl}
-                onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
-                placeholder="/images/styles/contemporary.jpg"
-                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-              />
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-mono uppercase text-neutral-400">
+                  Video Poster / Thumbnail Photo
+                </label>
+                {formData.thumbnailUrl && (
+                  <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1">
+                    <Check className="w-3 h-3" />
+                    <span>Photo Attached</span>
+                  </span>
+                )}
+              </div>
+
+              {formData.thumbnailUrl ? (
+                <div className="relative aspect-video rounded-none overflow-hidden bg-black border border-neutral-800 group h-28">
+                  <Image
+                    src={formData.thumbnailUrl}
+                    alt="Thumbnail preview"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, thumbnailUrl: "" })}
+                      className="px-3 py-1 bg-dk-red text-white text-[11px] font-mono uppercase tracking-wider"
+                    >
+                      Remove Poster
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex items-center justify-center">
+                  <UploadButton
+                    endpoint="imageUploader"
+                    appearance={{
+                      button:
+                        "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-4 py-2 rounded-none transition-colors ut-uploading:bg-neutral-800",
+                      allowedContent: "text-neutral-500 font-mono text-[10px]",
+                    }}
+                    content={{
+                      button({ ready }) {
+                        return ready ? "Upload Poster Photo" : "Loading...";
+                      },
+                    }}
+                    onClientUploadComplete={(res) => {
+                      if (res && res[0]) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          thumbnailUrl: res[0].url,
+                        }));
+                        toast.success("Video poster uploaded!");
+                      }
+                    }}
+                    onUploadError={(error: Error) => {
+                      toast.error(error.message || "Failed to upload poster");
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
 

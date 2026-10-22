@@ -17,6 +17,7 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
 import { Branch } from "@/types";
 import { useToast } from "@/context/ToastContext";
+import { UploadButton } from "@/lib/uploadthing";
 
 export default function AdminBranchesPage() {
   const toast = useToast();
@@ -508,19 +509,70 @@ export default function AdminBranchesPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-              Studio Image URL
-            </label>
-            <input
-              type="url"
-              value={formData.imageUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, imageUrl: e.target.value })
-              }
-              placeholder="https://..."
-              className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
-            />
+          {/* Studio Image File Upload */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-mono uppercase text-neutral-400">
+                Studio Branch Photo
+              </label>
+              {formData.imageUrl && (
+                <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1">
+                  <Check className="w-3 h-3" />
+                  <span>Photo Uploaded</span>
+                </span>
+              )}
+            </div>
+
+            {formData.imageUrl ? (
+              <div className="relative aspect-video rounded-none overflow-hidden bg-black border border-neutral-800 group">
+                <Image
+                  src={formData.imageUrl}
+                  alt={formData.name || "Branch photo"}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({ ...formData, imageUrl: "", imageKey: "" })
+                    }
+                    className="px-3 py-1.5 bg-dk-red text-white text-xs font-mono uppercase tracking-wider"
+                  >
+                    Remove Photo
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex flex-col items-center justify-center gap-2 text-center">
+                <UploadButton
+                  endpoint="imageUploader"
+                  appearance={{
+                    button:
+                      "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-5 py-2.5 rounded-none transition-colors ut-uploading:bg-neutral-800",
+                    allowedContent: "text-neutral-500 font-mono text-[11px]",
+                  }}
+                  content={{
+                    button({ ready }) {
+                      return ready ? "Upload Studio Photo" : "Loading...";
+                    },
+                  }}
+                  onClientUploadComplete={(res) => {
+                    if (res && res[0]) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        imageUrl: res[0].url,
+                        imageKey: res[0].key,
+                      }));
+                      toast.success("Studio photo uploaded successfully!");
+                    }
+                  }}
+                  onUploadError={(error: Error) => {
+                    toast.error(error.message || "Failed to upload photo");
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           <div>
