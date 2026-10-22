@@ -131,7 +131,7 @@ export default function AdminVideosPage() {
   const handleSaveVideo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.url.trim() || !formData.title.trim()) {
-      setUploadError("Please upload or enter a video URL and title.");
+      setUploadError("Please upload a video file and enter a title.");
       return;
     }
 
@@ -492,80 +492,83 @@ export default function AdminVideosPage() {
             </div>
           )}
 
-          {/* UploadThing Direct Video Uploader */}
-          <div className="p-5 bg-black border border-neutral-800 space-y-3">
+          {/* Video File Upload */}
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-white">
-                Upload MP4 / MOV Video File
-              </span>
-              <span className="text-[10px] font-mono text-dk-yellow uppercase">
-                Up to 256MB direct cloud storage
-              </span>
-            </div>
-
-            <div className="pt-2">
-              <UploadDropzone
-                endpoint="videoUploader"
-                appearance={{
-                  container:
-                    "border border-dashed border-neutral-700 bg-neutral-950 hover:border-dk-yellow transition-colors py-8 px-4 cursor-pointer",
-                  button:
-                    "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-6 py-2.5 rounded-none transition-colors",
-                  label: "text-neutral-300 font-heading text-sm uppercase tracking-wide hover:text-white font-light",
-                  allowedContent: "text-neutral-500 font-mono text-[11px]",
-                }}
-                onClientUploadComplete={(res) => {
-                  if (res && res[0]) {
-                    const uploaded = res[0];
-                    const cleanTitle = uploaded.name.replace(/\.[^/.]+$/, "");
-
-                    setFormData((prev) => ({
-                      ...prev,
-                      url: uploaded.url,
-                      key: uploaded.key,
-                      title: prev.title.trim() ? prev.title : cleanTitle,
-                    }));
-
-                    setUploadSuccess(`Video uploaded successfully: ${uploaded.name}`);
-                    setUploadError("");
-                    toast.success("Video file uploaded. Complete details below and click Save.");
-                  }
-                }}
-                onUploadError={(error: Error) => {
-                  console.error("Upload error:", error);
-                  setUploadError(`Upload error: ${error.message || "Failed to upload video."}`);
-                  toast.error(error.message || "Upload failed");
-                }}
-              />
-            </div>
-
-            {/* Video File Preview Box */}
-            {formData.url && (
-              <div className="p-3 bg-neutral-900 border border-neutral-800 flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2 truncate">
-                  <Film className="w-4 h-4 text-dk-red shrink-0" />
-                  <span className="font-mono text-white truncate">{formData.url}</span>
-                </div>
-                <span className="text-[10px] font-mono text-[#25D366] uppercase font-bold shrink-0">
-                  Ready to Publish
+              <label className="block text-xs font-mono uppercase text-neutral-400">
+                Performance Video File (MP4, MOV, WebM)
+              </label>
+              {formData.url && (
+                <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1 font-bold">
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Video Attached & Ready</span>
                 </span>
+              )}
+            </div>
+
+            {formData.url ? (
+              <div className="p-4 bg-neutral-900 border border-neutral-800 space-y-3">
+                <div className="relative aspect-video max-h-56 w-full bg-black border border-neutral-800 overflow-hidden">
+                  <video
+                    src={formData.url}
+                    controls
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-2 truncate text-xs text-neutral-300 font-mono">
+                    <Film className="w-4 h-4 text-dk-red shrink-0" />
+                    <span className="truncate">{formData.title || "Uploaded Video"}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, url: "", key: "" }))}
+                    className="px-3 py-1.5 bg-dk-red text-white text-xs font-mono uppercase tracking-wider hover:bg-red-700 transition-colors"
+                  >
+                    Remove / Change Video
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="p-8 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex flex-col items-center justify-center gap-3 text-center">
+                <UploadButton
+                  endpoint="videoUploader"
+                  appearance={{
+                    button:
+                      "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-6 py-3 rounded-none transition-colors ut-uploading:bg-neutral-800",
+                    allowedContent: "text-neutral-500 font-mono text-[11px]",
+                  }}
+                  content={{
+                    button({ ready }) {
+                      return ready ? "Select & Upload Video File" : "Preparing...";
+                    },
+                  }}
+                  onClientUploadComplete={(res) => {
+                    if (res && res[0]) {
+                      const uploaded = res[0];
+                      const cleanTitle = uploaded.name.replace(/\.[^/.]+$/, "");
+                      setFormData((prev) => ({
+                        ...prev,
+                        url: uploaded.url,
+                        key: uploaded.key,
+                        title: prev.title.trim() ? prev.title : cleanTitle,
+                      }));
+                      setUploadSuccess(`Video uploaded successfully: ${uploaded.name}`);
+                      setUploadError("");
+                      toast.success("Video file uploaded successfully!");
+                    }
+                  }}
+                  onUploadError={(error: Error) => {
+                    console.error("Upload error:", error);
+                    setUploadError(`Upload error: ${error.message || "Failed to upload video."}`);
+                    toast.error(error.message || "Upload failed");
+                  }}
+                />
+                <p className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">
+                  Supports MP4, MOV, WebM, M4V (up to 256MB)
+                </p>
               </div>
             )}
-          </div>
-
-          {/* Direct Video URL (Auto filled or custom paste) */}
-          <div>
-            <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-              Video URL (Direct MP4 link or YouTube / Vimeo URL) <span className="text-dk-red">*</span>
-            </label>
-            <input
-              type="url"
-              required
-              value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-              placeholder="https://utfs.io/f/... or https://www.youtube.com/watch?v=..."
-              className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-            />
           </div>
 
           {/* Title & Category */}
