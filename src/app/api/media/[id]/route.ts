@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { updateMedia, deleteMedia } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
 import { deleteUploadThingFile } from "@/lib/uploadthing-server";
@@ -15,14 +16,24 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await req.json();
+    const { previousKey, ...updatePayload } = body;
 
-    const success = await updateMedia(id, body);
+    const success = await updateMedia(id, updatePayload);
     if (!success) {
       return NextResponse.json(
         { error: "Media item not found or failed to update" },
         { status: 404 }
       );
     }
+
+    // Clean up old UploadThing file if key was changed
+    if (previousKey && updatePayload.key && previousKey !== updatePayload.key) {
+      await deleteUploadThingFile(previousKey);
+    }
+
+    revalidatePath("/");
+    revalidatePath("/gallery");
+    revalidatePath("/admin/videos");
 
     return NextResponse.json({ success: true, message: "Media updated" });
   } catch (error) {
@@ -53,10 +64,17 @@ export async function DELETE(
       );
     }
 
-    // Attempt to delete from UploadThing if a storage key is present
+    // Attempt to delete from UploadThing if storage keys are present
     if (deletedItem.key) {
       await deleteUploadThingFile(deletedItem.key);
     }
+    if (deletedItem.thumbnailKey) {
+      await deleteUploadThingFile(deletedItem.thumbnailKey);
+    }
+
+    revalidatePath("/");
+    revalidatePath("/gallery");
+    revalidatePath("/admin/videos");
 
     return NextResponse.json({
       success: true,

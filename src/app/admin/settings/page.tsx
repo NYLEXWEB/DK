@@ -21,6 +21,7 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { SiteSettings } from "@/types";
 import { INITIAL_SITE_SETTINGS } from "@/lib/constants";
 import { useToast } from "@/context/ToastContext";
+import { adminFetch } from "@/lib/admin-fetch";
 
 export default function AdminSettingsPage() {
   const { toast } = useToast();
@@ -52,8 +53,8 @@ export default function AdminSettingsPage() {
       try {
         setLoading(true);
         const [settingsRes, credsRes] = await Promise.all([
-          fetch("/api/settings"),
-          fetch("/api/auth/credentials"),
+          adminFetch("/api/settings"),
+          adminFetch("/api/auth/credentials"),
         ]);
 
         const settingsData = await settingsRes.json();
@@ -82,7 +83,7 @@ export default function AdminSettingsPage() {
     setSuccessMessage("");
 
     try {
-      const res = await fetch("/api/settings", {
+      const res = await adminFetch("/api/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
@@ -141,7 +142,7 @@ export default function AdminSettingsPage() {
     setSavingCreds(true);
 
     try {
-      const res = await fetch("/api/auth/credentials", {
+      const res = await adminFetch("/api/auth/credentials", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

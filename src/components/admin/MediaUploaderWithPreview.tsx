@@ -1,0 +1,395 @@
+"use client";
+
+import React, { useState, useRef } from "react";
+import Image from "next/image";
+import {
+  Upload,
+  Check,
+  X,
+  ExternalLink,
+  Copy,
+  Loader2,
+  AlertCircle,
+  FileImage,
+  RefreshCw,
+} from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
+
+interface MediaUploaderWithPreviewProps {
+  label?: string;
+  value?: string;
+  fileKey?: string;
+  mediaType?: "image" | "video";
+  onChange: (data: { url: string; key?: string; name?: string; type?: "image" | "video" }) => void;
+  onClear?: () => void;
+  placeholder?: string;
+}
+
+export function MediaUploaderWithPreview({
+  label = "Upload Media",
+  value = "",
+  fileKey = "",
+  mediaType = "image",
+  onChange,
+  onClear,
+  placeholder = "https://... or /images/...",
+}: MediaUploaderWithPreviewProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [selectedFileSize, setSelectedFileSize] = useState<string | null>(null);
+
+  // Format bytes to human readable string
+  const formatBytes = (bytes: number): string => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 1. Instant Client Preview
+    const previewUrl = URL.createObjectURL(file);
+    setLocalPreview(previewUrl);
+    setSelectedFileName(file.name);
+    setSelectedFileSize(formatBytes(file.size));
+    setUploadError(null);
+    setIsUploading(true);
+
+    try {
+      // 2. Upload to server endpoint which handles UploadThing Cloud / Local storage
+      const body = new FormData();
+      body.append("file", file);
+
+      const res = await adminFetch("/api/upload", {
+        method: "POST",
+        body,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to upload file");
+      }
+
+      // 3. Update parent form with permanent cloud URL
+      onChange({
+        url: data.url,
+        key: data.key,
+        name: data.name || file.name,
+        type: data.type || (file.type.startsWith("video/") ? "video" : "image"),
+      });
+    } catch (err: any) {
+      console.error("Upload failed:", err);
+      setUploadError(err.message || "Failed to upload media. Please try again.");
+    } finally {
+      setIsUploading(false);
+      // Reset input value so re-selecting same file triggers onChange
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleDirectUrlChange = (newUrl: string) => {
+    setLocalPreview(null);
+    setSelectedFileName(null);
+    setUploadError(null);
+    onChange({
+      url: newUrl.trim(),
+      key: fileKey || "",
+      type: mediaType,
+    });
+  };
+
+  const handleCopyLink = () => {
+    const urlToCopy = value || localPreview;
+    if (urlToCopy) {
+      navigator.clipboard.writeText(urlToCopy);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleRemove = () => {
+    setLocalPreview(null);
+    setSelectedFileName(null);
+    setSelectedFileSize(null);
+    setUploadError(null);
+    if (onClear) {
+      onClear();
+    } else {
+      onChange({ url: "", key: "", type: mediaType });
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const displayUrl = localPreview || value;
+  const isVideo =
+    mediaType === "video" ||
+    Boolean(displayUrl?.match(/\.(mp4|mov|webm|m4v)$/i)) ||
+    Boolean(selectedFileName?.match(/\.(mp4|mov|webm|m4v)$/i));
+
+  return (
+    <div className="space-y-3 p-4 bg-neutral-950 border border-neutral-800 rounded-none">
+      {/* Header with status */}
+      <div className="flex items-center justify-between">
+        <label className="block text-xs font-mono uppercase text-neutral-300">
+          {label}
+        </label>
+        {displayUrl ? (
+          <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1 font-semibold">
+            {isUploading ? (
+              <>
+                <Loader2 className="w-3 h-3 animate-spin text-dk-yellow" />
+                <span className="text-dk-yellow">Uploading to Cloud...</span>
+              </>
+            ) : (
+              <>
+                <Check className="w-3 h-3" />
+                <span>Photo Ready</span>
+              </>
+            )}
+          </span>
+        ) : (
+          <span className="text-[10px] font-mono uppercase text-neutral-500">
+            Preview & Cloud Upload
+          </span>
+        )}
+      </div>
+
+      {/* Error alert */}
+      {uploadError && (
+        <div className="flex items-center gap-2 p-2.5 bg-dk-red/10 border border-dk-red/30 text-white text-xs font-mono">
+          <AlertCircle className="w-4 h-4 text-dk-red shrink-0" />
+          <span>{uploadError}</span>
+        </div>
+      )}
+
+      {/* Hidden File Input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        accept={
+          mediaType === "video"
+            ? "video/mp4,video/quicktime,video/webm"
+            : "image/png,image/jpeg,image/webp,image/gif"
+        }
+        className="hidden"
+      />
+
+      {/* Media Preview Box */}
+      {displayUrl ? (
+        <div className="space-y-3">
+          <div className="relative aspect-video max-h-56 w-full bg-black border border-neutral-800 overflow-hidden group">
+            {isVideo ? (
+              <video
+                key={displayUrl}
+                src={displayUrl}
+                controls
+                playsInline
+                className="w-full h-full object-contain bg-black relative z-10"
+              />
+            ) : (
+              <>
+                <Image
+                  src={displayUrl}
+                  alt="Selected media preview"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  unoptimized={displayUrl.startsWith("blob:")}
+                />
+                {/* Overlay Actions on Hover for Images */}
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-3 z-10">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="px-3 py-1.5 bg-white text-black hover:bg-dk-yellow text-xs font-mono uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    <span>Change Photo</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRemove}
+                    disabled={isUploading}
+                    className="px-3 py-1.5 bg-dk-red text-white hover:bg-red-700 text-xs font-mono uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                  >
+                    <X className="w-3 h-3" />
+                    <span>Remove</span>
+                  </button>
+                  {value && (
+                    <a
+                      href={value}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-neutral-800 text-white hover:bg-neutral-700 text-xs font-mono uppercase tracking-wider transition-colors inline-flex items-center gap-1"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Uploading Spinner Overlay */}
+            {isUploading && (
+              <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center gap-2 z-20">
+                <Loader2 className="w-6 h-6 animate-spin text-dk-yellow" />
+                <span className="text-xs font-mono uppercase tracking-wider text-white">
+                  Uploading to Cloud Storage...
+                </span>
+                {selectedFileSize && (
+                  <span className="text-[10px] font-mono text-neutral-400">
+                    {selectedFileSize}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Action buttons and file details */}
+          <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
+            <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400 truncate max-w-[280px]">
+              {selectedFileName ? (
+                <span className="truncate">File: {selectedFileName}</span>
+              ) : (
+                <span className="truncate text-neutral-500">
+                  {isVideo ? "Video loaded" : "Image loaded"}
+                </span>
+              )}
+              {selectedFileSize && <span>• {selectedFileSize}</span>}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="px-2.5 py-1 bg-neutral-800 text-neutral-200 hover:text-white hover:bg-neutral-700 text-[11px] font-mono uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>Change {mediaType === "video" ? "Video" : "Photo"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleRemove}
+                disabled={isUploading}
+                className="px-2.5 py-1 bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-dk-red hover:border-dk-red/50 text-[11px] font-mono uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+              >
+                <X className="w-3 h-3" />
+                <span>Remove</span>
+              </button>
+              {value && (
+                <a
+                  href={value}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open in new tab"
+                  className="p-1 bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Copyable / Editable URL Field */}
+          <div className="space-y-1 pt-1 border-t border-neutral-900">
+            <label className="block text-[10px] font-mono uppercase text-neutral-500">
+              Media Permanent URL:
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={value}
+                onChange={(e) => handleDirectUrlChange(e.target.value)}
+                placeholder="Uploaded URL will appear here"
+                className="flex-1 bg-black border border-neutral-800 px-3 py-2 text-xs text-neutral-300 font-mono focus:outline-none focus:border-dk-yellow truncate"
+              />
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                disabled={!value}
+                className="px-3 py-2 bg-neutral-900 border border-neutral-800 hover:border-dk-yellow text-xs font-mono text-neutral-300 uppercase whitespace-nowrap inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3 h-3 text-[#25D366]" />
+                    <span className="text-[#25D366]">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Dropzone / Upload Trigger Button */
+        <div className="space-y-3">
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              const file = e.dataTransfer.files?.[0];
+              if (file && fileInputRef.current) {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInputRef.current.files = dataTransfer.files;
+                handleFileSelect({ target: fileInputRef.current } as any);
+              }
+            }}
+            className="p-6 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex flex-col items-center justify-center gap-2.5 text-center cursor-pointer group"
+          >
+            <div className="w-10 h-10 rounded-full bg-neutral-900 group-hover:bg-neutral-800 flex items-center justify-center text-neutral-400 group-hover:text-dk-yellow transition-colors">
+              <Upload className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-xs font-heading font-light uppercase tracking-wider text-white group-hover:text-dk-yellow transition-colors block">
+                Choose or Drop {mediaType === "video" ? "Video" : "Photo"}
+              </span>
+              <span className="text-[10px] font-mono text-neutral-500 mt-1 block">
+                Instant preview before saving • Direct cloud storage upload
+              </span>
+            </div>
+            <button
+              type="button"
+              className="mt-1 px-4 py-2 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors pointer-events-none"
+            >
+              Select {mediaType === "video" ? "Video" : "File"} from Computer
+            </button>
+          </div>
+
+          {/* Direct URL input fallback */}
+          <div className="pt-1">
+            <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1">
+              Or Enter {mediaType === "video" ? "Video" : "Image"} URL Directly:
+            </label>
+            <input
+              type="url"
+              value={value}
+              onChange={(e) => handleDirectUrlChange(e.target.value)}
+              placeholder={placeholder}
+              className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

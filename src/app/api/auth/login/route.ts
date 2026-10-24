@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json({
       success: true,
       message: "Authentication successful",
+      token,
       user: { username: username.trim(), role: "admin" },
     });
 

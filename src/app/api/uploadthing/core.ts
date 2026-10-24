@@ -1,11 +1,23 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { verifySessionToken, COOKIE_NAME } from "@/lib/auth";
 
 const f = createUploadthing();
 
 async function checkAdminAuth() {
   try {
+    // 1. Check Authorization Bearer header
+    const headerStore = await headers();
+    const authHeader = headerStore.get("authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const bearer = authHeader.substring(7).trim();
+      const session = await verifySessionToken(bearer);
+      if (session?.username && session.role === "admin") {
+        return { username: session.username };
+      }
+    }
+
+    // 2. Check HTTP-only session cookie
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
     if (token) {
@@ -42,9 +54,13 @@ export const ourFileRouter = {
       return { uploadedBy: user.username };
     })
     .onUploadComplete(async ({ metadata, file }) => {
+      const fileUrl =
+        (file as any).ufsUrl ||
+        file.url ||
+        (file.key ? `https://utfs.io/f/${file.key}` : "");
       return {
         uploadedBy: metadata.uploadedBy,
-        url: file.url,
+        url: fileUrl,
         key: file.key,
         name: file.name,
         type: file.type || (file.name.match(/\.(mp4|mov|webm|m4v)$/i) ? "video" : "image"),
@@ -63,9 +79,13 @@ export const ourFileRouter = {
       return { uploadedBy: user.username };
     })
     .onUploadComplete(async ({ metadata, file }) => {
+      const fileUrl =
+        (file as any).ufsUrl ||
+        file.url ||
+        (file.key ? `https://utfs.io/f/${file.key}` : "");
       return {
         uploadedBy: metadata.uploadedBy,
-        url: file.url,
+        url: fileUrl,
         key: file.key,
         name: file.name,
         type: "image",
@@ -84,9 +104,10 @@ export const ourFileRouter = {
       return { uploadedBy: user.username };
     })
     .onUploadComplete(async ({ metadata, file }) => {
+      const fileUrl = (file as any).ufsUrl || file.url;
       return {
         uploadedBy: metadata.uploadedBy,
-        url: file.url,
+        url: fileUrl,
         key: file.key,
         name: file.name,
         type: "video",

@@ -18,6 +18,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Branch } from "@/types";
 import { useToast } from "@/context/ToastContext";
 import { UploadButton } from "@/lib/uploadthing";
+import { adminFetch } from "@/lib/admin-fetch";
+import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
 
 export default function AdminBranchesPage() {
   const toast = useToast();
@@ -53,7 +55,7 @@ export default function AdminBranchesPage() {
   const fetchBranches = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/branches?all=true");
+      const res = await adminFetch("/api/branches?all=true");
       const data = await res.json();
       if (data.success) {
         setBranches(data.data);
@@ -139,7 +141,7 @@ export default function AdminBranchesPage() {
     setActionLoading(true);
     try {
       if (editingBranch) {
-        const res = await fetch(`/api/branches/${editingBranch._id || editingBranch.slug}`, {
+        const res = await adminFetch(`/api/branches/${editingBranch._id || editingBranch.slug}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -149,7 +151,7 @@ export default function AdminBranchesPage() {
           throw new Error(errData.error || "Update failed");
         }
       } else {
-        const res = await fetch("/api/branches", {
+        const res = await adminFetch("/api/branches", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -177,7 +179,7 @@ export default function AdminBranchesPage() {
   const handleToggleActive = async (branch: Branch) => {
     try {
       const nextActive = !branch.isActive;
-      const res = await fetch(`/api/branches/${branch._id || branch.slug}`, {
+      const res = await adminFetch(`/api/branches/${branch._id || branch.slug}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive: nextActive }),
@@ -205,15 +207,20 @@ export default function AdminBranchesPage() {
     if (!deleteTarget) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/branches/${deleteTarget._id || deleteTarget.slug}`, {
+      const targetId = deleteTarget._id || deleteTarget.slug;
+      const res = await adminFetch(`/api/branches/${targetId}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        setBranches((prev) => prev.filter((b) => b.slug !== deleteTarget.slug));
+        setBranches((prev) =>
+          prev.filter((b) => (deleteTarget._id ? b._id !== deleteTarget._id : b.slug !== deleteTarget.slug))
+        );
         toast.success(`"${deleteTarget.name}" branch removed from directory.`, "Branch Deleted");
         setDeleteTarget(null);
+        fetchBranches();
       } else {
-        throw new Error("Failed to delete branch");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to delete branch");
       }
     } catch (err: any) {
       toast.error(err.message || "Deletion failed", "Error");
@@ -265,17 +272,28 @@ export default function AdminBranchesPage() {
                 className="bg-neutral-950 border border-neutral-800 flex flex-col justify-between overflow-hidden group"
               >
                 {/* Branch Visual */}
-                <div className="relative aspect-[16/9] bg-neutral-900">
-                  <Image
-                    src={
-                      b.imageUrl ||
-                      "/images/branches/kunduparamba.jpg"
-                    }
-                    alt={b.name}
-                    fill
-                    className="object-cover"
-                    sizes="350px"
-                  />
+                <div className="relative aspect-[16/9] bg-neutral-900 overflow-hidden">
+                  {b.imageUrl ? (
+                    <Image
+                      src={b.imageUrl}
+                      alt={b.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="350px"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900/90 p-4 text-center border-b border-neutral-800">
+                      <div className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center mb-1 text-neutral-400">
+                        <MapPin className="w-5 h-5 text-dk-yellow" />
+                      </div>
+                      <span className="text-[11px] font-mono text-neutral-300 uppercase tracking-wider">
+                        No Studio Photo
+                      </span>
+                      <span className="text-[9px] font-mono text-neutral-500 uppercase">
+                        Click edit to upload
+                      </span>
+                    </div>
+                  )}
                   <div className="absolute top-2 right-2">
                     <button
                       onClick={() => handleToggleActive(b)}
@@ -509,71 +527,24 @@ export default function AdminBranchesPage() {
             </div>
           </div>
 
-          {/* Studio Image File Upload */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-mono uppercase text-neutral-400">
-                Studio Branch Photo
-              </label>
-              {formData.imageUrl && (
-                <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1">
-                  <Check className="w-3 h-3" />
-                  <span>Photo Uploaded</span>
-                </span>
-              )}
-            </div>
-
-            {formData.imageUrl ? (
-              <div className="relative aspect-video rounded-none overflow-hidden bg-black border border-neutral-800 group">
-                <Image
-                  src={formData.imageUrl}
-                  alt={formData.name || "Branch photo"}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData({ ...formData, imageUrl: "", imageKey: "" })
-                    }
-                    className="px-3 py-1.5 bg-dk-red text-white text-xs font-mono uppercase tracking-wider"
-                  >
-                    Remove Photo
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="p-4 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex flex-col items-center justify-center gap-2 text-center">
-                <UploadButton
-                  endpoint="imageUploader"
-                  appearance={{
-                    button:
-                      "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-5 py-2.5 rounded-none transition-colors ut-uploading:bg-neutral-800",
-                    allowedContent: "text-neutral-500 font-mono text-[11px]",
-                  }}
-                  content={{
-                    button({ ready }) {
-                      return ready ? "Upload Studio Photo" : "Loading...";
-                    },
-                  }}
-                  onClientUploadComplete={(res) => {
-                    if (res && res[0]) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        imageUrl: res[0].url,
-                        imageKey: res[0].key,
-                      }));
-                      toast.success("Studio photo uploaded successfully!");
-                    }
-                  }}
-                  onUploadError={(error: Error) => {
-                    toast.error(error.message || "Failed to upload photo");
-                  }}
-                />
-              </div>
-            )}
-          </div>
+          {/* Studio Image File Upload & Instant Preview */}
+          <MediaUploaderWithPreview
+            label="Studio Branch Photo"
+            value={formData.imageUrl}
+            fileKey={formData.imageKey}
+            onChange={({ url, key }) => {
+              setFormData((prev) => ({
+                ...prev,
+                imageUrl: url,
+                imageKey: key || prev.imageKey,
+              }));
+              toast.success("Studio photo attached successfully!");
+            }}
+            onClear={() => {
+              setFormData((prev) => ({ ...prev, imageUrl: "", imageKey: "" }));
+            }}
+            placeholder="https://... or /images/..."
+          />
 
           <div>
             <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">

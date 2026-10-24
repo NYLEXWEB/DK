@@ -81,6 +81,16 @@ export async function POST(req: NextRequest) {
       displayOrder: Number(displayOrder) || 0,
     });
 
+    import("next/cache").then(({ revalidatePath }) => {
+      try {
+        revalidatePath("/");
+        revalidatePath("/branches");
+        revalidatePath(`/branches/${newBranch.slug}`);
+      } catch (err) {
+        console.warn("Revalidate error on create branch:", err);
+      }
+    });
+
     return NextResponse.json(
       { success: true, data: newBranch },
       { status: 201 }

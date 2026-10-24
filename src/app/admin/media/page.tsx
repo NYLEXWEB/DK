@@ -1,29 +1,35 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Upload,
   Trash2,
   Edit2,
   Eye,
   EyeOff,
-  Video,
   Image as ImageIcon,
   Plus,
   Loader2,
   Check,
   AlertCircle,
-  Film,
   FileCheck2,
+  Film,
+  Search,
+  Maximize2,
+  RefreshCw,
+  FolderOpen,
+  X,
+  SlidersHorizontal,
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
-import { MediaItem, MediaCategory, MediaType } from "@/types";
-import { UploadDropzone, UploadButton } from "@/lib/uploadthing";
+import { MediaItem, MediaCategory } from "@/types";
+import { UploadDropzone } from "@/lib/uploadthing";
 import { useToast } from "@/context/ToastContext";
+import { adminFetch } from "@/lib/admin-fetch";
+import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
 
 const CATEGORIES: MediaCategory[] = [
   "Classes",
@@ -38,65 +44,83 @@ const CATEGORIES: MediaCategory[] = [
   "Bournemouth",
 ];
 
-export default function AdminMediaPage() {
-  const toast = useToast();
-  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filterCategory, setFilterCategory] = useState<string>("All");
+function cleanFilenameToTitle(name: string): string {
+  if (!name) return "";
+  const withoutExt = name.replace(/\.[^/.]+$/, "");
+  const spaced = withoutExt.replace(/[-_]+/g, " ").trim();
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
 
-  // Modal states
+export default function AdminPhotoLibraryPage() {
+  const toast = useToast();
+  const [photos, setPhotos] = useState<MediaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Filters & Search
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "live" | "draft">("all");
+
+  // Lightbox preview for full-size inspection
+  const [previewPhoto, setPreviewPhoto] = useState<MediaItem | null>(null);
+
+  // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MediaItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState("");
+  const [isReplacingFile, setIsReplacingFile] = useState(false);
 
-  // Add / Edit Form State
+  // Form State
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     category: "Classes" as MediaCategory,
-    type: "image" as MediaType,
     url: "",
     key: "",
-    thumbnailUrl: "",
+    name: "",
     published: true,
-    displayOrder: 0,
+    displayOrder: 1,
   });
 
-  const fetchMedia = async () => {
+  const fetchPhotos = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/media?all=true");
+      // Fetch all photos (both published and draft)
+      const res = await adminFetch("/api/media?type=image&all=true");
       const data = await res.json();
-      if (data.success) {
-        setMediaItems(data.data);
+      if (data.success && Array.isArray(data.data)) {
+        setPhotos(data.data);
+      } else {
+        setPhotos([]);
       }
     } catch (err) {
-      console.error("Failed to load media:", err);
+      console.error("Failed to load photo library:", err);
+      toast.error("Could not load photos from database.", "Fetch Error");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchMedia();
+    fetchPhotos();
   }, []);
 
   const handleOpenAdd = () => {
     setUploadError("");
     setUploadSuccess("");
+    setIsReplacingFile(false);
     setFormData({
       title: "",
       description: "",
       category: "Classes",
-      type: "image",
       url: "",
       key: "",
-      thumbnailUrl: "",
+      name: "",
       published: true,
-      displayOrder: mediaItems.length + 1,
+      displayOrder: photos.length + 1,
     });
     setIsAddModalOpen(true);
   };
@@ -104,24 +128,40 @@ export default function AdminMediaPage() {
   const handleOpenEdit = (item: MediaItem) => {
     setUploadError("");
     setUploadSuccess("");
+    setIsReplacingFile(false);
     setEditingItem(item);
     setFormData({
-      title: item.title,
+      title: item.title || "",
       description: item.description || "",
-      category: item.category,
-      type: item.type,
-      url: item.url,
+      category: item.category || "Classes",
+      url: item.url || "",
       key: item.key || "",
-      thumbnailUrl: item.thumbnailUrl || "",
-      published: item.published,
-      displayOrder: item.displayOrder,
+      name: item.name || "",
+      published: Boolean(item.published),
+      displayOrder: typeof item.displayOrder === "number" ? item.displayOrder : 1,
     });
   };
 
-  const handleSaveMedia = async (e: React.FormEvent) => {
+  const handleCloseModal = () => {
+    setIsAddModalOpen(false);
+    setEditingItem(null);
+    setIsReplacingFile(false);
+    setUploadError("");
+    setUploadSuccess("");
+  };
+
+  const handleSavePhoto = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.url.trim() || !formData.title.trim()) {
-      setUploadError("Please upload or enter a media URL and give it a title.");
+
+    if (!formData.url.trim()) {
+      setUploadError("Please upload a photo via the dropzone before saving.");
+      toast.error("Please upload a photo first.", "Photo Missing");
+      return;
+    }
+
+    if (!formData.title.trim()) {
+      setUploadError("Please give this photo a title or caption.");
+      toast.error("Photo title is required.", "Validation Error");
       return;
     }
 
@@ -129,37 +169,56 @@ export default function AdminMediaPage() {
     setUploadError("");
 
     try {
-      if (editingItem) {
-        const res = await fetch(`/api/media/${editingItem._id}`, {
+      const payload = {
+        type: "image",
+        url: formData.url.trim(),
+        key: formData.key.trim(),
+        name: formData.name.trim(),
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        category: formData.category,
+        published: Boolean(formData.published),
+        displayOrder: Number(formData.displayOrder) || 1,
+      };
+
+      if (editingItem && editingItem._id) {
+        // Edit mode
+        const res = await adminFetch(`/api/media/${editingItem._id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...payload,
+            previousKey: editingItem.key && editingItem.key !== formData.key ? editingItem.key : undefined,
+          }),
         });
+
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || "Update failed");
+          throw new Error(errData.error || "Failed to update photo in database.");
         }
+
+        toast.success(`"${payload.title}" updated successfully.`, "Photo Updated");
       } else {
-        const res = await fetch("/api/media", {
+        // Create mode
+        const res = await adminFetch("/api/media", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
+
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || "Creation failed");
+          throw new Error(errData.error || "Failed to save photo to database.");
         }
+
+        toast.success(`"${payload.title}" saved to photo library and live gallery.`, "Photo Added");
       }
 
-      setIsAddModalOpen(false);
-      setEditingItem(null);
-      await fetchMedia();
-      toast.success(
-        editingItem ? "Media item updated successfully." : "New media item added to archive.",
-        "Media Saved"
-      );
+      handleCloseModal();
+      await fetchPhotos();
     } catch (err: any) {
-      const msg = err.message || "Failed to save media item.";
+      console.error("Save photo error:", err);
+      const msg = err.message || "Failed to save photo.";
       setUploadError(msg);
       toast.error(msg, "Save Failed");
     } finally {
@@ -168,65 +227,95 @@ export default function AdminMediaPage() {
   };
 
   const handleTogglePublish = async (item: MediaItem) => {
+    if (!item._id) return;
     try {
       const nextState = !item.published;
-      const res = await fetch(`/api/media/${item._id}`, {
+      const res = await adminFetch(`/api/media/${item._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ published: nextState }),
       });
+
       if (res.ok) {
-        setMediaItems((prev) =>
-          prev.map((m) =>
-            m._id === item._id ? { ...m, published: nextState } : m
-          )
+        setPhotos((prev) =>
+          prev.map((p) => (p._id === item._id ? { ...p, published: nextState } : p))
         );
         toast.info(
-          nextState ? `"${item.title}" is now published on live gallery.` : `"${item.title}" moved to draft status.`,
+          nextState
+            ? `"${item.title}" is now LIVE on the public gallery.`
+            : `"${item.title}" moved to DRAFT status.`,
           "Status Updated"
         );
       } else {
-        toast.error("Failed to change publish status.");
+        toast.error("Failed to update status on server.");
       }
     } catch (err) {
       console.error("Toggle publish failed:", err);
-      toast.error("Network error while updating publish status.");
+      toast.error("Network error updating status.");
     }
   };
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
+  const handleDeletePhoto = async () => {
+    if (!deleteTarget || !deleteTarget._id) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/media/${deleteTarget._id}`, {
+      const res = await adminFetch(`/api/media/${deleteTarget._id}`, {
         method: "DELETE",
       });
+
       if (res.ok) {
-        setMediaItems((prev) => prev.filter((m) => m._id !== deleteTarget._id));
-        toast.success(`"${deleteTarget.title}" deleted from media library and storage.`, "Item Removed");
+        setPhotos((prev) => prev.filter((p) => p._id !== deleteTarget._id));
+        toast.success(
+          `"${deleteTarget.title}" deleted from database and storage.`,
+          "Photo Removed"
+        );
         setDeleteTarget(null);
       } else {
-        throw new Error("Failed to delete media item");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to delete photo from database.");
       }
     } catch (err: any) {
+      console.error("Delete photo error:", err);
       toast.error(err.message || "Deletion failed", "Error");
     } finally {
       setActionLoading(false);
     }
   };
 
-  const filteredMedia = mediaItems.filter((item) => {
-    if (filterCategory === "All") return true;
-    if (filterCategory === "Videos") return item.type === "video";
-    if (filterCategory === "Photos") return item.type === "image";
-    return item.category === filterCategory;
-  });
+  // Filter & Search Logic
+  const filteredPhotos = useMemo(() => {
+    return photos.filter((item) => {
+      // Category filter
+      if (selectedCategory !== "All" && item.category !== selectedCategory) {
+        return false;
+      }
+      // Status filter
+      if (statusFilter === "live" && !item.published) return false;
+      if (statusFilter === "draft" && item.published) return false;
+
+      // Search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const titleMatch = item.title?.toLowerCase().includes(q);
+        const descMatch = item.description?.toLowerCase().includes(q);
+        const catMatch = item.category?.toLowerCase().includes(q);
+        if (!titleMatch && !descMatch && !catMatch) return false;
+      }
+
+      return true;
+    });
+  }, [photos, selectedCategory, statusFilter, searchQuery]);
+
+  // Library statistics
+  const totalPhotos = photos.length;
+  const livePhotos = photos.filter((p) => p.published).length;
+  const draftPhotos = totalPhotos - livePhotos;
 
   return (
     <>
       <AdminHeader
-        title="Media Management"
-        subtitle="Upload, categorize, and organize photos & video performance reels"
+        title="Photo Library"
+        subtitle="Upload, curate, and organize dance photos for the public gallery"
       >
         <div className="flex items-center gap-3">
           <Link
@@ -238,158 +327,252 @@ export default function AdminMediaPage() {
           </Link>
           <button
             onClick={handleOpenAdd}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest transition-colors shadow-lg active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Media</span>
+            <span>Add Photo</span>
           </button>
         </div>
       </AdminHeader>
 
       <main className="p-6 sm:p-8 space-y-6 flex-1">
-        {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {["All", "Videos", "Photos", ...CATEGORIES].map((cat) => (
+        {/* Statistics Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="bg-neutral-950 border border-neutral-800 p-4">
+            <span className="text-[10px] font-mono uppercase text-neutral-500 block mb-1">
+              Total Photos
+            </span>
+            <span className="text-2xl font-heading font-extralight text-white block">
+              {totalPhotos}
+            </span>
+          </div>
+
+          <div className="bg-neutral-950 border border-neutral-800 p-4">
+            <span className="text-[10px] font-mono uppercase text-[#25D366] block mb-1 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
+              Live on Gallery
+            </span>
+            <span className="text-2xl font-heading font-extralight text-white block">
+              {livePhotos}
+            </span>
+          </div>
+
+          <div className="bg-neutral-950 border border-neutral-800 p-4">
+            <span className="text-[10px] font-mono uppercase text-neutral-400 block mb-1">
+              Draft Photos
+            </span>
+            <span className="text-2xl font-heading font-extralight text-white block">
+              {draftPhotos}
+            </span>
+          </div>
+
+          <div className="bg-neutral-950 border border-neutral-800 p-4 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-dk-yellow block mb-1">
+                Active Categories
+              </span>
+              <span className="text-2xl font-heading font-extralight text-white block">
+                {CATEGORIES.length}
+              </span>
+            </div>
             <button
-              key={cat}
-              onClick={() => setFilterCategory(cat)}
-              className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors shrink-0 ${
-                filterCategory === cat
-                  ? "bg-white text-black font-semibold"
-                  : "bg-neutral-900 text-neutral-400 hover:text-white"
-              }`}
+              onClick={fetchPhotos}
+              title="Refresh photo library"
+              className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-900 border border-neutral-800 transition-colors"
             >
-              {cat}
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-dk-yellow" : ""}`} />
             </button>
-          ))}
+          </div>
         </div>
 
-        {/* Media Grid */}
+        {/* Filter & Search Bar */}
+        <div className="space-y-3 bg-neutral-950 border border-neutral-800 p-4">
+          {/* Top row: search + status selector */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search photos by title, caption, or category..."
+                className="w-full bg-black border border-neutral-800 pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-dk-yellow"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase text-neutral-500 flex items-center gap-1">
+                <SlidersHorizontal className="w-3 h-3" />
+                Status:
+              </span>
+              {(["all", "live", "draft"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors ${
+                    statusFilter === s
+                      ? "bg-white text-black font-semibold"
+                      : "bg-neutral-900 text-neutral-400 hover:text-white"
+                  }`}
+                >
+                  {s === "all" ? "All" : s === "live" ? "Live" : "Draft"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom row: category pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-neutral-900 scrollbar-none">
+            {["All", ...CATEGORIES].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3 py-1 text-xs font-mono uppercase tracking-wider transition-colors shrink-0 ${
+                  selectedCategory === cat
+                    ? "bg-dk-yellow text-black font-bold"
+                    : "bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Photos Grid */}
         {loading ? (
           <div className="py-24 text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto text-dk-yellow mb-2" />
-            <p className="text-xs font-mono text-neutral-500 uppercase">
-              Loading media repository...
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-dk-yellow mb-3" />
+            <p className="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+              Connecting to database & loading photo repository...
             </p>
           </div>
-        ) : filteredMedia.length === 0 ? (
-          <div className="py-24 text-center border border-dashed border-neutral-800 bg-neutral-950 p-8">
-            <p className="text-neutral-400 font-mono text-xs uppercase tracking-wider mb-4">
-              No media items found.
-            </p>
+        ) : filteredPhotos.length === 0 ? (
+          <div className="py-24 text-center border border-dashed border-neutral-800 bg-neutral-950 p-8 space-y-4">
+            <div className="w-12 h-12 mx-auto rounded-full bg-neutral-900 flex items-center justify-center text-neutral-500">
+              <FolderOpen className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-neutral-300 font-heading text-sm uppercase tracking-wider">
+                No photos found
+              </p>
+              <p className="text-neutral-500 font-mono text-xs mt-1">
+                {searchQuery || selectedCategory !== "All" || statusFilter !== "all"
+                  ? "Try adjusting your filters or search keywords."
+                  : "Start populating the live gallery by uploading your first high-resolution dance photo."}
+              </p>
+            </div>
             <button
               onClick={handleOpenAdd}
-              className="px-4 py-2 bg-neutral-900 border border-neutral-800 text-xs font-mono uppercase text-dk-yellow hover:border-dk-yellow"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-900 border border-neutral-800 text-xs font-mono uppercase text-dk-yellow hover:border-dk-yellow transition-colors"
             >
-              Upload First Media
+              <Plus className="w-4 h-4" />
+              <span>Upload First Photo</span>
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredMedia.map((item) => (
+            {filteredPhotos.map((item) => (
               <div
-                key={item._id}
-                className="bg-neutral-950 border border-neutral-800 overflow-hidden flex flex-col justify-between group"
+                key={item._id || item.url}
+                className="bg-neutral-950 border border-neutral-800 overflow-hidden flex flex-col justify-between group hover:border-neutral-700 transition-colors"
               >
-                {/* Visual Preview */}
-                <div className="relative aspect-[4/3] bg-neutral-900">
-                  {item.type === "video" ? (
-                    <div className="relative w-full h-full flex items-center justify-center bg-black">
-                      {item.thumbnailUrl ? (
-                        <Image
-                          src={item.thumbnailUrl}
-                          alt={item.title}
-                          fill
-                          className="object-cover"
-                          sizes="300px"
-                        />
-                      ) : (
-                        <Video className="w-8 h-8 text-neutral-600" />
-                      )}
-                      <div className="absolute top-2 left-2">
-                        <span className="p-1.5 bg-black/80 text-dk-red flex items-center gap-1 text-[10px] font-mono uppercase">
-                          <Video className="w-3 h-3" />
-                          <span>Video</span>
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={item.url}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                        sizes="300px"
-                      />
-                      <div className="absolute top-2 left-2">
-                        <span className="p-1.5 bg-black/80 text-white flex items-center gap-1 text-[10px] font-mono uppercase">
-                          <ImageIcon className="w-3 h-3" />
-                          <span>Photo</span>
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                {/* Photo Preview Container */}
+                <div className="relative aspect-[4/3] bg-neutral-900 overflow-hidden">
+                  <Image
+                    src={item.url}
+                    alt={item.title || "DK Dance Photo"}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
 
-                  {/* Publish Badge */}
-                  <div className="absolute top-2 right-2">
+                  {/* Category Pill Overlay */}
+                  <div className="absolute top-2 left-2 z-10">
+                    <span className="px-2 py-1 bg-black/80 backdrop-blur-sm text-dk-yellow text-[10px] font-mono uppercase font-bold tracking-wider border border-white/10">
+                      {item.category}
+                    </span>
+                  </div>
+
+                  {/* Publish Status Toggle Button */}
+                  <div className="absolute top-2 right-2 z-10">
                     <button
                       onClick={() => handleTogglePublish(item)}
-                      title={item.published ? "Click to unpublish" : "Click to publish"}
-                      className={`p-1.5 rounded-none text-xs font-mono uppercase tracking-wider flex items-center gap-1 ${
+                      title={item.published ? "Click to move to Draft" : "Click to publish live"}
+                      className={`px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md ${
                         item.published
-                          ? "bg-black/90 text-dk-yellow"
-                          : "bg-black/90 text-neutral-500"
+                          ? "bg-black/90 text-[#25D366] border border-[#25D366]/40 hover:bg-black"
+                          : "bg-black/90 text-neutral-400 border border-neutral-700 hover:text-white"
                       }`}
                     >
                       {item.published ? (
                         <>
-                          <Eye className="w-3.5 h-3.5" />
-                          <span className="text-[9px]">Live</span>
+                          <Eye className="w-3 h-3 text-[#25D366]" />
+                          <span>Live</span>
                         </>
                       ) : (
                         <>
-                          <EyeOff className="w-3.5 h-3.5" />
-                          <span className="text-[9px]">Draft</span>
+                          <EyeOff className="w-3 h-3 text-neutral-500" />
+                          <span>Draft</span>
                         </>
                       )}
                     </button>
                   </div>
+
+                  {/* Full size preview trigger on hover */}
+                  <button
+                    onClick={() => setPreviewPhoto(item)}
+                    title="View full-size photo"
+                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+                  >
+                    <span className="p-2.5 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-white hover:scale-110 transition-transform">
+                      <Maximize2 className="w-4 h-4" />
+                    </span>
+                  </button>
                 </div>
 
-                {/* Details */}
+                {/* Details Section */}
                 <div className="p-4 flex-1 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-dk-yellow block mb-1">
-                      {item.category}
-                    </span>
                     <h3 className="text-sm font-heading font-bold uppercase text-white truncate mb-1">
                       {item.title}
                     </h3>
-                    {item.description && (
-                      <p className="text-xs text-neutral-400 line-clamp-2">
+                    {item.description ? (
+                      <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
                         {item.description}
                       </p>
+                    ) : (
+                      <p className="text-[11px] text-neutral-600 italic">No description provided</p>
                     )}
                   </div>
 
-                  {/* Card Actions */}
-                  <div className="pt-4 mt-3 border-t border-neutral-900 flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-600">
+                  {/* Card Bottom Actions */}
+                  <div className="pt-3 mt-3 border-t border-neutral-900 flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-neutral-500">
                       Order: {item.displayOrder}
                     </span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleOpenEdit(item)}
-                        aria-label="Edit media"
-                        className="p-1.5 text-neutral-400 hover:text-white transition-colors"
+                        aria-label={`Edit ${item.title}`}
+                        title="Edit Photo Details"
+                        className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-colors"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => setDeleteTarget(item)}
-                        aria-label="Delete media"
-                        className="p-1.5 text-neutral-400 hover:text-dk-red transition-colors"
+                        aria-label={`Delete ${item.title}`}
+                        title="Delete Photo"
+                        className="p-1.5 text-neutral-400 hover:text-dk-red hover:bg-neutral-900 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -402,18 +585,62 @@ export default function AdminMediaPage() {
         )}
       </main>
 
-      {/* Add / Edit Modal */}
+      {/* Full-Screen Photo Preview Modal */}
+      {previewPhoto && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setPreviewPhoto(null)}
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+        >
+          <button
+            onClick={() => setPreviewPhoto(null)}
+            className="fixed top-6 right-6 p-2 rounded-full bg-neutral-900/90 text-neutral-300 hover:text-white border border-neutral-700 transition-colors z-50"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center"
+          >
+            <div className="relative w-full h-[70vh] bg-black border border-neutral-800">
+              <Image
+                src={previewPhoto.url}
+                alt={previewPhoto.title}
+                fill
+                className="object-contain"
+                sizes="100vw"
+              />
+            </div>
+            <div className="w-full mt-4 flex items-center justify-between text-white border-t border-neutral-800 pt-3">
+              <div>
+                <span className="text-xs font-mono uppercase text-dk-yellow mr-3">
+                  {previewPhoto.category}
+                </span>
+                <span className="text-sm font-heading font-light uppercase">
+                  {previewPhoto.title}
+                </span>
+                {previewPhoto.description && (
+                  <p className="text-xs text-neutral-400 mt-1">{previewPhoto.description}</p>
+                )}
+              </div>
+              <span className="text-xs font-mono text-neutral-500">
+                {previewPhoto.published ? "Live on Gallery" : "Draft"}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add / Edit Photo Modal */}
       <Modal
         isOpen={isAddModalOpen || editingItem !== null}
-        onClose={() => {
-          setIsAddModalOpen(false);
-          setEditingItem(null);
-        }}
-        title={editingItem ? "Edit Media Item" : "Add Media Item"}
+        onClose={handleCloseModal}
+        title={editingItem ? "Edit Photo" : "Add New Photo"}
         maxWidth="lg"
       >
-        <form onSubmit={handleSaveMedia} className="space-y-5">
-          {/* Error Message */}
+        <form onSubmit={handleSavePhoto} className="space-y-5">
+          {/* Error Message Alert */}
           {uploadError && (
             <div
               role="alert"
@@ -424,7 +651,7 @@ export default function AdminMediaPage() {
             </div>
           )}
 
-          {/* Success Notification */}
+          {/* Success Notification Alert */}
           {uploadSuccess && (
             <div className="flex items-center gap-2.5 p-3.5 bg-[#25D366]/10 border border-[#25D366]/30 text-white text-xs font-mono">
               <FileCheck2 className="w-4 h-4 text-[#25D366] shrink-0" />
@@ -432,131 +659,36 @@ export default function AdminMediaPage() {
             </div>
           )}
 
-          {/* UploadThing UploadDropzone Section */}
-          <div className="p-5 bg-black border border-neutral-800 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-white">
-                Upload Media via UploadThing
-              </span>
-              <span className="text-[10px] font-mono text-dk-yellow uppercase">
-                Direct Cloud Storage
-              </span>
-            </div>
+          {/* Photo Uploader with Instant Client Preview */}
+          <MediaUploaderWithPreview
+            label="Dance Studio / Gallery Photo"
+            value={formData.url}
+            fileKey={formData.key}
+            mediaType="image"
+            onChange={({ url, key, name }) => {
+              const cleanTitle = name ? cleanFilenameToTitle(name) : "";
+              setFormData((prev) => ({
+                ...prev,
+                url,
+                key: key || prev.key,
+                name: name || prev.name,
+                title: prev.title.trim() ? prev.title : cleanTitle,
+              }));
+              setUploadSuccess(`Photo uploaded and ready!`);
+              setUploadError("");
+              toast.success("Photo attached and ready for gallery!");
+            }}
+            onClear={() => {
+              setFormData((prev) => ({ ...prev, url: "", key: "", name: "" }));
+            }}
+            placeholder="https://... or /images/..."
+          />
 
-            {/* Formats Supported Badges */}
-            <div className="flex flex-wrap gap-2 text-[10px] font-mono uppercase">
-              <span className="px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-300">
-                Photos: JPG, PNG, WEBP, GIF, SVG (up to 16MB)
-              </span>
-              <span className="px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-300">
-                Videos: MP4, MOV, WEBM, M4V (up to 256MB)
-              </span>
-            </div>
-
-            {/* Dropzone Component */}
-            <div className="pt-2">
-              <UploadDropzone
-                endpoint="mediaUploader"
-                appearance={{
-                  container:
-                    "border border-dashed border-neutral-700 bg-neutral-950 hover:border-dk-yellow transition-colors py-8 px-4 cursor-pointer",
-                  button:
-                    "bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-widest px-6 py-2.5 rounded-none transition-colors ut-uploading:bg-neutral-800",
-                  label: "text-neutral-300 font-heading text-sm uppercase tracking-wide hover:text-white",
-                  allowedContent: "text-neutral-500 font-mono text-[11px]",
-                }}
-                onClientUploadComplete={(res) => {
-                  if (res && res[0]) {
-                    const uploaded = res[0];
-                    const isVideo = Boolean(
-                      uploaded.name.match(/\.(mp4|mov|webm|m4v)$/i)
-                    );
-                    const cleanTitle = uploaded.name.replace(/\.[^/.]+$/, "");
-
-                    setFormData((prev) => ({
-                      ...prev,
-                      url: uploaded.url,
-                      key: uploaded.key,
-                      type: isVideo ? "video" : "image",
-                      title: prev.title.trim() ? prev.title : cleanTitle,
-                    }));
-
-                    setUploadSuccess(
-                      `File uploaded successfully: ${uploaded.name} (${isVideo ? "Video" : "Photo"})`
-                    );
-                    setUploadError("");
-                  }
-                }}
-                onUploadError={(error: Error) => {
-                  console.error("UploadThing upload error:", error);
-                  setUploadError(
-                    `Upload error: ${error.message || "Failed to upload file. Please check file format and network."}`
-                  );
-                }}
-              />
-            </div>
-
-            {/* Live Visual Media Preview Box */}
-            {formData.url && (
-              <div className="p-4 bg-neutral-900 border border-neutral-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1.5 font-bold">
-                    <Check className="w-3.5 h-3.5" />
-                    <span>File Attached & Ready</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, url: "", key: "" }))
-                    }
-                    className="text-[10px] font-mono uppercase text-dk-red hover:underline"
-                  >
-                    Change / Re-upload File
-                  </button>
-                </div>
-
-                {formData.type === "image" ? (
-                  <div className="relative aspect-video max-h-48 w-full bg-black border border-neutral-800 overflow-hidden">
-                    <Image
-                      src={formData.url}
-                      alt={formData.title || "Uploaded photo preview"}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="aspect-video max-h-48 w-full bg-black border border-neutral-800 overflow-hidden">
-                    <video
-                      src={formData.url}
-                      controls
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
+          {/* Form Fields: Category & Display Order */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                Media Type
-              </label>
-              <select
-                value={formData.type}
-                onChange={(e) =>
-                  setFormData({ ...formData, type: e.target.value as MediaType })
-                }
-                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow"
-              >
-                <option value="image">Photo / Image</option>
-                <option value="video">Video Reel</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                Category
+                Category *
               </label>
               <select
                 value={formData.category}
@@ -566,7 +698,7 @@ export default function AdminMediaPage() {
                     category: e.target.value as MediaCategory,
                   })
                 }
-                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow"
+                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -575,8 +707,27 @@ export default function AdminMediaPage() {
                 ))}
               </select>
             </div>
+
+            <div>
+              <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
+                Display Order
+              </label>
+              <input
+                type="number"
+                min={1}
+                value={formData.displayOrder}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    displayOrder: Number(e.target.value),
+                  })
+                }
+                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
+              />
+            </div>
           </div>
 
+          {/* Title / Caption */}
           <div>
             <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
               Title / Caption *
@@ -585,14 +736,13 @@ export default function AdminMediaPage() {
               type="text"
               required
               value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g. Kozhikode Stage Show Choreography"
               className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow"
             />
           </div>
 
+          {/* Description */}
           <div>
             <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
               Description (Optional)
@@ -603,129 +753,52 @@ export default function AdminMediaPage() {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              placeholder="Brief performance or class description..."
+              placeholder="Brief performance, workshop, or class details..."
               className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow resize-none"
             />
           </div>
 
-          {formData.type === "video" && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-mono uppercase text-neutral-400">
-                  Video Poster / Thumbnail Photo
-                </label>
-                {formData.thumbnailUrl && (
-                  <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1">
-                    <Check className="w-3 h-3" />
-                    <span>Poster Attached</span>
-                  </span>
-                )}
-              </div>
-
-              {formData.thumbnailUrl ? (
-                <div className="relative aspect-video rounded-none overflow-hidden bg-black border border-neutral-800 group h-24">
-                  <Image
-                    src={formData.thumbnailUrl}
-                    alt="Poster preview"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, thumbnailUrl: "" })}
-                      className="px-2.5 py-1 bg-dk-red text-white text-[10px] font-mono uppercase tracking-wider"
-                    >
-                      Remove Poster
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-3 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex items-center justify-center">
-                  <UploadButton
-                    endpoint="imageUploader"
-                    appearance={{
-                      button:
-                        "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-4 py-2 rounded-none transition-colors ut-uploading:bg-neutral-800",
-                      allowedContent: "text-neutral-500 font-mono text-[10px]",
-                    }}
-                    content={{
-                      button({ ready }) {
-                        return ready ? "Upload Poster Photo" : "Loading...";
-                      },
-                    }}
-                    onClientUploadComplete={(res) => {
-                      if (res && res[0]) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          thumbnailUrl: res[0].url,
-                        }));
-                        toast.success("Video poster uploaded!");
-                      }
-                    }}
-                    onUploadError={(error: Error) => {
-                      toast.error(error.message || "Failed to upload poster");
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4 items-center">
-            <div>
-              <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                Display Order
-              </label>
-              <input
-                type="number"
-                value={formData.displayOrder}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    displayOrder: Number(e.target.value),
-                  })
-                }
-                className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-              />
-            </div>
-
-            <div className="flex items-center gap-2 pt-5">
-              <input
-                id="published"
-                type="checkbox"
-                checked={formData.published}
-                onChange={(e) =>
-                  setFormData({ ...formData, published: e.target.checked })
-                }
-                className="w-4 h-4 rounded-none accent-dk-yellow"
-              />
-              <label
-                htmlFor="published"
-                className="text-xs font-mono uppercase text-neutral-300"
-              >
-                Publish to Live Gallery
-              </label>
-            </div>
+          {/* Publish Checkbox */}
+          <div className="flex items-center gap-2.5 p-3 bg-neutral-900 border border-neutral-800">
+            <input
+              id="photo-published"
+              type="checkbox"
+              checked={formData.published}
+              onChange={(e) =>
+                setFormData({ ...formData, published: e.target.checked })
+              }
+              className="w-4 h-4 rounded-none accent-dk-yellow cursor-pointer"
+            />
+            <label
+              htmlFor="photo-published"
+              className="text-xs font-mono uppercase text-neutral-200 cursor-pointer select-none"
+            >
+              Publish to Live Gallery Immediately
+            </label>
           </div>
 
+          {/* Modal Actions */}
           <div className="pt-4 border-t border-neutral-900 flex justify-end gap-3">
             <button
               type="button"
-              onClick={() => {
-                setIsAddModalOpen(false);
-                setEditingItem(null);
-              }}
+              onClick={handleCloseModal}
               className="px-4 py-2.5 text-xs font-mono uppercase text-neutral-400 hover:text-white"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={actionLoading}
-              className="px-6 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
+              disabled={actionLoading || !formData.url}
+              className="px-6 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center gap-2 shadow-lg"
             >
-              {actionLoading ? "Saving..." : "Save Media Item"}
+              {actionLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Saving to Database...</span>
+                </>
+              ) : (
+                <span>{editingItem ? "Update Photo" : "Save Photo"}</span>
+              )}
             </button>
           </div>
         </form>
@@ -734,12 +807,12 @@ export default function AdminMediaPage() {
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteTarget !== null}
-        title="Delete Media Item?"
-        message={`Are you sure you want to delete "${deleteTarget?.title}"? This will remove the record from MongoDB and delete the asset from UploadThing.`}
-        confirmText="Delete Asset"
+        title="Delete Photo?"
+        message={`Are you sure you want to permanently delete "${deleteTarget?.title}"? This will remove the photo record from the MongoDB database and delete the file from UploadThing storage.`}
+        confirmText="Delete Photo"
         isDestructive={true}
         isLoading={actionLoading}
-        onConfirm={handleDelete}
+        onConfirm={handleDeletePhoto}
         onCancel={() => setDeleteTarget(null)}
       />
     </>

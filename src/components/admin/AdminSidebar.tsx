@@ -34,8 +34,8 @@ export function AdminSidebar() {
 
   const navItems = [
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { label: "Photo Library", href: "/admin/media", icon: ImageIcon },
     { label: "Video Showcase", href: "/admin/videos", icon: Video },
-    { label: "Media Library", href: "/admin/media", icon: ImageIcon },
     { label: "Branches", href: "/admin/branches", icon: MapPin },
     { label: "Enquiries", href: "/admin/enquiries", icon: Inbox },
     { label: "Settings & Security", href: "/admin/settings", icon: Sliders },

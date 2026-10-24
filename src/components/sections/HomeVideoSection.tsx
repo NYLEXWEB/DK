@@ -107,7 +107,7 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
         className="fixed inset-0 z-[100000] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-3 sm:p-8"
         onClick={handleClose}
       >
-        {/* Unmissable, Prominent Close Button at Top-Right */}
+        {/* Close Button at Top-Right */}
         <button
           onClick={handleClose}
           aria-label="Close video"
@@ -261,13 +261,6 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
                       <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current ml-0.5" />
                     </div>
                   </div>
-
-                  {/* Duration Tag */}
-                  {video.duration && (
-                    <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 border border-white/10 text-[10px] font-mono text-neutral-300">
-                      {video.duration}
-                    </div>
-                  )}
                 </div>
 
                 {/* Video Info / Writings Below */}
@@ -278,15 +271,9 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-heading font-light uppercase tracking-wide text-white group-hover:text-dk-yellow transition-colors line-clamp-1">
+                  <h3 className="text-sm font-heading font-light uppercase tracking-wide text-white group-hover:text-dk-yellow transition-colors line-clamp-2">
                     {video.title}
                   </h3>
-
-                  {video.description && (
-                    <p className="text-[11px] text-neutral-400 font-light line-clamp-2 leading-relaxed">
-                      {video.description}
-                    </p>
-                  )}
                 </div>
               </div>
             );

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getMedia, createMedia } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
 import { MediaCategory, MediaType } from "@/types";
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
       description,
       category = "Classes",
       thumbnailUrl,
+      thumbnailKey,
       duration,
       featuredOnHome = type === "video",
       published = true,
@@ -65,11 +67,16 @@ export async function POST(req: NextRequest) {
       description,
       category: category as MediaCategory,
       thumbnailUrl,
+      thumbnailKey,
       duration,
       featuredOnHome: Boolean(featuredOnHome),
       published: Boolean(published),
       displayOrder: Number(displayOrder) || 0,
     });
+
+    revalidatePath("/");
+    revalidatePath("/gallery");
+    revalidatePath("/admin/videos");
 
     return NextResponse.json(
       { success: true, data: newItem },

@@ -44,6 +44,12 @@ function LoginForm() {
         throw new Error(data.error || "Authentication failed.");
       }
 
+      if (data.token) {
+        try {
+          localStorage.setItem("dkdc_token", data.token);
+        } catch {}
+      }
+
       success("Signed in successfully. Loading dashboard...", "Authentication Verified");
       router.push(redirectTo);
       router.refresh();
