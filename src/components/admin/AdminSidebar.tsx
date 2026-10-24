@@ -45,14 +45,16 @@ export function AdminSidebar() {
     <>
       {/* Mobile Top Navigation Bar */}
       <div className="md:hidden bg-neutral-950 border-b border-neutral-800 p-4 flex items-center justify-between sticky top-0 z-30">
-        <Link href="/admin" className="block relative w-32 h-8">
-          <Image
-            src="/images/logo/logo.png"
-            alt="DK Dance Company Admin"
-            fill
-            className="object-contain object-left"
-            sizes="128px"
-          />
+        <Link href="/admin" className="block p-1.5 rounded-xl bg-white/[0.96] border border-white/20 shadow">
+          <div className="relative w-28 h-7">
+            <Image
+              src="/images/logo/logo.png"
+              alt="DK Dance Company Admin"
+              fill
+              className="object-contain object-center"
+              sizes="112px"
+            />
+          </div>
         </Link>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -117,14 +119,16 @@ export function AdminSidebar() {
       <div>
         {/* Logo */}
         <div className="p-6 border-b border-neutral-900">
-          <Link href="/admin" className="block relative w-36 h-10">
-            <Image
-              src="/images/logo/logo.png"
-              alt="DK Dance Company Admin"
-              fill
-              className="object-contain object-left"
-              sizes="144px"
-            />
+          <Link href="/admin" className="block p-2 rounded-xl bg-white/[0.96] border border-white/20 shadow">
+            <div className="relative w-32 h-8">
+              <Image
+                src="/images/logo/logo.png"
+                alt="DK Dance Company Admin"
+                fill
+                className="object-contain object-center"
+                sizes="128px"
+              />
+            </div>
           </Link>
           <span className="text-[10px] font-mono uppercase tracking-widest text-dk-yellow mt-2 block">
             Administrative Console

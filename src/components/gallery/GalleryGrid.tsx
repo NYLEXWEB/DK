@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { Play, X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { MediaItem, MediaCategory } from "@/types";
 import { FadeUp } from "@/components/ui/Motion";
@@ -33,6 +34,11 @@ export function GalleryGrid({
 }: GalleryGridProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredItems = items.filter((item) => {
     if (selectedCategory === "All") return true;
@@ -185,45 +191,56 @@ export function GalleryGrid({
       </div>
 
       {/* Lightbox / Video Modal */}
-      {currentItem && (
+      {currentItem && mounted && createPortal(
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
+          className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl"
+          onClick={handleClose}
         >
-          {/* Close button */}
+          {/* Prominent Close button at Top-Right */}
           <button
             onClick={handleClose}
             aria-label="Close media dialog"
-            className="absolute top-6 right-6 z-50 p-3 rounded-full text-neutral-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md transition-all shadow-lg"
+            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100010] inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-neutral-900/95 hover:bg-dk-yellow hover:text-black text-white border-2 border-white/20 hover:border-dk-yellow text-xs sm:text-sm font-heading font-semibold uppercase tracking-widest shadow-[0_10px_35px_rgba(0,0,0,0.9)] transition-all duration-200 cursor-pointer active:scale-95"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 stroke-[2.5]" />
+            <span>Close</span>
           </button>
 
           {/* Navigation Controls */}
           {displayItems.length > 1 && (
             <>
               <button
-                onClick={handlePrev}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrev();
+                }}
                 aria-label="Previous item"
-                className="absolute left-6 top-1/2 -translate-y-1/2 z-50 p-3.5 rounded-full text-neutral-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/10 hover:border-dk-yellow backdrop-blur-md transition-all shadow-lg"
+                className="fixed left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xl active:scale-95"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8" />
               </button>
               <button
-                onClick={handleNext}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNext();
+                }}
                 aria-label="Next item"
-                className="absolute right-6 top-1/2 -translate-y-1/2 z-50 p-3.5 rounded-full text-neutral-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/10 hover:border-dk-yellow backdrop-blur-md transition-all shadow-lg"
+                className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xl active:scale-95"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8" />
               </button>
             </>
           )}
 
           {/* Main Media Content */}
-          <div className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center">
+          <div
+            className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             {currentItem.type === "video" ? (
-              <div className="w-full aspect-video bg-black border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="w-full aspect-video bg-black border border-white/10 overflow-hidden shadow-2xl">
                 <video
                   src={currentItem.url}
                   controls
@@ -232,7 +249,7 @@ export function GalleryGrid({
                 />
               </div>
             ) : (
-              <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+              <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl bg-black">
                 <Image
                   src={currentItem.url}
                   alt={currentItem.title}
@@ -263,7 +280,8 @@ export function GalleryGrid({
               </span>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, ArrowUpRight, MessageCircle } from "lucide-react";
+import { MapPin, ArrowUpRight, MessageCircle, Phone } from "lucide-react";
 import { FadeUp } from "@/components/ui/Motion";
 import { Branch } from "@/types";
 import { formatWhatsAppUrl } from "@/lib/utils";
@@ -99,9 +99,22 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                         </p>
                       )}
                       {branch.classTimings && (
-                        <div className="text-[11px] font-mono text-neutral-400 mb-6 bg-white/[0.02] p-3.5 rounded-2xl border border-white/[0.06] backdrop-blur-sm">
+                        <div className="text-[11px] font-mono text-neutral-400 mb-4 bg-white/[0.02] p-3.5 rounded-2xl border border-white/[0.06] backdrop-blur-sm">
                           <span className="text-neutral-300 block mb-1">Schedule:</span>
                           {branch.classTimings}
+                        </div>
+                      )}
+
+                      {branch.phone && (
+                        <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 mb-5 bg-white/[0.02] px-3.5 py-2.5 rounded-2xl border border-white/[0.06]">
+                          <span className="text-neutral-400">Desk / Enquiries:</span>
+                          <a
+                            href={`tel:${branch.phone}`}
+                            className="text-white hover:text-dk-yellow font-normal inline-flex items-center gap-1.5 transition-colors"
+                          >
+                            <Phone className="w-3 h-3 text-dk-yellow" />
+                            <span>{branch.phone}</span>
+                          </a>
                         </div>
                       )}
                     </div>
@@ -115,7 +128,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-xs font-mono uppercase text-dk-yellow hover:text-white transition-colors duration-200"
                         >
-                          <span>View Location</span>
+                          <span>Location</span>
                           <ArrowUpRight className="w-3.5 h-3.5" />
                         </a>
                       ) : (
@@ -124,7 +137,18 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                         </span>
                       )}
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        {/* Direct Call Button */}
+                        <a
+                          href={`tel:${branch.phone || "+919995272083"}`}
+                          aria-label={`Call ${branch.name} branch`}
+                          title={`Call ${branch.phone || "+919995272083"}`}
+                          className="p-2.5 rounded-full border border-white/10 text-neutral-300 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-200"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                        </a>
+
+                        {/* WhatsApp Button */}
                         <a
                           href={whatsappUrl}
                           target="_blank"
@@ -132,11 +156,12 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                           aria-label={`Enquire via WhatsApp for ${branch.name}`}
                           className="p-2.5 rounded-full border border-white/10 text-neutral-400 hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/10 transition-all duration-200"
                         >
-                          <MessageCircle className="w-4 h-4" />
+                          <MessageCircle className="w-3.5 h-3.5" />
                         </a>
+
                         <Link
                           href={`/branches/${branch.slug}`}
-                          className="text-xs font-mono uppercase text-neutral-400 hover:text-white transition-colors duration-200"
+                          className="text-xs font-mono uppercase text-neutral-400 hover:text-white transition-colors duration-200 pl-1"
                         >
                           Details →
                         </Link>

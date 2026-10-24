@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 const NAV_LINKS = [
@@ -22,6 +22,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,29 +62,50 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
-          isScrolled
-            ? "bg-black/60 backdrop-blur-2xl border-b border-white/[0.08] py-4 shadow-[0_10px_35px_-5px_rgba(0,0,0,0.8)]"
-            : "bg-gradient-to-b from-black/80 via-black/20 to-transparent py-6 backdrop-blur-[2px]"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${isScrolled
+          ? "bg-black/60 backdrop-blur-2xl border-b border-white/[0.08] py-4 shadow-[0_10px_35px_-5px_rgba(0,0,0,0.8)]"
+          : "bg-gradient-to-b from-black/80 via-black/20 to-transparent py-6 backdrop-blur-[2px]"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dk-yellow"
-          >
-            <div className="relative w-36 sm:w-44 h-12 transition-transform duration-300 group-hover:opacity-95">
-              <Image
-                src="/images/logo/logo.png"
-                alt="DK Dance Company"
-                fill
-                priority
-                className="object-contain object-left"
-                sizes="(max-width: 640px) 144px, 176px"
-              />
-            </div>
-          </Link>
+          {/* Logo & Return button */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {pathname !== "/" && (
+              <button
+                onClick={() => {
+                  if (typeof window !== "undefined" && window.history.length > 1) {
+                    router.back();
+                  } else {
+                    router.push("/");
+                  }
+                }}
+                aria-label="Back to previous page"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.14] border border-white/[0.12] hover:border-dk-yellow/60 text-xs font-mono uppercase tracking-wider text-neutral-300 hover:text-white transition-all cursor-pointer shrink-0"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-dk-yellow" />
+                <span className="inline">Back</span>
+              </button>
+            )}
+
+            {/* Logo in High-Contrast Luxury Light Container */}
+            <Link
+              href="/"
+              className="flex items-center group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dk-yellow"
+            >
+              <div className="relative px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-2xl bg-white/[0.97] shadow-[0_4px_24px_rgba(255,255,255,0.15)] border border-white/20 transition-all duration-300 group-hover:bg-white group-hover:shadow-[0_4px_30px_rgba(255,255,255,0.28)] group-hover:scale-[1.02]">
+                <div className="relative w-28 sm:w-36 h-9 sm:h-10">
+                  <Image
+                    src="/images/logo/logo.png"
+                    alt="DK Dance Company"
+                    fill
+                    priority
+                    className="object-contain object-center"
+                    sizes="(max-width: 640px) 112px, 144px"
+                  />
+                </div>
+              </div>
+            </Link>
+          </div>
 
           {/* Desktop Navigation Links */}
           <nav
@@ -100,11 +122,10 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-xs uppercase tracking-widest font-light transition-all duration-300 relative py-1.5 px-4 rounded-full ${
-                    isActive
-                      ? "text-white font-normal bg-white/[0.08] shadow-sm border border-white/10"
-                      : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-                  }`}
+                  className={`text-xs uppercase tracking-widest font-light transition-all duration-300 relative py-1.5 px-4 rounded-full ${isActive
+                    ? "text-white font-normal bg-white/[0.08] shadow-sm border border-white/10"
+                    : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
+                    }`}
                 >
                   {link.label}
                   {isActive && (
@@ -140,11 +161,10 @@ export function Navbar() {
 
       {/* Mobile Drawer Menu */}
       <div
-        className={`fixed inset-0 z-30 bg-black/95 backdrop-blur-2xl flex flex-col justify-between px-6 sm:px-8 pt-24 pb-8 overflow-y-auto overscroll-contain transition-all duration-300 lg:hidden ${
-          mobileMenuOpen
-            ? "opacity-100 pointer-events-auto translate-y-0"
-            : "opacity-0 pointer-events-none -translate-y-4"
-        }`}
+        className={`fixed inset-0 z-30 bg-black/95 backdrop-blur-2xl flex flex-col justify-between px-6 sm:px-8 pt-24 pb-8 overflow-y-auto overscroll-contain transition-all duration-300 lg:hidden ${mobileMenuOpen
+          ? "opacity-100 pointer-events-auto translate-y-0"
+          : "opacity-0 pointer-events-none -translate-y-4"
+          }`}
       >
         <nav aria-label="Mobile Navigation" className="flex flex-col gap-4 sm:gap-5 mt-2">
           <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-mono">
@@ -160,11 +180,11 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-xl sm:text-2xl font-heading font-light uppercase tracking-tight flex items-center justify-between py-2 transition-colors duration-200 ${
-                  isActive
-                    ? "text-dk-yellow pl-2 border-l-2 border-dk-yellow"
-                    : "text-neutral-300 hover:text-white"
-                }`}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`text-xl sm:text-2xl font-heading font-light uppercase tracking-tight flex items-center justify-between py-2 transition-colors duration-200 ${isActive
+                  ? "text-dk-yellow pl-2 border-l-2 border-dk-yellow"
+                  : "text-neutral-300 hover:text-white"
+                  }`}
               >
                 <span>{link.label}</span>
                 <span className="text-xs font-mono text-neutral-600">→</span>
@@ -174,9 +194,11 @@ export function Navbar() {
         </nav>
 
         <div className="flex flex-col gap-4 pt-6 mt-6 border-t border-white/[0.08]">
-          <Button href="/contact" variant="primary" size="md" icon className="w-full">
-            Enquire Now
-          </Button>
+          <div onClick={() => setMobileMenuOpen(false)}>
+            <Button href="/contact" variant="primary" size="md" icon className="w-full">
+              Enquire Now
+            </Button>
+          </div>
           <div className="flex items-center justify-between text-xs text-neutral-500 pt-1 font-mono">
             <span>Kozhikode • Bournemouth</span>
             <a href="tel:+919995272083" className="hover:text-white transition-colors">

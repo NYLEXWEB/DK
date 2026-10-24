@@ -4,10 +4,10 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { BrandIntroSection } from "@/components/sections/BrandIntroSection";
+import { StatsCounterSection } from "@/components/sections/StatsCounterSection";
 import { DanceStylesSection } from "@/components/sections/DanceStylesSection";
 import { WhoCanJoinSection } from "@/components/sections/WhoCanJoinSection";
 import { BranchesSection } from "@/components/sections/BranchesSection";
-import { PerformanceSection } from "@/components/sections/PerformanceSection";
 import { HomeVideoSection } from "@/components/sections/HomeVideoSection";
 import { OnlineClassesSection } from "@/components/sections/OnlineClassesSection";
 import { GoogleReviewsSection } from "@/components/sections/GoogleReviewsSection";
@@ -39,6 +39,9 @@ export default async function HomePage() {
           {/* 2. Brand Introduction & Director */}
           <BrandIntroSection />
 
+          {/* Animated Statistics Counter (3,000+ Students, 10+ Trainers, 6 Studios, 2 Countries) */}
+          <StatsCounterSection />
+
           {/* 3. Dance Disciplines & Styles */}
           <DanceStylesSection />
 
@@ -47,9 +50,6 @@ export default async function HomePage() {
 
           {/* 5. Branch Network Presence */}
           <BranchesSection branches={branches} />
-
-          {/* 6. Performance & Choreography */}
-          <PerformanceSection />
 
           {/* 7. Video Showcase */}
           <HomeVideoSection videos={videos} />
