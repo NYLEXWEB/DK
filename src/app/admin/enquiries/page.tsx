@@ -19,6 +19,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Enquiry, EnquiryStatus } from "@/types";
 import { formatDate, formatWhatsAppUrl } from "@/lib/utils";
 import { useToast } from "@/context/ToastContext";
+import { adminFetch } from "@/lib/admin-fetch";
 
 export default function AdminEnquiriesPage() {
   const { toast } = useToast();
@@ -33,7 +34,7 @@ export default function AdminEnquiriesPage() {
   const fetchEnquiries = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/enquiries");
+      const res = await adminFetch("/api/enquiries");
       const data = await res.json();
       if (data.success) {
         setEnquiries(data.data);
@@ -52,7 +53,7 @@ export default function AdminEnquiriesPage() {
 
   const handleUpdateStatus = async (id: string, status: EnquiryStatus) => {
     try {
-      const res = await fetch(`/api/enquiries/${id}`, {
+      const res = await adminFetch(`/api/enquiries/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -79,7 +80,7 @@ export default function AdminEnquiriesPage() {
     if (!deleteTarget) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/enquiries/${deleteTarget._id}`, {
+      const res = await adminFetch(`/api/enquiries/${deleteTarget._id}`, {
         method: "DELETE",
       });
       if (res.ok) {

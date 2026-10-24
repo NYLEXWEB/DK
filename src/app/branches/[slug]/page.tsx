@@ -119,17 +119,28 @@ export default async function BranchDetailPage({
             {/* Visual */}
             <div className="lg:col-span-5 relative aspect-[4/3] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
               <RevealImage className="w-full h-full relative">
-                <Image
-                  src={
-                    branch.imageUrl ||
-                    "/images/branches/kunduparamba.jpg"
-                  }
-                  alt={`${branch.name} Studio`}
-                  fill
-                  priority
-                  className="object-cover object-center transition-all duration-700 ease-out"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                />
+                {branch.imageUrl ? (
+                  <Image
+                    src={branch.imageUrl}
+                    alt={`${branch.name} Studio`}
+                    fill
+                    priority
+                    className="object-cover object-center transition-all duration-700 ease-out"
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-neutral-900 via-black to-neutral-950 p-8 text-center">
+                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+                      <MapPin className="w-8 h-8 text-dk-yellow" />
+                    </div>
+                    <span className="text-base font-heading uppercase tracking-widest text-white">
+                      {branch.name} Studio
+                    </span>
+                    <span className="text-xs font-mono uppercase text-neutral-400 mt-2">
+                      {branch.city}, {branch.country}
+                    </span>
+                  </div>
+                )}
               </RevealImage>
             </div>
           </div>

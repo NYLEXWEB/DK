@@ -14,7 +14,8 @@ interface BranchesSectionProps {
 }
 
 export function BranchesSection({ branches, showAll = false }: BranchesSectionProps) {
-  const displayBranches = showAll ? branches : branches.slice(0, 6);
+  const activeBranches = branches.filter((b) => b.isActive !== false);
+  const displayBranches = showAll ? activeBranches : activeBranches;
 
   return (
     <section className="bg-black text-white py-28 sm:py-36 border-t border-neutral-900 relative">
@@ -56,16 +57,27 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                 <div className="rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 flex flex-col justify-between h-full group overflow-hidden shadow-xl">
                   {/* Branch Image Preview */}
                   <div className="relative aspect-[16/10] bg-neutral-900 overflow-hidden">
-                    <Image
-                      src={
-                        branch.imageUrl ||
-                        "/images/branches/kunduparamba.jpg"
-                      }
-                      alt={`${branch.name} branch of DK Dance Company`}
-                      fill
-                      className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
+                    {branch.imageUrl ? (
+                      <Image
+                        src={branch.imageUrl}
+                        alt={`${branch.name} branch of DK Dance Company`}
+                        fill
+                        className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-neutral-900 via-black to-neutral-950 p-6 text-center">
+                        <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-3">
+                          <MapPin className="w-5 h-5 text-dk-yellow" />
+                        </div>
+                        <span className="text-xs font-mono uppercase tracking-widest text-neutral-300">
+                          {branch.name} Studio
+                        </span>
+                        <span className="text-[10px] font-mono uppercase text-neutral-500 mt-1">
+                          {branch.city}, {branch.country}
+                        </span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent opacity-80" />
 
                     {/* International Badge */}

@@ -22,6 +22,7 @@ export interface MediaItem {
   description?: string;
   category: MediaCategory;
   thumbnailUrl?: string;
+  thumbnailKey?: string;
   duration?: string;
   featuredOnHome?: boolean;
   published: boolean;

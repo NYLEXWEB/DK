@@ -13,10 +13,12 @@ export const metadata: Metadata = {
     "Explore the visual archive of DK Dance Company: stage shows, competition wins, workshop intensives, and branch activities in Kozhikode and Bournemouth UK.",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function GalleryPage() {
   const mediaItems = await getMedia();
+  const publishedPhotos = mediaItems.filter((m) => m.published !== false);
 
   return (
     <>
@@ -37,7 +39,7 @@ export default async function GalleryPage() {
 
         {/* Database-driven Gallery Grid */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8">
-          <GalleryGrid items={mediaItems} showCategories={true} />
+          <GalleryGrid items={publishedPhotos} showCategories={true} />
         </section>
       </main>
 

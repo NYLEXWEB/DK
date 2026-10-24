@@ -31,6 +31,16 @@ export async function PATCH(
       );
     }
 
+    import("next/cache").then(({ revalidatePath }) => {
+      try {
+        revalidatePath("/");
+        revalidatePath("/branches");
+        if (body.slug) revalidatePath(`/branches/${body.slug}`);
+      } catch (err) {
+        console.warn("Revalidate error on update branch:", err);
+      }
+    });
+
     return NextResponse.json({ success: true, message: "Branch updated" });
   } catch (error) {
     console.error("Error in PATCH /api/branches/[id]:", error);
@@ -59,6 +69,15 @@ export async function DELETE(
         { status: 404 }
       );
     }
+
+    import("next/cache").then(({ revalidatePath }) => {
+      try {
+        revalidatePath("/");
+        revalidatePath("/branches");
+      } catch (err) {
+        console.warn("Revalidate error on delete branch:", err);
+      }
+    });
 
     return NextResponse.json({ success: true, message: "Branch deleted" });
   } catch (error) {

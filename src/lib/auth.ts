@@ -64,8 +64,22 @@ export async function getAuthSession(): Promise<AuthSession | null> {
 
 export async function verifyRequestAuth(req: NextRequest): Promise<AuthSession | null> {
   const token = req.cookies.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-  return verifySessionToken(token);
+  if (token) {
+    const session = await verifySessionToken(token);
+    if (session) return session;
+  }
+
+  // Also support Authorization: Bearer <token>
+  const authHeader = req.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    const bearer = authHeader.substring(7).trim();
+    if (bearer) {
+      const session = await verifySessionToken(bearer);
+      if (session) return session;
+    }
+  }
+
+  return null;
 }
 
 export async function validateCredentials(username: string, pass: string): Promise<boolean> {

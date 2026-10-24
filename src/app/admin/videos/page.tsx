@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
-  Video,
   Film,
   Plus,
   Trash2,
@@ -14,17 +13,14 @@ import {
   Loader2,
   Check,
   AlertCircle,
-  FileCheck2,
-  Play,
-  Volume2,
-  VolumeX,
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
 import { MediaItem, MediaCategory, MediaType } from "@/types";
-import { UploadDropzone, UploadButton } from "@/lib/uploadthing";
+import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
 import { useToast } from "@/context/ToastContext";
+import { adminFetch } from "@/lib/admin-fetch";
 
 const CATEGORIES: MediaCategory[] = [
   "Performances",
@@ -51,18 +47,27 @@ export default function AdminVideosPage() {
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [uploadError, setUploadError] = useState("");
-  const [uploadSuccess, setUploadSuccess] = useState("");
 
-  // Form State
-  const [formData, setFormData] = useState({
+  // Form State (Approximate Duration and Description are removed as requested)
+  const [formData, setFormData] = useState<{
+    title: string;
+    category: MediaCategory;
+    type: MediaType;
+    url: string;
+    key: string;
+    thumbnailUrl: string;
+    thumbnailKey: string;
+    featuredOnHome: boolean;
+    published: boolean;
+    displayOrder: number;
+  }>({
     title: "",
-    description: "",
-    category: "Performances" as MediaCategory,
-    type: "video" as MediaType,
+    category: "Performances",
+    type: "video",
     url: "",
     key: "",
     thumbnailUrl: "",
-    duration: "0:45",
+    thumbnailKey: "",
     featuredOnHome: true,
     published: true,
     displayOrder: 1,
@@ -71,7 +76,7 @@ export default function AdminVideosPage() {
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/media?type=video&all=true");
+      const res = await adminFetch("/api/media?type=video&all=true");
       const data = await res.json();
       if (data.success) {
         setVideos(data.data);
@@ -90,17 +95,15 @@ export default function AdminVideosPage() {
 
   const handleOpenAdd = () => {
     setUploadError("");
-    setUploadSuccess("");
     setEditingItem(null);
     setFormData({
       title: "",
-      description: "",
       category: "Performances",
       type: "video",
       url: "",
       key: "",
       thumbnailUrl: "",
-      duration: "0:45",
+      thumbnailKey: "",
       featuredOnHome: true,
       published: true,
       displayOrder: videos.length + 1,
@@ -110,17 +113,15 @@ export default function AdminVideosPage() {
 
   const handleOpenEdit = (item: MediaItem) => {
     setUploadError("");
-    setUploadSuccess("");
     setEditingItem(item);
     setFormData({
       title: item.title,
-      description: item.description || "",
       category: item.category,
       type: "video",
       url: item.url,
       key: item.key || "",
       thumbnailUrl: item.thumbnailUrl || "",
-      duration: item.duration || "0:45",
+      thumbnailKey: item.thumbnailKey || "",
       featuredOnHome: item.featuredOnHome !== false,
       published: item.published,
       displayOrder: item.displayOrder,
@@ -131,7 +132,7 @@ export default function AdminVideosPage() {
   const handleSaveVideo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.url.trim() || !formData.title.trim()) {
-      setUploadError("Please upload a video file and enter a title.");
+      setUploadError("Please upload a video file and enter a routine title.");
       return;
     }
 
@@ -140,7 +141,7 @@ export default function AdminVideosPage() {
 
     try {
       if (editingItem && editingItem._id) {
-        const res = await fetch(`/api/media/${editingItem._id}`, {
+        const res = await adminFetch(`/api/media/${editingItem._id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -151,7 +152,7 @@ export default function AdminVideosPage() {
         }
         toast.success(`Video "${formData.title}" updated successfully.`);
       } else {
-        const res = await fetch("/api/media", {
+        const res = await adminFetch("/api/media", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -179,7 +180,7 @@ export default function AdminVideosPage() {
     if (!item._id) return;
     const nextState = !item.featuredOnHome;
     try {
-      const res = await fetch(`/api/media/${item._id}`, {
+      const res = await adminFetch(`/api/media/${item._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ featuredOnHome: nextState }),
@@ -206,7 +207,7 @@ export default function AdminVideosPage() {
     if (!item._id) return;
     const nextState = !item.published;
     try {
-      const res = await fetch(`/api/media/${item._id}`, {
+      const res = await adminFetch(`/api/media/${item._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ published: nextState }),
@@ -231,12 +232,12 @@ export default function AdminVideosPage() {
     if (!deleteTarget || !deleteTarget._id) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/media/${deleteTarget._id}`, {
+      const res = await adminFetch(`/api/media/${deleteTarget._id}`, {
         method: "DELETE",
       });
       if (res.ok) {
         setVideos((prev) => prev.filter((v) => v._id !== deleteTarget._id));
-        toast.success(`Video "${deleteTarget.title}" deleted successfully from database and storage.`);
+        toast.success(`Video "${deleteTarget.title}" deleted successfully.`);
         setDeleteTarget(null);
       } else {
         throw new Error("Failed to delete video");
@@ -259,11 +260,11 @@ export default function AdminVideosPage() {
     <>
       <AdminHeader
         title="Video Showcase & Performance Reels"
-        subtitle="Upload, feature, and manage video routines featured on the DKDC homepage showcase"
+        subtitle="Upload, feature, and manage video routines displayed on the DKDC homepage showcase"
       >
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors shadow-lg active:scale-95"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors shadow-lg active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Upload Video</span>
@@ -273,7 +274,7 @@ export default function AdminVideosPage() {
       <main className="p-6 sm:p-8 space-y-6 flex-1">
         {/* Filter & Metric Tabs */}
         <div className="flex items-center justify-between gap-4 flex-wrap pb-2 border-b border-neutral-900">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {[
               { id: "all", label: "All Videos", count: videos.length },
               {
@@ -295,7 +296,7 @@ export default function AdminVideosPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveFilter(tab.id as any)}
-                className={`px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-2 ${
+                className={`px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer ${
                   activeFilter === tab.id
                     ? "bg-white text-black font-normal"
                     : "bg-neutral-900 text-neutral-400 hover:text-white"
@@ -310,7 +311,7 @@ export default function AdminVideosPage() {
           </div>
 
           <span className="text-xs font-mono text-neutral-500 uppercase">
-            Homepage section updates immediately upon upload
+            Homepage showcase synchronizes with database
           </span>
         </div>
 
@@ -319,7 +320,7 @@ export default function AdminVideosPage() {
           <div className="py-24 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-dk-yellow mb-2" />
             <p className="text-xs font-mono text-neutral-500 uppercase">
-              Loading video showcases...
+              Loading video showcases from database...
             </p>
           </div>
         ) : filteredVideos.length === 0 ? (
@@ -329,11 +330,11 @@ export default function AdminVideosPage() {
               No videos found in this view.
             </p>
             <p className="text-xs text-neutral-500 max-w-sm mx-auto">
-              Upload MP4 choreography videos, rehearsals, or stage performance reels to feature them on the homepage.
+              Upload MP4 choreography routines, rehearsals, or stage reels to feature them on the homepage showcase.
             </p>
             <button
               onClick={handleOpenAdd}
-              className="px-5 py-2.5 bg-white text-black text-xs font-heading font-light uppercase tracking-widest hover:bg-dk-yellow transition-colors"
+              className="px-5 py-2.5 bg-white text-black text-xs font-heading font-light uppercase tracking-widest hover:bg-dk-yellow transition-colors cursor-pointer"
             >
               Upload First Video
             </button>
@@ -369,12 +370,12 @@ export default function AdminVideosPage() {
                     )}
                   </div>
 
-                  {/* Top Right Controls */}
+                  {/* Top Right Live/Draft Control */}
                   <div className="absolute top-2 right-2 flex items-center gap-1">
                     <button
                       onClick={() => handleTogglePublish(item)}
                       title={item.published ? "Live on site" : "Draft (Hidden)"}
-                      className={`p-1.5 text-xs font-mono uppercase tracking-wider flex items-center gap-1 ${
+                      className={`p-1.5 text-xs font-mono uppercase tracking-wider flex items-center gap-1 cursor-pointer ${
                         item.published
                           ? "bg-black/90 text-dk-yellow"
                           : "bg-black/90 text-neutral-500"
@@ -397,34 +398,23 @@ export default function AdminVideosPage() {
 
                 {/* Video Info */}
                 <div className="p-4 flex-1 flex flex-col justify-between">
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[10px] font-mono uppercase text-dk-yellow">
                         {item.category}
                       </span>
-                      {item.duration && (
-                        <span className="text-[10px] font-mono text-neutral-400">
-                          {item.duration}
-                        </span>
-                      )}
                     </div>
 
-                    <h3 className="text-sm font-heading font-light uppercase text-white truncate">
+                    <h3 className="text-sm font-heading font-light uppercase text-white tracking-wide">
                       {item.title}
                     </h3>
-
-                    {item.description && (
-                      <p className="text-xs text-neutral-400 line-clamp-2 font-sans font-light">
-                        {item.description}
-                      </p>
-                    )}
                   </div>
 
                   {/* Action Bar */}
                   <div className="pt-4 mt-4 border-t border-neutral-900 flex items-center justify-between">
                     <button
                       onClick={() => handleToggleFeatured(item)}
-                      className={`inline-flex items-center gap-1.5 text-[10px] font-mono uppercase px-2.5 py-1 transition-colors border ${
+                      className={`inline-flex items-center gap-1.5 text-[10px] font-mono uppercase px-2.5 py-1 transition-colors border cursor-pointer ${
                         item.featuredOnHome !== false
                           ? "border-dk-yellow/50 bg-dk-yellow/10 text-dk-yellow hover:bg-dk-yellow/20"
                           : "border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white"
@@ -444,14 +434,16 @@ export default function AdminVideosPage() {
                       <button
                         onClick={() => handleOpenEdit(item)}
                         aria-label="Edit video details"
-                        className="p-1.5 text-neutral-400 hover:text-white transition-colors"
+                        title="Edit video"
+                        className="p-1.5 text-neutral-400 hover:text-white transition-colors cursor-pointer"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => setDeleteTarget(item)}
                         aria-label="Delete video"
-                        className="p-1.5 text-neutral-400 hover:text-dk-red transition-colors"
+                        title="Delete video"
+                        className="p-1.5 text-neutral-400 hover:text-dk-red transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -468,13 +460,15 @@ export default function AdminVideosPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
-          setEditingItem(null);
+          if (!actionLoading) {
+            setIsModalOpen(false);
+            setEditingItem(null);
+          }
         }}
         title={editingItem ? "Edit Video Routine" : "Upload Video to Showcase"}
         maxWidth="lg"
       >
-        <form onSubmit={handleSaveVideo} className="space-y-5">
+        <form onSubmit={handleSaveVideo} className="space-y-6">
           {uploadError && (
             <div
               role="alert"
@@ -485,93 +479,29 @@ export default function AdminVideosPage() {
             </div>
           )}
 
-          {uploadSuccess && (
-            <div className="flex items-center gap-2.5 p-3.5 bg-[#25D366]/10 border border-[#25D366]/30 text-white text-xs font-mono">
-              <FileCheck2 className="w-4 h-4 text-[#25D366] shrink-0" />
-              <span>{uploadSuccess}</span>
-            </div>
-          )}
+          {/* 1. PERFORMANCE VIDEO FILE UPLOAD */}
+          <MediaUploaderWithPreview
+            label="Performance Video File *"
+            value={formData.url}
+            fileKey={formData.key}
+            mediaType="video"
+            onChange={(data) => {
+              const cleanTitle = data.name
+                ? data.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ").trim()
+                : "";
+              setFormData((prev) => ({
+                ...prev,
+                url: data.url,
+                key: data.key || "",
+                title: prev.title.trim() ? prev.title : cleanTitle,
+              }));
+              setUploadError("");
+            }}
+            onClear={() => setFormData((prev) => ({ ...prev, url: "", key: "" }))}
+            placeholder="https://... or upload MP4/WebM video"
+          />
 
-          {/* Video File Upload */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-mono uppercase text-neutral-400">
-                Performance Video File (MP4, MOV, WebM)
-              </label>
-              {formData.url && (
-                <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1 font-bold">
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Video Attached & Ready</span>
-                </span>
-              )}
-            </div>
-
-            {formData.url ? (
-              <div className="p-4 bg-neutral-900 border border-neutral-800 space-y-3">
-                <div className="relative aspect-video max-h-56 w-full bg-black border border-neutral-800 overflow-hidden">
-                  <video
-                    src={formData.url}
-                    controls
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex items-center justify-between pt-1">
-                  <div className="flex items-center gap-2 truncate text-xs text-neutral-300 font-mono">
-                    <Film className="w-4 h-4 text-dk-red shrink-0" />
-                    <span className="truncate">{formData.title || "Uploaded Video"}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, url: "", key: "" }))}
-                    className="px-3 py-1.5 bg-dk-red text-white text-xs font-mono uppercase tracking-wider hover:bg-red-700 transition-colors"
-                  >
-                    Remove / Change Video
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="p-8 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex flex-col items-center justify-center gap-3 text-center">
-                <UploadButton
-                  endpoint="videoUploader"
-                  appearance={{
-                    button:
-                      "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-6 py-3 rounded-none transition-colors ut-uploading:bg-neutral-800",
-                    allowedContent: "text-neutral-500 font-mono text-[11px]",
-                  }}
-                  content={{
-                    button({ ready }) {
-                      return ready ? "Select & Upload Video File" : "Preparing...";
-                    },
-                  }}
-                  onClientUploadComplete={(res) => {
-                    if (res && res[0]) {
-                      const uploaded = res[0];
-                      const cleanTitle = uploaded.name.replace(/\.[^/.]+$/, "");
-                      setFormData((prev) => ({
-                        ...prev,
-                        url: uploaded.url,
-                        key: uploaded.key,
-                        title: prev.title.trim() ? prev.title : cleanTitle,
-                      }));
-                      setUploadSuccess(`Video uploaded successfully: ${uploaded.name}`);
-                      setUploadError("");
-                      toast.success("Video file uploaded successfully!");
-                    }
-                  }}
-                  onUploadError={(error: Error) => {
-                    console.error("Upload error:", error);
-                    setUploadError(`Upload error: ${error.message || "Failed to upload video."}`);
-                    toast.error(error.message || "Upload failed");
-                  }}
-                />
-                <p className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">
-                  Supports MP4, MOV, WebM, M4V (up to 256MB)
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Title & Category */}
+          {/* 2. TITLE & CATEGORY */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
@@ -596,7 +526,7 @@ export default function AdminVideosPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, category: e.target.value as MediaCategory })
                 }
-                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow"
+                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow cursor-pointer"
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -607,100 +537,24 @@ export default function AdminVideosPage() {
             </div>
           </div>
 
-          {/* Duration & Thumbnail URL */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                Approx Duration (e.g. 0:45 or 1:30)
-              </label>
-              <input
-                type="text"
-                value={formData.duration}
-                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                placeholder="0:45"
-                className="w-full bg-black border border-neutral-800 px-3 py-2.5 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-              />
-            </div>
+          {/* 3. VIDEO POSTER / THUMBNAIL PHOTO (OPTIONAL) */}
+          <MediaUploaderWithPreview
+            label="Video Poster / Thumbnail Photo (Optional)"
+            value={formData.thumbnailUrl}
+            fileKey={formData.thumbnailKey}
+            mediaType="image"
+            onChange={(data) => {
+              setFormData((prev) => ({
+                ...prev,
+                thumbnailUrl: data.url,
+                thumbnailKey: data.key || "",
+              }));
+            }}
+            onClear={() => setFormData((prev) => ({ ...prev, thumbnailUrl: "", thumbnailKey: "" }))}
+            placeholder="https://... or upload poster image"
+          />
 
-            {/* Video Poster / Thumbnail Upload */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-mono uppercase text-neutral-400">
-                  Video Poster / Thumbnail Photo
-                </label>
-                {formData.thumbnailUrl && (
-                  <span className="text-[10px] font-mono uppercase text-[#25D366] flex items-center gap-1">
-                    <Check className="w-3 h-3" />
-                    <span>Photo Attached</span>
-                  </span>
-                )}
-              </div>
-
-              {formData.thumbnailUrl ? (
-                <div className="relative aspect-video rounded-none overflow-hidden bg-black border border-neutral-800 group h-28">
-                  <Image
-                    src={formData.thumbnailUrl}
-                    alt="Thumbnail preview"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, thumbnailUrl: "" })}
-                      className="px-3 py-1 bg-dk-red text-white text-[11px] font-mono uppercase tracking-wider"
-                    >
-                      Remove Poster
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-3 bg-black border border-dashed border-neutral-800 hover:border-dk-yellow transition-colors flex items-center justify-center">
-                  <UploadButton
-                    endpoint="imageUploader"
-                    appearance={{
-                      button:
-                        "bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest px-4 py-2 rounded-none transition-colors ut-uploading:bg-neutral-800",
-                      allowedContent: "text-neutral-500 font-mono text-[10px]",
-                    }}
-                    content={{
-                      button({ ready }) {
-                        return ready ? "Upload Poster Photo" : "Loading...";
-                      },
-                    }}
-                    onClientUploadComplete={(res) => {
-                      if (res && res[0]) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          thumbnailUrl: res[0].url,
-                        }));
-                        toast.success("Video poster uploaded!");
-                      }
-                    }}
-                    onUploadError={(error: Error) => {
-                      toast.error(error.message || "Failed to upload poster");
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-              Description / Choreographer Notes (Optional)
-            </label>
-            <textarea
-              rows={3}
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Tell viewers about this choreography, dancers involved, or performance event..."
-              className="w-full bg-black border border-neutral-800 p-3 text-xs text-white focus:outline-none focus:border-dk-yellow font-light"
-            />
-          </div>
-
-          {/* Toggles: Featured on Home & Published */}
+          {/* 4. TOGGLES: Featured on Home & Published */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-neutral-950 border border-neutral-800">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -737,22 +591,23 @@ export default function AdminVideosPage() {
             </label>
           </div>
 
-          {/* Modal Actions */}
+          {/* 5. MODAL ACTIONS */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-900">
             <button
               type="button"
+              disabled={actionLoading}
               onClick={() => {
                 setIsModalOpen(false);
                 setEditingItem(null);
               }}
-              className="px-4 py-2.5 text-xs font-mono uppercase text-neutral-400 hover:text-white"
+              className="px-4 py-2.5 text-xs font-mono uppercase text-neutral-400 hover:text-white cursor-pointer disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={actionLoading}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50"
+              disabled={actionLoading || !formData.url}
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50 cursor-pointer"
             >
               {actionLoading ? (
                 <>
@@ -774,7 +629,7 @@ export default function AdminVideosPage() {
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title="Delete Video Routine?"
-        message={`Delete "${deleteTarget?.title}"? If uploaded to UploadThing, the video file will also be permanently deleted from cloud storage.`}
+        message={`Delete "${deleteTarget?.title}"? The video will be removed from the site.`}
         confirmText="Delete Video"
         isDestructive={true}
         isLoading={actionLoading}

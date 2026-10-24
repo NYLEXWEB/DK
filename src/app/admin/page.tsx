@@ -85,7 +85,7 @@ export default async function AdminDashboardPage() {
           <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
-                Published Photos
+                Photo Library
               </span>
               <ImageIcon className="w-4 h-4 text-white" />
             </div>
@@ -97,7 +97,7 @@ export default async function AdminDashboardPage() {
                 href="/admin/media"
                 className="text-[11px] font-mono uppercase text-neutral-500 hover:text-white mt-3 inline-block"
               >
-                View photos in gallery →
+                Manage photo library →
               </Link>
             </div>
           </div>
@@ -114,10 +114,10 @@ export default async function AdminDashboardPage() {
                 {publishedVideos}
               </span>
               <Link
-                href="/admin/media"
+                href="/admin/videos"
                 className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-red mt-3 inline-block"
               >
-                Manage video reels →
+                Manage video showcase →
               </Link>
             </div>
           </div>

@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { getDb } from "./mongodb";
+import { getDb, resetDbClient } from "./mongodb";
 import { Branch, MediaItem, Enquiry, SiteSettings } from "@/types";
+import { deleteUploadThingFile, deleteUploadThingFiles } from "./uploadthing-server";
 import {
   INITIAL_BRANCHES,
   INITIAL_GALLERY_ITEMS,
@@ -40,6 +41,7 @@ export async function getBranches(): Promise<Branch[]> {
     }));
   } catch (err) {
     console.error("Error fetching branches:", err);
+    resetDbClient();
     return memoryBranches;
   }
 }
@@ -47,13 +49,16 @@ export async function getBranches(): Promise<Branch[]> {
 export async function getBranchBySlug(slug: string): Promise<Branch | null> {
   const db = await getDb();
   if (!db) {
-    return memoryBranches.find((b) => b.slug === slug) || null;
+    return memoryBranches.find((b) => b.slug === slug || b._id === slug) || null;
   }
 
   try {
-    const branch = await db.collection<Branch>("branches").findOne({ slug });
+    const query: any = ObjectId.isValid(slug)
+      ? { $or: [{ slug }, { _id: new ObjectId(slug) }, { _id: slug }] }
+      : { $or: [{ slug }, { _id: slug }] };
+    const branch = await db.collection<Branch>("branches").findOne(query);
     if (!branch) {
-      return memoryBranches.find((b) => b.slug === slug) || null;
+      return memoryBranches.find((b) => b.slug === slug || b._id === slug) || null;
     }
     return {
       ...branch,
@@ -61,15 +66,27 @@ export async function getBranchBySlug(slug: string): Promise<Branch | null> {
     };
   } catch (err) {
     console.error("Error fetching branch by slug:", err);
-    return memoryBranches.find((b) => b.slug === slug) || null;
+    return memoryBranches.find((b) => b.slug === slug || b._id === slug) || null;
   }
 }
 
 export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
   const db = await getDb();
   const now = new Date().toISOString();
+
+  let finalSlug = data.slug;
+  if (db) {
+    let count = 1;
+    let existing = await db.collection("branches").findOne({ slug: finalSlug });
+    while (existing) {
+      finalSlug = `${data.slug}-${++count}`;
+      existing = await db.collection("branches").findOne({ slug: finalSlug });
+    }
+  }
+
   const item: Branch = {
     ...data,
+    slug: finalSlug,
     createdAt: now,
     updatedAt: now,
   };
@@ -111,7 +128,9 @@ export async function updateBranch(
   }
 
   try {
-    const query = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { slug: id };
+    const query: any = ObjectId.isValid(id)
+      ? { $or: [{ _id: new ObjectId(id) }, { _id: id }, { slug: id }] }
+      : { $or: [{ _id: id }, { slug: id }] };
     const { _id, ...updateData } = data as any;
     const result = await db.collection("branches").updateOne(query, {
       $set: {
@@ -129,13 +148,25 @@ export async function updateBranch(
 export async function deleteBranch(id: string): Promise<boolean> {
   const db = await getDb();
   if (!db) {
+    const target = memoryBranches.find((b) => b._id === id || b.slug === id);
+    if (target) {
+      deleteUploadThingFiles([target.imageKey, target.imageUrl]).catch(() => {});
+    }
     const initialLen = memoryBranches.length;
     memoryBranches = memoryBranches.filter((b) => b._id !== id && b.slug !== id);
     return memoryBranches.length < initialLen;
   }
 
   try {
-    const query = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { slug: id };
+    const query: any = ObjectId.isValid(id)
+      ? { $or: [{ _id: new ObjectId(id) }, { _id: id }, { slug: id }] }
+      : { $or: [{ _id: id }, { slug: id }] };
+
+    const branch = await db.collection<Branch>("branches").findOne(query);
+    if (branch) {
+      await deleteUploadThingFiles([branch.imageKey, branch.imageUrl]);
+    }
+
     const result = await db.collection("branches").deleteOne(query);
     return result.deletedCount > 0;
   } catch (err) {
@@ -179,6 +210,7 @@ export async function getMedia(category?: string): Promise<MediaItem[]> {
     }));
   } catch (err) {
     console.error("Error fetching media:", err);
+    resetDbClient();
     return memoryMedia;
   }
 }
@@ -238,6 +270,7 @@ export async function getVideos(options?: {
     }));
   } catch (err) {
     console.error("Error fetching videos:", err);
+    resetDbClient();
     return initialSeedVideos;
   }
 }
@@ -311,6 +344,12 @@ export async function deleteMedia(id: string): Promise<MediaItem | null> {
   if (!db) {
     const item = memoryMedia.find((m) => m._id === id);
     if (item) {
+      deleteUploadThingFiles([
+        item.key,
+        item.url,
+        item.thumbnailKey,
+        item.thumbnailUrl,
+      ]).catch(() => {});
       memoryMedia = memoryMedia.filter((m) => m._id !== id);
       return item;
     }
@@ -323,6 +362,14 @@ export async function deleteMedia(id: string): Promise<MediaItem | null> {
       .collection("media")
       .findOne({ _id: new ObjectId(id) })) as any;
     if (!item) return null;
+
+    // Delete associated files from UploadThing Cloud Storage
+    await deleteUploadThingFiles([
+      item.key,
+      item.url,
+      item.thumbnailKey,
+      item.thumbnailUrl,
+    ]);
 
     await db.collection("media").deleteOne({ _id: new ObjectId(id) });
     return {
@@ -360,6 +407,7 @@ export async function getEnquiries(): Promise<Enquiry[]> {
     }));
   } catch (err) {
     console.error("Error fetching enquiries:", err);
+    resetDbClient();
     return memoryEnquiries;
   }
 }
