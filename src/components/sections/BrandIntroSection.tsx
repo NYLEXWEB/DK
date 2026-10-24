@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 
 export function BrandIntroSection() {
   return (
-    <section className="bg-black text-white py-28 sm:py-36 border-t border-neutral-900 relative">
+    <section className="bg-black text-white py-28 sm:py-36 relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         {/* Editorial Eyebrow */}
         <FadeUp>

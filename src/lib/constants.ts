@@ -284,7 +284,7 @@ export const SPECIAL_TRAINING_MODULES = [
   },
 ];
 
-export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
+export const INITIAL_VIDEOS: MediaItem[] = [
   {
     type: "video",
     title: "DKDC Stage Choreography & Kinetic Routine",
@@ -309,6 +309,9 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     published: true,
     displayOrder: 2,
   },
+];
+
+export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
   {
     type: "image",
     title: "Stage Choreography Showcase",
@@ -316,7 +319,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "DKDC senior company dancers performing contemporary routine.",
     url: "/images/styles/lyrical.jpg",
     published: true,
-    displayOrder: 3,
+    displayOrder: 1,
   },
   {
     type: "image",
@@ -325,7 +328,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "Studio session exploring isolation techniques and rhythm grooves.",
     url: "/images/styles/hip-hop.jpg",
     published: true,
-    displayOrder: 4,
+    displayOrder: 2,
   },
   {
     type: "image",
@@ -334,7 +337,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "International collaboration and masterclass sessions in Bournemouth, UK.",
     url: "/images/branches/bournemouth.jpg",
     published: true,
-    displayOrder: 5,
+    displayOrder: 3,
   },
   {
     type: "image",
@@ -343,7 +346,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "Lighting and synchronization during our Kozhikode grand stage show.",
     url: "/images/styles/western.jpg",
     published: true,
-    displayOrder: 6,
+    displayOrder: 4,
   },
   {
     type: "image",
@@ -352,7 +355,7 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     description: "Students conditioning acrobatics and stretching drills.",
     url: "/images/branches/westhill.jpg",
     published: true,
-    displayOrder: 7,
+    displayOrder: 5,
   },
   {
     type: "image",
@@ -360,6 +363,24 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     category: "Competitions",
     description: "DKDC competition team performing winning routine.",
     url: "/images/styles/bollywood.jpg",
+    published: true,
+    displayOrder: 6,
+  },
+  {
+    type: "image",
+    title: "Contemporary Fluidity Practice",
+    category: "Classes",
+    description: "Technical contemporary session exploring breath and floor transitions.",
+    url: "/images/styles/contemporary.jpg",
+    published: true,
+    displayOrder: 7,
+  },
+  {
+    type: "image",
+    title: "Ensemble Formation & Precision",
+    category: "Performances",
+    description: "Synchronized group choreography rehearsals.",
+    url: "/images/branches/balussery.jpg",
     published: true,
     displayOrder: 8,
   },

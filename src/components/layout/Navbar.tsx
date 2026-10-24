@@ -4,8 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Menu, X, ArrowLeft, ArrowUpRight } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -26,13 +25,14 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 30) {
+      if (window.scrollY > 40) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
       }
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -59,18 +59,25 @@ export function Navbar() {
     return null;
   }
 
+  const isHome = pathname === "/";
+  const isLightHero = isHome && !isScrolled;
+
   return (
     <>
+      {/* Spacious, Elegant, Transparent Navbar */}
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${isScrolled
-          ? "bg-black/60 backdrop-blur-2xl border-b border-white/[0.08] py-4 shadow-[0_10px_35px_-5px_rgba(0,0,0,0.8)]"
-          : "bg-gradient-to-b from-black/80 via-black/20 to-transparent py-6 backdrop-blur-[2px]"
-          }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled
+            ? "bg-neutral-950/90 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_12px_35px_-10px_rgba(0,0,0,0.85)] py-4 sm:py-4.5 px-6 sm:px-10 lg:px-14 text-white"
+            : isLightHero
+            ? "bg-transparent py-6 sm:py-7 px-6 sm:px-10 lg:px-14 text-neutral-900"
+            : "bg-transparent py-6 sm:py-7 px-6 sm:px-10 lg:px-14 text-white"
+        }`}
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
-          {/* Logo & Return button */}
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Left Brand Lockup & Return Button */}
           <div className="flex items-center gap-3 sm:gap-4">
-            {pathname !== "/" && (
+            {!isHome && (
               <button
                 onClick={() => {
                   if (typeof window !== "undefined" && window.history.length > 1) {
@@ -80,37 +87,46 @@ export function Navbar() {
                   }
                 }}
                 aria-label="Back to previous page"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.14] border border-white/[0.12] hover:border-dk-yellow/60 text-xs font-mono uppercase tracking-wider text-neutral-300 hover:text-white transition-all cursor-pointer shrink-0"
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer shrink-0 ${
+                  isLightHero
+                    ? "bg-black/[0.05] hover:bg-black/[0.1] border border-black/10 text-neutral-800 hover:text-black"
+                    : "bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-dk-yellow/50 text-neutral-300 hover:text-white"
+                }`}
               >
                 <ArrowLeft className="w-3.5 h-3.5 text-dk-yellow" />
-                <span className="inline">Back</span>
+                <span className="hidden sm:inline">Back</span>
               </button>
             )}
 
-            {/* Logo in High-Contrast Luxury Light Container */}
+            {/* Prominent, Large Brand Logo without any Box/Background */}
             <Link
               href="/"
-              className="flex items-center group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dk-yellow"
+              className="flex items-center group relative focus-visible:outline-none"
+              aria-label="DK Dance Company Homepage"
             >
-              <div className="relative px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-2xl bg-white/[0.97] shadow-[0_4px_24px_rgba(255,255,255,0.15)] border border-white/20 transition-all duration-300 group-hover:bg-white group-hover:shadow-[0_4px_30px_rgba(255,255,255,0.28)] group-hover:scale-[1.02]">
-                <div className="relative w-28 sm:w-36 h-9 sm:h-10">
-                  <Image
-                    src="/images/logo/logo.png"
-                    alt="DK Dance Company"
-                    fill
-                    priority
-                    className="object-contain object-center"
-                    sizes="(max-width: 640px) 112px, 144px"
-                  />
-                </div>
+              <div
+                className={`relative w-44 sm:w-56 md:w-64 h-11 sm:h-14 transition-all duration-300 group-hover:scale-[1.02] ${
+                  isScrolled
+                    ? "filter drop-shadow-[0_0_1px_rgba(255,255,255,0.9)] drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+                    : ""
+                }`}
+              >
+                <Image
+                  src="/images/logo/logo.png"
+                  alt="DK Dance Company"
+                  fill
+                  priority
+                  className="object-contain object-left"
+                  sizes="(max-width: 640px) 176px, (max-width: 768px) 224px, 256px"
+                />
               </div>
             </Link>
           </div>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Navigation Links - Pure Clean Typography, Slim Font, No Rounded Selection Box */}
           <nav
             aria-label="Main Navigation"
-            className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-white/[0.02] border border-white/[0.06] backdrop-blur-md"
+            className="hidden lg:flex items-center gap-6 xl:gap-8"
           >
             {NAV_LINKS.map((link) => {
               const isActive =
@@ -122,86 +138,117 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-xs uppercase tracking-widest font-light transition-all duration-300 relative py-1.5 px-4 rounded-full ${isActive
-                    ? "text-white font-normal bg-white/[0.08] shadow-sm border border-white/10"
-                    : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-                    }`}
+                  className={`text-[13px] sm:text-sm font-light tracking-wide transition-colors duration-200 ${
+                    isLightHero
+                      ? isActive
+                        ? "text-black font-medium"
+                        : "text-neutral-700 hover:text-black"
+                      : isActive
+                      ? "text-white font-medium"
+                      : "text-neutral-400 hover:text-white"
+                  }`}
                 >
                   {link.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-4 right-4 h-[1.5px] bg-gradient-to-r from-transparent via-dk-yellow to-transparent" />
-                  )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Right Action Button */}
-          <div className="hidden lg:flex items-center gap-4">
-            <Button href="/contact" variant="primary" size="sm" icon>
-              Enquire Now
-            </Button>
-          </div>
+          {/* Right Action CTA & Mobile Trigger */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Link
+              href="/contact"
+              className={`hidden sm:inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-medium text-xs uppercase tracking-wider transition-all duration-300 active:scale-95 ${
+                isLightHero
+                  ? "bg-neutral-950 text-white hover:bg-dk-yellow hover:text-neutral-950 shadow-md"
+                  : "bg-dk-yellow hover:bg-[#fff433] text-neutral-950 shadow-[0_2px_16px_rgba(255,241,2,0.32)]"
+              }`}
+            >
+              <span>Enquire</span>
+              <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
 
-          {/* Mobile Hamburger Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={mobileMenuOpen}
-            className="lg:hidden p-2 text-white hover:text-dk-yellow transition-colors duration-200 focus:outline-none"
-          >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+            {/* Mobile Hamburger Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={mobileMenuOpen}
+              className={`lg:hidden p-2.5 rounded-full transition-all duration-200 focus:outline-none ${
+                isLightHero
+                  ? "bg-black/[0.06] hover:bg-black/[0.12] border border-black/10 text-neutral-900"
+                  : "bg-white/[0.08] hover:bg-white/[0.14] border border-white/10 text-white hover:text-dk-yellow"
+              }`}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Mobile Drawer Menu */}
       <div
-        className={`fixed inset-0 z-30 bg-black/95 backdrop-blur-2xl flex flex-col justify-between px-6 sm:px-8 pt-24 pb-8 overflow-y-auto overscroll-contain transition-all duration-300 lg:hidden ${mobileMenuOpen
-          ? "opacity-100 pointer-events-auto translate-y-0"
-          : "opacity-0 pointer-events-none -translate-y-4"
-          }`}
+        className={`fixed inset-0 z-40 bg-neutral-950/95 backdrop-blur-3xl flex flex-col justify-between px-6 sm:px-10 pt-24 pb-8 overflow-y-auto overscroll-contain transition-all duration-500 lg:hidden text-white ${
+          mobileMenuOpen
+            ? "opacity-100 pointer-events-auto translate-y-0"
+            : "opacity-0 pointer-events-none -translate-y-4"
+        }`}
       >
-        <nav aria-label="Mobile Navigation" className="flex flex-col gap-4 sm:gap-5 mt-2">
-          <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-mono">
-            Navigation
-          </span>
-          {NAV_LINKS.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`text-xl sm:text-2xl font-heading font-light uppercase tracking-tight flex items-center justify-between py-2 transition-colors duration-200 ${isActive
-                  ? "text-dk-yellow pl-2 border-l-2 border-dk-yellow"
-                  : "text-neutral-300 hover:text-white"
-                  }`}
-              >
-                <span>{link.label}</span>
-                <span className="text-xs font-mono text-neutral-600">→</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="flex flex-col gap-4 pt-6 mt-6 border-t border-white/[0.08]">
-          <div onClick={() => setMobileMenuOpen(false)}>
-            <Button href="/contact" variant="primary" size="md" icon className="w-full">
-              Enquire Now
-            </Button>
+        <div className="flex flex-col gap-6 mt-4">
+          <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+            <span className="text-xs uppercase tracking-widest text-neutral-400 font-mono">
+              DIRECTORY
+            </span>
+            <span className="text-xs uppercase tracking-widest text-dk-yellow font-mono">
+              DK DANCE COMPANY
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs text-neutral-500 pt-1 font-mono">
+
+          <nav aria-label="Mobile Navigation" className="flex flex-col gap-2">
+            {NAV_LINKS.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(link.href);
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-2xl font-light tracking-tight flex items-center justify-between py-2 transition-all duration-200 ${
+                    isActive
+                      ? "text-dk-yellow pl-2 border-l-2 border-dk-yellow"
+                      : "text-neutral-300 hover:text-white"
+                  }`}
+                >
+                  <span>{link.label}</span>
+                  <span className="text-xs font-mono text-neutral-500">→</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Mobile Footer CTAs */}
+        <div className="flex flex-col gap-4 pt-6 border-t border-white/[0.08]">
+          <Link
+            href="/contact"
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full text-center py-3.5 rounded-full bg-dk-yellow text-neutral-950 font-medium text-xs uppercase tracking-wider shadow-md active:scale-98 transition-all"
+          >
+            Enquire Now
+          </Link>
+
+          <div className="flex items-center justify-between text-xs text-neutral-400 font-mono pt-1">
             <span>Kozhikode • Bournemouth</span>
-            <a href="tel:+919995272083" className="hover:text-white transition-colors">
+            <a
+              href="tel:+919995272083"
+              className="text-white hover:text-dk-yellow transition-colors"
+            >
               +91 9995 272 083
             </a>
           </div>

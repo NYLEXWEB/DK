@@ -5,12 +5,13 @@ import { Branch, MediaItem, Enquiry, SiteSettings } from "@/types";
 import {
   INITIAL_BRANCHES,
   INITIAL_GALLERY_ITEMS,
+  INITIAL_VIDEOS,
   INITIAL_SITE_SETTINGS,
 } from "./constants";
 
 // In-memory runtime fallbacks when MongoDB is not connected in local dev
 let memoryBranches: Branch[] = [...INITIAL_BRANCHES];
-let memoryMedia: MediaItem[] = [...INITIAL_GALLERY_ITEMS];
+let memoryMedia: MediaItem[] = [...INITIAL_GALLERY_ITEMS, ...INITIAL_VIDEOS];
 let memoryEnquiries: Enquiry[] = [];
 let memorySettings: SiteSettings = { ...INITIAL_SITE_SETTINGS };
 
@@ -147,10 +148,16 @@ export async function deleteBranch(id: string): Promise<boolean> {
 // ==========================================
 // MEDIA
 // ==========================================
-export async function getMedia(category?: string): Promise<MediaItem[]> {
+export async function getMedia(
+  category?: string,
+  mediaType: "image" | "video" | "all" = "image"
+): Promise<MediaItem[]> {
   const db = await getDb();
   if (!db) {
     let items = memoryMedia;
+    if (mediaType !== "all") {
+      items = items.filter((m) => m.type === mediaType);
+    }
     if (category && category !== "All") {
       items = items.filter((m) => m.category === category);
     }
@@ -159,6 +166,9 @@ export async function getMedia(category?: string): Promise<MediaItem[]> {
 
   try {
     const query: any = {};
+    if (mediaType !== "all") {
+      query.type = mediaType;
+    }
     if (category && category !== "All") {
       query.category = category;
     }
@@ -170,7 +180,7 @@ export async function getMedia(category?: string): Promise<MediaItem[]> {
       .toArray();
 
     if (media.length === 0 && !category) {
-      return memoryMedia;
+      return memoryMedia.filter((m) => mediaType === "all" || m.type === mediaType);
     }
 
     return media.map((m) => ({
@@ -179,7 +189,7 @@ export async function getMedia(category?: string): Promise<MediaItem[]> {
     }));
   } catch (err) {
     console.error("Error fetching media:", err);
-    return memoryMedia;
+    return memoryMedia.filter((m) => mediaType === "all" || m.type === mediaType);
   }
 }
 
@@ -196,7 +206,7 @@ export async function getVideos(options?: {
     query.featuredOnHome = true;
   }
 
-  const initialSeedVideos = INITIAL_GALLERY_ITEMS.filter((m) => m.type === "video");
+  const initialSeedVideos = INITIAL_VIDEOS;
 
   if (!db) {
     let items = memoryMedia.filter((m) => m.type === "video");

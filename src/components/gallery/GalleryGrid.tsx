@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
-import { Play, X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { MediaItem, MediaCategory } from "@/types";
 import { FadeUp } from "@/components/ui/Motion";
 
@@ -40,7 +40,10 @@ export function GalleryGrid({
     setMounted(true);
   }, []);
 
-  const filteredItems = items.filter((item) => {
+  // Exclusively display photos (strictly no videos in gallery)
+  const photoOnlyItems = items.filter((item) => item.type !== "video");
+
+  const filteredItems = photoOnlyItems.filter((item) => {
     if (selectedCategory === "All") return true;
     return item.category === selectedCategory;
   });
@@ -146,37 +149,17 @@ export function GalleryGrid({
                 onClick={() => setActiveItemIndex(idx)}
                 className="group relative aspect-[4/3] w-full bg-neutral-950 border border-white/[0.08] rounded-3xl overflow-hidden cursor-pointer shadow-xl"
               >
-                {item.type === "video" ? (
-                  <div className="relative w-full h-full bg-neutral-900 flex items-center justify-center">
-                    {item.thumbnailUrl ? (
-                      <Image
-                        src={item.thumbnailUrl}
-                        alt={item.title || "DK Dance Video"}
-                        fill
-                        className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-neutral-900" />
-                    )}
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/15 transition-colors duration-300" />
-                    <div className="relative z-10 w-12 h-12 rounded-full bg-white/90 text-black flex items-center justify-center group-hover:bg-dk-yellow group-hover:scale-110 transition-all duration-300 shadow-lg">
-                      <Play className="w-5 h-5 fill-black ml-0.5" />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={item.url}
-                      alt={item.title || "DK Dance Company Gallery Media"}
-                      fill
-                      loading="lazy"
-                      className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                  </div>
-                )}
+                <div className="relative w-full h-full">
+                  <Image
+                    src={item.url}
+                    alt={item.title || "DK Dance Company Gallery Media"}
+                    fill
+                    loading="lazy"
+                    className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                </div>
 
                 {/* Subtle Hover Action Indicator */}
                 <div className="absolute top-4 right-4 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -239,26 +222,15 @@ export function GalleryGrid({
             className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            {currentItem.type === "video" ? (
-              <div className="w-full aspect-video bg-black border border-white/10 overflow-hidden shadow-2xl">
-                <video
-                  src={currentItem.url}
-                  controls
-                  autoPlay
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ) : (
-              <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl bg-black">
-                <Image
-                  src={currentItem.url}
-                  alt={currentItem.title}
-                  fill
-                  className="object-contain"
-                  sizes="100vw"
-                />
-              </div>
-            )}
+            <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl bg-black">
+              <Image
+                src={currentItem.url}
+                alt={currentItem.title}
+                fill
+                className="object-contain"
+                sizes="100vw"
+              />
+            </div>
 
             {/* Media Caption */}
             <div className="w-full mt-4 flex items-center justify-between text-white border-t border-neutral-800 pt-3">

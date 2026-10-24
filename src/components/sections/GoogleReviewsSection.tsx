@@ -123,13 +123,137 @@ const WRITE_REVIEW_URL =
   process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL ||
   "https://search.google.com/local/writereview?placeid=ChIJYaPHMiJZoTsR8_8feyt0-EE";
 
+function ReviewCardItem({
+  review,
+  index,
+  total,
+  isMobile = false,
+}: {
+  review: GoogleReview;
+  index: number;
+  total: number;
+  isMobile?: boolean;
+}) {
+  return (
+    <div
+      className={`h-full rounded-3xl border border-white/[0.09] bg-[#0c0c0c] hover:bg-[#121212] hover:border-white/20 transition-all duration-300 flex flex-col justify-between group relative ${
+        isMobile
+          ? "p-6 sm:p-7 shadow-[0_-14px_35px_-5px_rgba(0,0,0,0.95)]"
+          : "p-7 sm:p-8 shadow-sm hover:shadow-2xl"
+      }`}
+    >
+      {/* Google G Emblem in Top Right */}
+      <div className="absolute top-6 right-6 flex items-center gap-2">
+        {isMobile && (
+          <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.1]">
+            {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </span>
+        )}
+        <div className="opacity-40 group-hover:opacity-100 transition-opacity">
+          <GoogleGLogo className="w-5 h-5" />
+        </div>
+      </div>
+
+      <div>
+        {/* Author Header */}
+        <div className="flex items-center gap-3.5 mb-5 pr-16">
+          {/* Google Style Circular Avatar */}
+          <div
+            className={`w-11 h-11 rounded-full flex items-center justify-center text-white text-base font-semibold shadow-inner shrink-0 ${review.avatarBg}`}
+          >
+            {review.avatarLetter}
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h3 className="text-sm font-medium text-white truncate">
+                {review.author}
+              </h3>
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#4285F4] shrink-0" />
+            </div>
+            <span className="text-[11px] text-neutral-400 block truncate">
+              {review.badge}
+            </span>
+          </div>
+        </div>
+
+        {/* Rating Stars & Time */}
+        <div className="flex items-center gap-3 mb-4">
+          <GoogleStars rating={review.rating} size="w-4 h-4" />
+          <span className="text-xs text-neutral-500 font-light">
+            {review.timeAgo}
+          </span>
+        </div>
+
+        {/* Review Text */}
+        <p className="text-neutral-300 text-sm leading-relaxed font-light">
+          "{review.text}"
+        </p>
+      </div>
+
+      {/* Card Bottom: Google Verified */}
+      <div className="pt-5 mt-6 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-neutral-500">
+        <span className="inline-flex items-center gap-1.5 font-light">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#34A853]" />
+          Verified on Google
+        </span>
+        <a
+          href={WRITE_REVIEW_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-white transition-colors"
+        >
+          View on Maps
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function WriteReviewCardItem({ isMobile = false }: { isMobile?: boolean }) {
+  return (
+    <div
+      className={`h-full rounded-3xl border border-dashed border-white/20 bg-[#0c0c0c] hover:bg-white/[0.04] transition-all duration-300 flex flex-col justify-between text-center items-center group ${
+        isMobile
+          ? "p-7 shadow-[0_-14px_35px_-5px_rgba(0,0,0,0.95)]"
+          : "p-8"
+      }`}
+    >
+      <div className="my-auto py-4">
+        <div className="w-14 h-14 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+          <GoogleGLogo className="w-8 h-8" />
+        </div>
+        <h3 className="text-xl font-heading font-light uppercase tracking-tight text-white mb-2">
+          Share Your Story
+        </h3>
+        <p className="text-neutral-400 text-xs sm:text-sm font-light max-w-xs mx-auto mb-5 leading-relaxed">
+          Have you trained at DK Dance Company? Your feedback inspires future dancers and helps us continue delivering excellence.
+        </p>
+        <a
+          href={WRITE_REVIEW_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs uppercase tracking-wider font-medium transition-all duration-300 active:scale-95 shadow-[0_4px_20px_rgba(66,133,244,0.3)]"
+        >
+          <GoogleGLogo className="w-4 h-4" />
+          <span>Write a Google Review</span>
+        </a>
+      </div>
+
+      <div className="text-[11px] text-neutral-500 pt-2">
+        Directly redirects to Google Maps Review
+      </div>
+    </div>
+  );
+}
+
 export function GoogleReviewsSection({
   isFullPage = false,
 }: {
   isFullPage?: boolean;
 }) {
   return (
-    <section className="bg-black text-white py-24 sm:py-32 border-t border-neutral-900 relative">
+    <section className="bg-black text-white py-24 sm:py-32 relative">
       {/* Background Subtle Gradient */}
       <div className="absolute inset-0 bg-radial-gradient from-blue-950/10 via-transparent to-transparent pointer-events-none" />
 
@@ -188,100 +312,55 @@ export function GoogleReviewsSection({
           </FadeUp>
         </div>
 
-        {/* Google Reviews Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* Mobile: Sticky Stacking Review Cards on Scroll (< md) */}
+        <div className="md:hidden flex flex-col relative pb-8">
           {GOOGLE_REVIEWS_DATA.map((review, index) => (
-            <FadeUp key={review.id} delay={index * 0.07}>
-              <div className="h-full p-7 sm:p-8 rounded-3xl border border-white/[0.08] bg-neutral-950/60 hover:bg-white/[0.03] hover:border-white/20 transition-all duration-500 flex flex-col justify-between group shadow-sm hover:shadow-2xl relative">
-                {/* Google G Emblem in Top Right */}
-                <div className="absolute top-7 right-7 opacity-40 group-hover:opacity-100 transition-opacity">
-                  <GoogleGLogo className="w-5 h-5" />
-                </div>
+            <div
+              key={`mobile-${review.id}`}
+              className="sticky transition-transform duration-300"
+              style={{
+                top: `${80 + index * 10}px`,
+                zIndex: index + 1,
+                marginBottom: "60px",
+              }}
+            >
+              <ReviewCardItem
+                review={review}
+                index={index}
+                total={GOOGLE_REVIEWS_DATA.length + 1}
+                isMobile
+              />
+            </div>
+          ))}
 
-                <div>
-                  {/* Author Header */}
-                  <div className="flex items-center gap-3.5 mb-5 pr-8">
-                    {/* Google Style Circular Avatar */}
-                    <div
-                      className={`w-11 h-11 rounded-full flex items-center justify-center text-white text-base font-semibold shadow-inner shrink-0 ${review.avatarBg}`}
-                    >
-                      {review.avatarLetter}
-                    </div>
+          {/* 6th Card: Write a Review Callout Tile on Mobile */}
+          <div
+            className="sticky transition-transform duration-300"
+            style={{
+              top: `${80 + GOOGLE_REVIEWS_DATA.length * 10}px`,
+              zIndex: GOOGLE_REVIEWS_DATA.length + 1,
+              marginBottom: "24px",
+            }}
+          >
+            <WriteReviewCardItem isMobile />
+          </div>
+        </div>
 
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <h3 className="text-sm font-medium text-white truncate">
-                          {review.author}
-                        </h3>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#4285F4] shrink-0" />
-                      </div>
-                      <span className="text-[11px] text-neutral-400 block truncate">
-                        {review.badge}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Rating Stars & Time */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <GoogleStars rating={review.rating} size="w-4 h-4" />
-                    <span className="text-xs text-neutral-500 font-light">
-                      {review.timeAgo}
-                    </span>
-                  </div>
-
-                  {/* Review Text */}
-                  <p className="text-neutral-300 text-sm leading-relaxed font-light">
-                    "{review.text}"
-                  </p>
-                </div>
-
-                {/* Card Bottom: Google Verified */}
-                <div className="pt-6 mt-6 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-neutral-500">
-                  <span className="inline-flex items-center gap-1.5 font-light">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#34A853]" />
-                    Verified on Google
-                  </span>
-                  <a
-                    href={WRITE_REVIEW_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    View on Maps
-                  </a>
-                </div>
-              </div>
+        {/* Desktop: Standard Responsive Grid (>= md) */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {GOOGLE_REVIEWS_DATA.map((review, index) => (
+            <FadeUp key={`desktop-${review.id}`} delay={index * 0.07}>
+              <ReviewCardItem
+                review={review}
+                index={index}
+                total={GOOGLE_REVIEWS_DATA.length}
+              />
             </FadeUp>
           ))}
 
-          {/* 6th Card: Write a Review Callout Tile */}
+          {/* 6th Card: Write a Review Callout Tile on Desktop */}
           <FadeUp delay={0.35}>
-            <div className="h-full p-8 rounded-3xl border border-dashed border-white/20 bg-white/[0.01] hover:bg-white/[0.04] transition-all duration-500 flex flex-col justify-between text-center items-center group">
-              <div className="my-auto py-6">
-                <div className="w-14 h-14 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300">
-                  <GoogleGLogo className="w-8 h-8" />
-                </div>
-                <h3 className="text-xl font-heading font-light uppercase tracking-tight text-white mb-2">
-                  Share Your Story
-                </h3>
-                <p className="text-neutral-400 text-xs sm:text-sm font-light max-w-xs mx-auto mb-6 leading-relaxed">
-                  Have you trained at DK Dance Company? Your feedback inspires future dancers and helps us continue delivering excellence.
-                </p>
-                <a
-                  href={WRITE_REVIEW_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs uppercase tracking-wider font-medium transition-all duration-300 active:scale-95 shadow-[0_4px_20px_rgba(66,133,244,0.3)]"
-                >
-                  <GoogleGLogo className="w-4 h-4" />
-                  <span>Write a Google Review</span>
-                </a>
-              </div>
-
-              <div className="text-[11px] text-neutral-500">
-                Directly redirects to Google Maps Review
-              </div>
-            </div>
+            <WriteReviewCardItem />
           </FadeUp>
         </div>
 

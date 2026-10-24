@@ -12,7 +12,7 @@ export function DanceStylesSection() {
   const [activeStyleIndex, setActiveStyleIndex] = useState(0);
 
   return (
-    <section className="bg-neutral-950 text-white py-28 sm:py-36 border-t border-neutral-900 relative">
+    <section className="bg-neutral-950 text-white py-28 sm:py-36 relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
@@ -204,7 +204,7 @@ export function DanceStylesSection() {
         </div>
 
         {/* Special Training Breakdown */}
-        <div className="pt-16 border-t border-white/[0.08]">
+        <div className="pt-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
               <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-dk-red/10 text-dk-red border border-dk-red/20 mb-3">

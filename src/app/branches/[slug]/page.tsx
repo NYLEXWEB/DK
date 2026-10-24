@@ -10,6 +10,7 @@ import { ContactForm } from "@/components/forms/ContactForm";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { FadeUp, RevealImage } from "@/components/ui/Motion";
 import { getBranchBySlug, getBranches } from "@/lib/db-services";
+import { GoogleMapsPinIcon } from "@/components/sections/BranchesSection";
 
 export async function generateMetadata({
   params,
@@ -97,10 +98,11 @@ export default async function BranchDetailPage({
                       href={branch.googleMapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-all duration-300 shadow-md text-center"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-neutral-950 hover:bg-[#1a73e8] hover:text-white font-mono text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-[0_4px_20px_rgba(26,115,232,0.4)] text-center group active:scale-95"
                     >
-                      <span>View Location</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      <GoogleMapsPinIcon className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform" />
+                      <span className="font-medium">Google Maps Location</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-[#1a73e8] group-hover:text-white transition-colors" />
                     </a>
                   )}
                   <a
@@ -150,10 +152,11 @@ export default async function BranchDetailPage({
                   href={branch.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono uppercase text-dk-yellow hover:underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.06] hover:bg-[#1a73e8] border border-white/10 hover:border-[#1a73e8] text-xs font-mono uppercase text-white transition-all duration-300 group shadow-sm hover:shadow-[0_2px_15px_rgba(26,115,232,0.35)]"
                 >
-                  <span>Open in Google Maps</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <GoogleMapsPinIcon className="w-3.5 h-3.5 shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="font-medium">Open in Google Maps</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#4285F4] group-hover:text-white transition-colors" />
                 </a>
               )}
             </div>

@@ -7,7 +7,7 @@ import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 
 export function EnquiryCTASection() {
   return (
-    <section className="bg-black text-white py-20 sm:py-36 border-t border-neutral-900 relative overflow-hidden">
+    <section className="bg-black text-white py-20 sm:py-36 relative overflow-hidden">
       {/* Background Subtle Accent Aura */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-dk-yellow/10 via-dk-red/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
 

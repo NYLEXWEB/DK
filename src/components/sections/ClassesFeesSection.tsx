@@ -26,7 +26,7 @@ export function ClassesFeesSection({ fees }: ClassesFeesSectionProps) {
   };
 
   return (
-    <section className="bg-black text-white py-28 sm:py-36 border-t border-neutral-900 relative">
+    <section className="bg-black text-white py-28 sm:py-36 relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         {/* Header */}
         <div className="max-w-3xl mb-20">

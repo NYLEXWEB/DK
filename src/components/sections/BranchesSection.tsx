@@ -13,11 +13,24 @@ interface BranchesSectionProps {
   showAll?: boolean;
 }
 
+// Official 4-color Google Maps Pin
+export function GoogleMapsPinIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 92.3 132.3" className={className} aria-hidden="true">
+      <path fill="#1a73e8" d="M60.2 2.2C55.8.8 51 0 46.1 0 32 0 19.3 6.4 10.8 16.5l21.8 18.3L60.2 2.2z" />
+      <path fill="#ea4335" d="M10.8 16.5C4.1 24.5 0 34.9 0 46.1c0 8.7 1.7 15.7 4.6 22l28-33.3-21.8-18.3z" />
+      <path fill="#4285f4" d="M46.2 28.5c9.8 0 17.7 7.9 17.7 17.7 0 4.3-1.6 8.3-4.2 11.4 0 0 13.9-16.6 28-33.3C82.2 13.7 72.4 4.8 60.2 2.2L32.6 34.8c3.4-3.8 8.2-6.3 13.6-6.3z" />
+      <path fill="#fbbc04" d="M46.2 63.8c-9.8 0-17.7-7.9-17.7-17.7 0-4.3 1.6-8.3 4.2-11.4L4.6 68.1c5.2 11.1 12.3 20 20.3 30.7l27.1-32.3c-3.5 2.7-7.9 4.3-13 4.3z" />
+      <path fill="#34a853" d="M65 74.3c-4.9 6.5-11.2 15.7-16 26.2-1.3 2.9-2.6 6-3.8 9.3 4.5 12.3 9.4 22.5 9.4 22.5s33.9-42.3 37.7-65.7c0-.2 0-.3.1-.5L65 74.3z" />
+    </svg>
+  );
+}
+
 export function BranchesSection({ branches, showAll = false }: BranchesSectionProps) {
   const displayBranches = showAll ? branches : branches.slice(0, 6);
 
   return (
-    <section className="bg-black text-white py-28 sm:py-36 border-t border-neutral-900 relative">
+    <section className="bg-black text-white py-28 sm:py-36 relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
@@ -126,10 +139,12 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                           href={branch.googleMapsUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-mono uppercase text-dk-yellow hover:text-white transition-colors duration-200"
+                          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-neutral-950 hover:bg-[#1a73e8] hover:text-white border border-white/20 font-mono text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-[0_4px_20px_rgba(26,115,232,0.45)] active:scale-95 group/maps shrink-0"
+                          title={`Open ${branch.name} location on Google Maps`}
                         >
-                          <span>Location</span>
-                          <ArrowUpRight className="w-3.5 h-3.5" />
+                          <GoogleMapsPinIcon className="w-3.5 h-3.5 shrink-0 group-hover/maps:scale-110 transition-transform" />
+                          <span className="font-medium">Google Maps</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-[#1a73e8] group-hover/maps:text-white transition-colors" />
                         </a>
                       ) : (
                         <span className="text-xs font-mono text-neutral-600 uppercase">

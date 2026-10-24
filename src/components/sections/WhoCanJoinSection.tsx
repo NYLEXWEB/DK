@@ -65,7 +65,7 @@ export function WhoCanJoinSection() {
   };
 
   return (
-    <section className="bg-neutral-950 text-white py-24 sm:py-32 border-t border-neutral-900 relative">
+    <section className="bg-neutral-950 text-white py-24 sm:py-32 relative">
       <div className="max-w-5xl mx-auto px-6 sm:px-8">
         {/* Header */}
         <div className="max-w-2xl mb-16 sm:mb-20">

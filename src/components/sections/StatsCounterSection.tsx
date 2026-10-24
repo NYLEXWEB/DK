@@ -89,7 +89,7 @@ function AnimatedCounter({
     <span className="inline-flex items-baseline justify-center">
       <span>{count.toLocaleString()}</span>
       {suffix && (
-        <span className="text-dk-yellow font-normal ml-1 text-3xl sm:text-5xl lg:text-6xl">
+        <span className="text-amber-500 font-light ml-0.5 sm:ml-1 text-2xl sm:text-4xl lg:text-6xl">
           {suffix}
         </span>
       )}
@@ -125,65 +125,47 @@ export function StatsCounterSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-black text-white py-24 sm:py-32 border-t border-b border-white/[0.08] overflow-hidden"
+      className="relative bg-white text-neutral-950 py-24 sm:py-36 lg:py-44 overflow-hidden"
     >
-      {/* Subtle luxury ambient lighting in center */}
+      {/* 1. Top Seamless Merge: Black into White */}
+      <div className="absolute inset-x-0 top-0 h-28 sm:h-44 lg:h-52 bg-gradient-to-b from-black via-black/55 via-35% to-transparent pointer-events-none z-10" />
+
+      {/* 2. Bottom Seamless Merge: White back into Black */}
+      <div className="absolute inset-x-0 bottom-0 h-28 sm:h-44 lg:h-52 bg-gradient-to-t from-black via-black/55 via-35% to-transparent pointer-events-none z-10" />
+
+      {/* Subtle luxury ambient glow in center */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-dk-yellow/[0.025] blur-[160px] pointer-events-none rounded-full"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-amber-500/[0.04] blur-[160px] pointer-events-none rounded-full"
         aria-hidden="true"
       />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
-        {/* Simple Minimalist Title Tag */}
-        <div className="text-center max-w-xl mx-auto mb-14 sm:mb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-20">
+        {/* Minimalist Title Tag in Contrasting Dark Tone */}
+        <div className="text-center max-w-xl mx-auto mb-10 sm:mb-16 lg:mb-20">
           <FadeUp>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
-              <span className="editorial-eyebrow text-neutral-400">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-300/80 shadow-sm mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.22em] text-neutral-600 font-medium">
                 MILESTONES & IMPACT
               </span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-heading font-extralight sm:font-thin uppercase tracking-tight text-white">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-thin uppercase tracking-tight text-neutral-950">
               DKDC By The Numbers
             </h2>
           </FadeUp>
         </div>
 
-        {/* Minimalist Grid (No cards, clean architectural divider lines) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Minimalist Architectural Grid: 2 Columns on Mobile, 3 Columns on Desktop */}
+        <div className="grid grid-cols-2 lg:grid-cols-3">
           {STATS_DATA.map((item, idx) => {
-            // Desktop 3-column border calculations
-            const isLastInRowLg = (idx + 1) % 3 === 0;
-            const isBottomRowLg = idx >= 3;
-
-            // Tablet 2-column border calculations
-            const isLastInRowSm = (idx + 1) % 2 === 0;
-            const isBottomRowSm = idx >= 4;
-
-            // Mobile 1-column
-            const isLastItem = idx === STATS_DATA.length - 1;
-
             return (
               <div
                 key={item.label}
-                className={`flex flex-col items-center justify-center py-12 sm:py-16 lg:py-20 px-6 sm:px-8 text-center transition-all duration-300 group ${
-                  // Border bottom logic
-                  isLastItem ? "" : "border-b border-white/[0.08]"
-                } ${
-                  // Responsive border overrides for tablet & desktop
-                  isBottomRowSm ? "sm:border-b-0" : "sm:border-b"
-                } ${
-                  isBottomRowLg ? "lg:border-b-0" : "lg:border-b"
-                } ${
-                  // Border right logic
-                  isLastInRowSm ? "sm:border-r-0" : "sm:border-r sm:border-white/[0.08]"
-                } ${
-                  isLastInRowLg ? "lg:border-r-0" : "lg:border-r lg:border-white/[0.08]"
-                }`}
+                className="flex flex-col items-center justify-center py-8 sm:py-14 lg:py-20 px-2.5 sm:px-6 lg:px-8 text-center transition-all duration-300 group"
               >
-                <FadeUp delay={idx * 0.06}>
-                  {/* Large Minimalist Animated Number */}
-                  <div className="text-4xl sm:text-6xl lg:text-7xl font-heading font-light tracking-tight text-white group-hover:text-dk-yellow transition-colors duration-500">
+                <FadeUp delay={idx * 0.05}>
+                  {/* Large Minimalist Animated Number in Dark Typography */}
+                  <div className="text-3xl sm:text-5xl lg:text-7xl font-heading font-thin tracking-tight text-neutral-950 group-hover:scale-105 transition-transform duration-500">
                     <AnimatedCounter
                       target={item.target}
                       suffix={item.suffix}
@@ -192,7 +174,7 @@ export function StatsCounterSection() {
                   </div>
 
                   {/* Clean Uppercase Subtitle */}
-                  <div className="mt-3 sm:mt-4 text-xs sm:text-sm font-mono uppercase tracking-[0.2em] sm:tracking-[0.25em] text-neutral-400 font-light group-hover:text-neutral-300 transition-colors duration-300">
+                  <div className="mt-2 sm:mt-3 lg:mt-4 text-[10px] sm:text-xs lg:text-sm font-mono uppercase tracking-[0.15em] sm:tracking-[0.2em] lg:tracking-[0.25em] text-neutral-600 font-light group-hover:text-neutral-900 transition-colors duration-300 max-w-[130px] sm:max-w-none">
                     {item.label}
                   </div>
                 </FadeUp>

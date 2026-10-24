@@ -28,7 +28,7 @@ export function OnlineClassesSection({ onlineData }: OnlineClassesSectionProps) 
   };
 
   return (
-    <section className="bg-black text-white py-28 sm:py-36 border-t border-neutral-900 relative">
+    <section className="bg-black text-white py-28 sm:py-36 relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Content Column */}
