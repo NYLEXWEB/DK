@@ -5,9 +5,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { MessageCircle, Instagram, Facebook, Youtube } from "lucide-react";
+import { SiteSettings } from "@/types";
 
-export function Footer() {
+export function Footer({ settings }: { settings?: SiteSettings }) {
   const pathname = usePathname();
+  const [liveSettings, setLiveSettings] = React.useState<SiteSettings | null>(settings || null);
+
+  React.useEffect(() => {
+    if (settings) {
+      setLiveSettings(settings);
+    } else {
+      fetch("/api/settings")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.data) {
+            setLiveSettings(data.data);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [settings]);
 
   // Hide footer on admin panel pages
   if (pathname?.startsWith("/admin")) {
@@ -15,6 +32,30 @@ export function Footer() {
   }
 
   const currentYear = new Date().getFullYear();
+
+  const instagramUrl =
+    liveSettings?.socialLinks?.instagram ||
+    process.env.NEXT_PUBLIC_INSTAGRAM_URL ||
+    "https://instagram.com/dkdancecompany";
+  const facebookUrl =
+    liveSettings?.socialLinks?.facebook ||
+    process.env.NEXT_PUBLIC_FACEBOOK_URL ||
+    "https://facebook.com/dkdancecompany";
+  const youtubeUrl =
+    liveSettings?.socialLinks?.youtube ||
+    process.env.NEXT_PUBLIC_YOUTUBE_URL ||
+    "https://youtube.com/@dkdancecompany";
+  const rawWhatsapp =
+    liveSettings?.contact?.whatsapp ||
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ||
+    "919995272083";
+  const cleanWhatsapp = rawWhatsapp.replace(/\D/g, "") || "919995272083";
+  const officePhone =
+    liveSettings?.contact?.phone || "+91 9995 272 083";
+  const officeEmail =
+    liveSettings?.contact?.email || "info@dkdancecompany.com";
+  const officeAddress =
+    liveSettings?.contact?.address || "Kozhikode, Kerala, India";
 
   return (
     <footer className="relative z-20 bg-black pt-16 sm:pt-20 pb-24 sm:pb-12 text-white">
@@ -47,7 +88,7 @@ export function Footer() {
             {/* Social Links */}
             <div className="flex items-center gap-3 mt-8">
               <a
-                href={process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com/dkdancecompany"}
+                href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on Instagram"
@@ -56,7 +97,7 @@ export function Footer() {
                 <Instagram className="w-4 h-4" />
               </a>
               <a
-                href={process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://facebook.com/dkdancecompany"}
+                href={facebookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on Facebook"
@@ -65,7 +106,7 @@ export function Footer() {
                 <Facebook className="w-4 h-4" />
               </a>
               <a
-                href={process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://youtube.com/@dkdancecompany"}
+                href={youtubeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on YouTube"
@@ -74,7 +115,7 @@ export function Footer() {
                 <Youtube className="w-4 h-4" />
               </a>
               <a
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919995272083"}?text=${encodeURIComponent("Hello DK Dance Company, I would like to enquire about dance classes.")}`}
+                href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent("Hello DK Dance Company, I would like to enquire about dance classes.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Chat on WhatsApp"
@@ -179,21 +220,21 @@ export function Footer() {
               Head Office
             </h4>
             <p className="text-sm text-neutral-400 leading-relaxed mb-4">
-              Kozhikode, Kerala, India
+              {officeAddress}
             </p>
             <div className="flex flex-col gap-2 text-sm text-neutral-400 mb-6">
               <span className="text-white font-medium">Director: Dhanesh Krishnan</span>
               <a
-                href="tel:+919995272083"
+                href={`tel:${officePhone.replace(/\s+/g, "")}`}
                 className="hover:text-dk-yellow transition-colors duration-150 font-mono text-xs"
               >
-                +91 9995 272 083
+                {officePhone}
               </a>
               <a
-                href="mailto:info@dkdancecompany.com"
+                href={`mailto:${officeEmail}`}
                 className="hover:text-dk-yellow transition-colors duration-150 font-mono text-xs"
               >
-                info@dkdancecompany.com
+                {officeEmail}
               </a>
             </div>
 

@@ -68,6 +68,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Strict library capacity limits: max 10 videos, max 15 images
+    if (type === "video") {
+      const existingVideos = await getVideos({ onlyPublished: false });
+      if (existingVideos.length >= 10) {
+        return NextResponse.json(
+          {
+            error:
+              "Maximum limit of 10 videos reached in the showcase. Please remove an existing video before uploading a new one.",
+          },
+          { status: 400 }
+        );
+      }
+    } else {
+      const existingPhotos = await getMedia(undefined, "image");
+      if (existingPhotos.length >= 15) {
+        return NextResponse.json(
+          {
+            error:
+              "Maximum limit of 15 images reached in the photo library. Please remove an existing photo before uploading a new one.",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     const newItem = await createMedia({
       type: type as MediaType,
       url,

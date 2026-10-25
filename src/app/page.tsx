@@ -22,12 +22,13 @@ import {
   getVideos,
   getDanceStyles,
   getCurriculumModules,
+  getReviews,
 } from "@/lib/db-services";
 
 export const revalidate = 60; // Revalidate every minute for live CMS updates
 
 export default async function HomePage() {
-  const [branches, mediaItems, siteSettings, videos, danceStyles, curriculum] =
+  const [branches, mediaItems, siteSettings, videos, danceStyles, curriculum, reviews] =
     await Promise.all([
       getBranches(),
       getMedia(),
@@ -35,6 +36,7 @@ export default async function HomePage() {
       getVideos({ onlyPublished: true, onlyFeatured: true }),
       getDanceStyles(true),
       getCurriculumModules(true),
+      getReviews(true),
     ]);
 
   return (
@@ -100,17 +102,20 @@ export default async function HomePage() {
           <OnlineClassesSection onlineData={siteSettings.onlineClasses} />
 
           {/* 9. Verified Google Reviews Showcase */}
-          <GoogleReviewsSection />
+          <GoogleReviewsSection reviews={reviews} />
 
           {/* 10. Strong Enquiry Call-to-Action */}
           <EnquiryCTASection />
 
           {/* 10. Global Site Footer */}
-          <Footer />
+          <Footer settings={siteSettings} />
         </div>
       </main>
 
-      <WhatsAppButton variant="floating" />
+      <WhatsAppButton
+        variant="floating"
+        phone={siteSettings.contact.whatsapp}
+      />
     </>
   );
 }

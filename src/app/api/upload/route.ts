@@ -41,10 +41,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
     const isVideo =
       file.type.startsWith("video/") ||
       Boolean(file.name.match(/\.(mp4|mov|webm|m4v)$/i));
+
+    // Strict file size limits: 50MB for video, 10MB for image
+    const maxBytes = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    const limitMb = isVideo ? 50 : 10;
+    if (file.size > maxBytes) {
+      return NextResponse.json(
+        {
+          error: `${isVideo ? "Video" : "Image"} size exceeds ${limitMb} MB limit. Please select a ${isVideo ? "video" : "photo"} under ${limitMb} MB.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
 
     // 2. Upload directly to UploadThing Cloud Storage via Server SDK
     // This marks the file as 'Uploaded' directly on the UploadThing Dashboard!

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSiteSettings, updateSiteSettings } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
 
@@ -30,6 +31,15 @@ export async function PATCH(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    revalidatePath("/", "layout");
+    revalidatePath("/");
+    revalidatePath("/about");
+    revalidatePath("/reviews");
+    revalidatePath("/contact");
+    revalidatePath("/dance-styles");
+    revalidatePath("/branches");
+    revalidatePath("/gallery");
 
     return NextResponse.json({
       success: true,

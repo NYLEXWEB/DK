@@ -11,6 +11,7 @@ import {
   Sparkles,
   GraduationCap,
   MapPin,
+  Star,
   Inbox,
   Sliders,
   LogOut,
@@ -58,6 +59,7 @@ export function AdminSidebar() {
     { label: "Dance Styles", href: "/admin/dance-styles", icon: Sparkles },
     { label: "Curriculum", href: "/admin/curriculum", icon: GraduationCap },
     { label: "Branches", href: "/admin/branches", icon: MapPin },
+    { label: "Google Reviews", href: "/admin/reviews", icon: Star },
     { label: "Enquiries", href: "/admin/enquiries", icon: Inbox },
     { label: "Settings & Security", href: "/admin/settings", icon: Sliders },
   ];

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { FadeUp } from "@/components/ui/Motion";
 import { ExternalLink, CheckCircle2 } from "lucide-react";
 
+import { ReviewItem } from "@/types";
+
 export interface GoogleReview {
   id: string;
   author: string;
@@ -248,10 +250,34 @@ function WriteReviewCardItem({ isMobile = false }: { isMobile?: boolean }) {
 }
 
 export function GoogleReviewsSection({
+  reviews,
   isFullPage = false,
 }: {
+  reviews?: ReviewItem[];
   isFullPage?: boolean;
 }) {
+  const displayReviews: GoogleReview[] =
+    reviews && reviews.length > 0
+      ? reviews.map((r, i) => ({
+          id: r._id || `review-${i + 1}`,
+          author: r.author,
+          avatarLetter: r.avatarLetter || (r.author ? r.author[0].toUpperCase() : "G"),
+          avatarBg: r.avatarBg || "bg-[#4285F4]",
+          badge: r.badge || "Verified Google Reviewer",
+          rating: r.rating || 5,
+          timeAgo: r.timeAgo || "Recently",
+          text: r.text,
+        }))
+      : GOOGLE_REVIEWS_DATA;
+
+  const averageRating =
+    displayReviews.length > 0
+      ? (
+          displayReviews.reduce((sum, r) => sum + (r.rating || 5), 0) /
+          displayReviews.length
+        ).toFixed(1)
+      : "5.0";
+
   return (
     <section className="bg-black text-white py-24 sm:py-32 relative">
       {/* Background Subtle Gradient */}
@@ -287,9 +313,9 @@ export function GoogleReviewsSection({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-3xl font-heading font-semibold text-white tracking-tight">
-                      5.0
+                      {averageRating}
                     </span>
-                    <GoogleStars rating={5} size="w-4 h-4" />
+                    <GoogleStars rating={Math.round(Number(averageRating))} size="w-4 h-4" />
                   </div>
                   <span className="text-xs text-neutral-400 font-light block mt-0.5">
                     Based on 140+ Google reviews
@@ -314,7 +340,7 @@ export function GoogleReviewsSection({
 
         {/* Mobile: Sticky Stacking Review Cards on Scroll (< md) */}
         <div className="md:hidden flex flex-col relative pb-8">
-          {GOOGLE_REVIEWS_DATA.map((review, index) => (
+          {displayReviews.map((review, index) => (
             <div
               key={`mobile-${review.id}`}
               className="sticky transition-transform duration-300"
@@ -327,18 +353,18 @@ export function GoogleReviewsSection({
               <ReviewCardItem
                 review={review}
                 index={index}
-                total={GOOGLE_REVIEWS_DATA.length + 1}
+                total={displayReviews.length + 1}
                 isMobile
               />
             </div>
           ))}
 
-          {/* 6th Card: Write a Review Callout Tile on Mobile */}
+          {/* Callout Tile on Mobile */}
           <div
             className="sticky transition-transform duration-300"
             style={{
-              top: `${80 + GOOGLE_REVIEWS_DATA.length * 10}px`,
-              zIndex: GOOGLE_REVIEWS_DATA.length + 1,
+              top: `${80 + displayReviews.length * 10}px`,
+              zIndex: displayReviews.length + 1,
               marginBottom: "24px",
             }}
           >
@@ -348,17 +374,17 @@ export function GoogleReviewsSection({
 
         {/* Desktop: Standard Responsive Grid (>= md) */}
         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {GOOGLE_REVIEWS_DATA.map((review, index) => (
+          {displayReviews.map((review, index) => (
             <FadeUp key={`desktop-${review.id}`} delay={index * 0.07}>
               <ReviewCardItem
                 review={review}
                 index={index}
-                total={GOOGLE_REVIEWS_DATA.length}
+                total={displayReviews.length}
               />
             </FadeUp>
           ))}
 
-          {/* 6th Card: Write a Review Callout Tile on Desktop */}
+          {/* Callout Tile on Desktop */}
           <FadeUp delay={0.35}>
             <WriteReviewCardItem />
           </FadeUp>

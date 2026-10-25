@@ -143,3 +143,18 @@ export interface CurriculumModule {
   updatedAt?: string;
 }
 
+export interface ReviewItem {
+  _id?: string;
+  author: string;
+  avatarLetter?: string;
+  avatarBg?: string;
+  badge?: string;
+  rating: number; // 1 to 5
+  timeAgo?: string;
+  text: string;
+  published: boolean;
+  displayOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

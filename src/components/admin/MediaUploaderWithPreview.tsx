@@ -20,6 +20,7 @@ interface MediaUploaderWithPreviewProps {
   value?: string;
   fileKey?: string;
   mediaType?: "image" | "video";
+  maxSizeMb?: number;
   onChange: (data: { url: string; key?: string; name?: string; type?: "image" | "video" }) => void;
   onClear?: () => void;
   placeholder?: string;
@@ -30,6 +31,7 @@ export function MediaUploaderWithPreview({
   value = "",
   fileKey = "",
   mediaType = "image",
+  maxSizeMb,
   onChange,
   onClear,
   placeholder = "https://... or /images/...",
@@ -41,6 +43,8 @@ export function MediaUploaderWithPreview({
   const [copied, setCopied] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [selectedFileSize, setSelectedFileSize] = useState<string | null>(null);
+
+  const effectiveMaxMb = maxSizeMb || (mediaType === "video" ? 50 : 10);
 
   // Format bytes to human readable string
   const formatBytes = (bytes: number): string => {
@@ -54,6 +58,17 @@ export function MediaUploaderWithPreview({
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Strict client-side file size limit enforcement (10MB for photos, 50MB for videos)
+    const maxBytes = effectiveMaxMb * 1024 * 1024;
+    if (file.size > maxBytes) {
+      const err = `${mediaType === "video" ? "Video" : "Image"} size exceeds ${effectiveMaxMb} MB limit (Selected: ${formatBytes(file.size)}). Please select a ${mediaType === "video" ? "video" : "photo"} under ${effectiveMaxMb} MB.`;
+      setUploadError(err);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
 
     // 1. Instant Client Preview
     const previewUrl = URL.createObjectURL(file);
@@ -364,7 +379,7 @@ export function MediaUploaderWithPreview({
                 Choose or Drop {mediaType === "video" ? "Video" : "Photo"}
               </span>
               <span className="text-[10px] font-mono text-neutral-500 mt-1 block">
-                Instant preview before saving • Direct cloud storage upload
+                Instant preview before saving • Max file size: {effectiveMaxMb} MB ({mediaType === "video" ? "MP4, WebM" : "JPEG, PNG, WebP"})
               </span>
             </div>
             <button

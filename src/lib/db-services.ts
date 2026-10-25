@@ -1,7 +1,15 @@
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { getDb, resetDbClient } from "./mongodb";
-import { Branch, MediaItem, Enquiry, SiteSettings, DanceStyle, CurriculumModule } from "@/types";
+import {
+  Branch,
+  MediaItem,
+  Enquiry,
+  SiteSettings,
+  DanceStyle,
+  CurriculumModule,
+  ReviewItem,
+} from "@/types";
 import { deleteUploadThingFile, deleteUploadThingFiles } from "./uploadthing-server";
 import {
   INITIAL_BRANCHES,
@@ -10,6 +18,7 @@ import {
   INITIAL_SITE_SETTINGS,
   DANCE_STYLES,
   SPECIAL_TRAINING_MODULES,
+  INITIAL_REVIEWS,
 } from "./constants";
 
 // In-memory runtime fallbacks when MongoDB is not connected in local dev
@@ -29,6 +38,10 @@ let memoryCurriculum: CurriculumModule[] = SPECIAL_TRAINING_MODULES.map((m, i) =
   badge: "CONDITIONING",
   displayOrder: i + 1,
   isActive: true,
+}));
+let memoryReviews: ReviewItem[] = INITIAL_REVIEWS.map((r, i) => ({
+  ...r,
+  _id: `rev-${i + 1}`,
 }));
 
 // ==========================================
@@ -1071,6 +1084,175 @@ export async function deleteCurriculumModule(id: string): Promise<boolean> {
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting curriculum module:", err);
+    return false;
+  }
+}
+
+// ==========================================
+// GOOGLE REVIEWS
+// ==========================================
+const GOOGLE_AVATAR_COLORS = [
+  "bg-[#EA4335]", // Google Red
+  "bg-[#4285F4]", // Google Blue
+  "bg-[#34A853]", // Google Green
+  "bg-[#FBBC05] text-neutral-900 font-medium", // Google Yellow
+  "bg-[#9C27B0]", // Google Purple
+  "bg-[#009688]", // Google Teal
+];
+
+export async function getReviews(onlyPublished: boolean = false): Promise<ReviewItem[]> {
+  const db = await getDb();
+  if (!db) {
+    const list = onlyPublished ? memoryReviews.filter((r) => r.published !== false) : memoryReviews;
+    return [...list].sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  try {
+    const collection = db.collection<ReviewItem>("reviews");
+    const count = await collection.countDocuments({});
+    if (count === 0) {
+      // Auto-seed with INITIAL_REVIEWS
+      const now = new Date().toISOString();
+      const seedData = INITIAL_REVIEWS.map((r, idx) => ({
+        ...r,
+        avatarLetter: r.avatarLetter || (r.author ? r.author[0].toUpperCase() : "G"),
+        avatarBg: r.avatarBg || GOOGLE_AVATAR_COLORS[idx % GOOGLE_AVATAR_COLORS.length],
+        badge: r.badge || "Verified Google Reviewer",
+        rating: r.rating || 5,
+        timeAgo: r.timeAgo || "Recently",
+        published: true,
+        displayOrder: idx + 1,
+        createdAt: now,
+        updatedAt: now,
+      }));
+      await collection.insertMany(seedData as any);
+    }
+
+    const query = onlyPublished ? { published: { $ne: false } } : {};
+    const reviews = await collection
+      .find(query)
+      .sort({ displayOrder: 1, createdAt: -1 })
+      .toArray();
+
+    return reviews.map((r) => ({
+      ...r,
+      _id: r._id?.toString(),
+    }));
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    resetDbClient();
+    const list = onlyPublished ? memoryReviews.filter((r) => r.published !== false) : memoryReviews;
+    return [...list].sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+}
+
+export async function getReviewById(id: string): Promise<ReviewItem | null> {
+  const db = await getDb();
+  if (!db) {
+    return memoryReviews.find((r) => r._id === id) || null;
+  }
+
+  try {
+    if (!ObjectId.isValid(id)) return null;
+    const review = await db.collection<any>("reviews").findOne({ _id: new ObjectId(id) });
+    if (!review) return null;
+    return {
+      ...review,
+      _id: review._id?.toString(),
+    };
+  } catch (err) {
+    console.error("Error fetching review by id:", err);
+    return null;
+  }
+}
+
+export async function createReview(data: Omit<ReviewItem, "_id">): Promise<ReviewItem> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+  const letter = data.avatarLetter || (data.author ? data.author.trim()[0].toUpperCase() : "G");
+  const bg = data.avatarBg || GOOGLE_AVATAR_COLORS[Math.floor(Math.random() * GOOGLE_AVATAR_COLORS.length)];
+
+  const reviewDoc: Omit<ReviewItem, "_id"> = {
+    author: data.author.trim(),
+    avatarLetter: letter,
+    avatarBg: bg,
+    badge: data.badge ? data.badge.trim() : "Verified Student",
+    rating: Math.max(1, Math.min(5, Number(data.rating) || 5)),
+    timeAgo: data.timeAgo ? data.timeAgo.trim() : "Recently",
+    text: data.text.trim(),
+    published: data.published !== false,
+    displayOrder: Number(data.displayOrder) || 1,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  if (!db) {
+    const newReview = { ...reviewDoc, _id: `rev-${Date.now()}` };
+    memoryReviews.push(newReview);
+    return newReview;
+  }
+
+  try {
+    const result = await db.collection("reviews").insertOne(reviewDoc as any);
+    return {
+      ...reviewDoc,
+      _id: result.insertedId.toString(),
+    };
+  } catch (err) {
+    console.error("Error creating review:", err);
+    throw err;
+  }
+}
+
+export async function updateReview(id: string, data: Partial<ReviewItem>): Promise<boolean> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    const idx = memoryReviews.findIndex((r) => r._id === id);
+    if (idx !== -1) {
+      memoryReviews[idx] = { ...memoryReviews[idx], ...data, updatedAt: now };
+      return true;
+    }
+    return false;
+  }
+
+  try {
+    if (!ObjectId.isValid(id)) return false;
+    const { _id, ...updateData } = data as any;
+    if (updateData.author && !updateData.avatarLetter) {
+      updateData.avatarLetter = updateData.author.trim()[0].toUpperCase();
+    }
+    const result = await db.collection("reviews").updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          ...updateData,
+          updatedAt: now,
+        },
+      }
+    );
+    return result.matchedCount > 0;
+  } catch (err) {
+    console.error("Error updating review:", err);
+    return false;
+  }
+}
+
+export async function deleteReview(id: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) {
+    const initialLen = memoryReviews.length;
+    memoryReviews = memoryReviews.filter((r) => r._id !== id);
+    return memoryReviews.length < initialLen;
+  }
+
+  try {
+    if (!ObjectId.isValid(id)) return false;
+    const result = await db.collection("reviews").deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount > 0;
+  } catch (err) {
+    console.error("Error deleting review:", err);
     return false;
   }
 }

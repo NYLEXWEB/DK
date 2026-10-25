@@ -148,7 +148,7 @@ export default async function ContactPage() {
         </section>
       </main>
 
-      <Footer />
+      <Footer settings={settings} />
       <WhatsAppButton variant="floating" />
     </>
   );

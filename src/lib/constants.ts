@@ -1,4 +1,4 @@
-import { Branch, SiteSettings, MediaItem } from "@/types";
+import { Branch, SiteSettings, MediaItem, ReviewItem } from "@/types";
 
 export const INITIAL_SITE_SETTINGS: SiteSettings = {
   siteName: "DK Dance Company",
@@ -383,5 +383,63 @@ export const INITIAL_GALLERY_ITEMS: MediaItem[] = [
     url: "/images/branches/balussery.jpg",
     published: true,
     displayOrder: 8,
+  },
+];
+
+export const INITIAL_REVIEWS: ReviewItem[] = [
+  {
+    author: "Anusree K.",
+    avatarLetter: "A",
+    avatarBg: "bg-[#EA4335]",
+    badge: "Local Guide • 24 reviews",
+    rating: 5,
+    timeAgo: "2 weeks ago",
+    text: "DK Dance Company is undeniably the best dance academy in Kozhikode! Dhanesh master's teaching methodology is simply exceptional. My daughter joined as a complete beginner and her stage presence and confidence have skyrocketed. The studio vibe is super energetic and disciplined!",
+    published: true,
+    displayOrder: 1,
+  },
+  {
+    author: "Rahul Menon",
+    avatarLetter: "R",
+    avatarBg: "bg-[#4285F4]",
+    badge: "8 reviews",
+    rating: 5,
+    timeAgo: "3 weeks ago",
+    text: "Outstanding choreography and very disciplined training. The faculty pays personal attention to every single dancer, focusing heavily on footwork and musicality. Their annual stage mega-show was executed with pure international standards. Highly recommend DKDC to anyone passionate about dance!",
+    published: true,
+    displayOrder: 2,
+  },
+  {
+    author: "Dr. Fathima Zahra",
+    avatarLetter: "F",
+    avatarBg: "bg-[#34A853]",
+    badge: "Local Guide • 42 reviews",
+    rating: 5,
+    timeAgo: "1 month ago",
+    text: "I joined the adult batch for fitness and contemporary dance after work. It has been the best decision! The workouts, body isolations, and choreography routines are therapeutic. Dhanesh sir and the team ensure everyone feels welcomed regardless of age or experience.",
+    published: true,
+    displayOrder: 3,
+  },
+  {
+    author: "Deepak Nambiar",
+    avatarLetter: "D",
+    avatarBg: "bg-[#FBBC05] text-neutral-900 font-medium",
+    badge: "5 reviews",
+    rating: 5,
+    timeAgo: "1 month ago",
+    text: "The best dance studio in Calicut for Hip-hop, Western, and Cinematic choreography. The mentors break down complex routines step-by-step. The energy in the studio is contagious. Dhanesh Krishnan sir is truly an inspiration to all upcoming artists in Kerala.",
+    published: true,
+    displayOrder: 4,
+  },
+  {
+    author: "Sneha Varma",
+    avatarLetter: "S",
+    avatarBg: "bg-[#9C27B0]",
+    badge: "Local Guide • 19 reviews",
+    rating: 5,
+    timeAgo: "2 months ago",
+    text: "Enrolled both my kids at DKDC last year. The improvement in their physical coordination, rhythm, and stage confidence is incredible. Wonderful faculty, clean & spacious dance floors, and very transparent communication with parents. 5 stars all the way!",
+    published: true,
+    displayOrder: 5,
   },
 ];

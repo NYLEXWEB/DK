@@ -109,6 +109,13 @@ export default function AdminPhotoLibraryPage() {
   }, []);
 
   const handleOpenAdd = () => {
+    if (photos.length >= 15) {
+      toast.warning(
+        "Maximum limit reached (15/15 photos). Please delete an existing photo before uploading a new one.",
+        "Capacity Reached"
+      );
+      return;
+    }
     setUploadError("");
     setUploadSuccess("");
     setIsReplacingFile(false);
@@ -339,11 +346,30 @@ export default function AdminPhotoLibraryPage() {
         {/* Statistics Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
           <div className="bg-neutral-950 border border-neutral-800 p-3 sm:p-4">
-            <span className="text-[10px] font-mono uppercase text-neutral-500 block mb-1">
-              Total Photos
-            </span>
-            <span className="text-xl sm:text-2xl font-heading font-extralight text-white block">
-              {totalPhotos}
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-mono uppercase text-neutral-500">
+                Total Photos
+              </span>
+              <span
+                className={`text-[9px] font-mono uppercase px-1.5 py-0.5 border ${
+                  totalPhotos >= 15
+                    ? "bg-dk-red/20 border-dk-red text-dk-red font-bold"
+                    : "bg-neutral-900 border-neutral-800 text-dk-yellow"
+                }`}
+              >
+                {totalPhotos >= 15 ? "15/15 FULL" : "Max 15 Photos"}
+              </span>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-heading font-extralight text-white">
+                {totalPhotos}
+              </span>
+              <span className="text-xs font-mono text-neutral-500">
+                / 15
+              </span>
+            </div>
+            <span className="text-[10px] font-mono text-neutral-500 block mt-1">
+              Max 10 MB per image
             </span>
           </div>
 
@@ -384,6 +410,18 @@ export default function AdminPhotoLibraryPage() {
             </button>
           </div>
         </div>
+
+        {/* Capacity Warning Banner */}
+        {totalPhotos >= 15 && (
+          <div className="p-3.5 bg-dk-red/10 border border-dk-red/40 flex items-center justify-between gap-3 text-xs font-mono text-white">
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 text-dk-red shrink-0" />
+              <span>
+                <strong>Photo Limit Reached (15/15):</strong> Maximum capacity of 15 photos in the library has been reached. Please delete an existing photo before uploading a new one. (Max size: 10 MB per image).
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Filter & Search Bar */}
         <div className="space-y-3 bg-neutral-950 border border-neutral-800 p-3.5 sm:p-4">
@@ -663,10 +701,11 @@ export default function AdminPhotoLibraryPage() {
 
           {/* Photo Uploader with Instant Client Preview */}
           <MediaUploaderWithPreview
-            label="Dance Studio / Gallery Photo"
+            label="Dance Studio / Gallery Photo (Max 10 MB)"
             value={formData.url}
             fileKey={formData.key}
             mediaType="image"
+            maxSizeMb={10}
             onChange={({ url, key, name }) => {
               const cleanTitle = name ? cleanFilenameToTitle(name) : "";
               setFormData((prev) => ({

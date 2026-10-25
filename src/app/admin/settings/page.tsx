@@ -232,7 +232,7 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
-            <span>Website Copy & Fees</span>
+            <span>Website Copy & Social</span>
           </button>
 
           <button
@@ -512,110 +512,10 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              {/* Section 2: Tuition & Fees */}
+              {/* Section 2: Online Classes */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  2. Tuition & Admission Fees
-                </h2>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                      One-time Admission Fee
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.fees.admissionFee}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          fees: { ...settings.fees, admissionFee: e.target.value },
-                        })
-                      }
-                      className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                      1 Class / Week Fee
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.fees.weeklyOneClassFee}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          fees: {
-                            ...settings.fees,
-                            weeklyOneClassFee: e.target.value,
-                          },
-                        })
-                      }
-                      className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                      2 Classes / Week Fee
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.fees.weeklyTwoClassesFee}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          fees: {
-                            ...settings.fees,
-                            weeklyTwoClassesFee: e.target.value,
-                          },
-                        })
-                      }
-                      className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                    Fee Disclaimer & Branch Variance Note
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={settings.fees.disclaimer}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        fees: { ...settings.fees, disclaimer: e.target.value },
-                      })
-                    }
-                    className="w-full bg-black border border-neutral-800 p-3 text-xs text-white focus:outline-none focus:border-dk-yellow"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                    Payment Deadline Note (e.g. 10th of every month)
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.fees.paymentNote}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        fees: { ...settings.fees, paymentNote: e.target.value },
-                      })
-                    }
-                    className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
-                  />
-                </div>
-              </div>
-
-              {/* Section 3: Online Classes */}
-              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
-                <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  3. Online Digital Classes
+                  2. Online Digital Classes
                 </h2>
 
                 <div>
@@ -659,10 +559,10 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              {/* Section 4: Contact & Social */}
+              {/* Section 3: Contact & Social */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  4. Contact & Social Channels
+                  3. Contact & Social Channels
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -94,6 +94,13 @@ export default function AdminVideosPage() {
   }, []);
 
   const handleOpenAdd = () => {
+    if (videos.length >= 10) {
+      toast.warning(
+        "Maximum limit reached (10/10 videos). Please delete an existing video before uploading a new one.",
+        "Capacity Reached"
+      );
+      return;
+    }
     setUploadError("");
     setEditingItem(null);
     setFormData({
@@ -310,10 +317,30 @@ export default function AdminVideosPage() {
             ))}
           </div>
 
-          <span className="text-[11px] font-mono text-neutral-500 uppercase">
-            Homepage showcase synchronizes with database
-          </span>
+          <div className="flex items-center gap-3">
+            <span
+              className={`px-3 py-1.5 text-xs font-mono uppercase border ${
+                videos.length >= 10
+                  ? "bg-dk-red/20 border-dk-red text-dk-red font-bold"
+                  : "bg-neutral-900 border-neutral-800 text-neutral-300"
+              }`}
+            >
+              Capacity: <strong className="text-white">{videos.length}</strong> / 10 Videos (Max 50 MB)
+            </span>
+          </div>
         </div>
+
+        {/* Capacity Warning Banner */}
+        {videos.length >= 10 && (
+          <div className="p-3.5 bg-dk-red/10 border border-dk-red/40 flex items-center justify-between gap-3 text-xs font-mono text-white">
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 text-dk-red shrink-0" />
+              <span>
+                <strong>Video Showcase Limit Reached (10/10):</strong> Maximum capacity of 10 videos in the showcase has been reached. Please delete an existing video before uploading a new one. (Max size: 50 MB per video).
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Video Cards Grid */}
         {loading ? (
@@ -481,10 +508,11 @@ export default function AdminVideosPage() {
 
           {/* 1. PERFORMANCE VIDEO FILE UPLOAD */}
           <MediaUploaderWithPreview
-            label="Performance Video File *"
+            label="Performance Video File * (Max 50 MB)"
             value={formData.url}
             fileKey={formData.key}
             mediaType="video"
+            maxSizeMb={50}
             onChange={(data) => {
               const cleanTitle = data.name
                 ? data.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ").trim()
@@ -539,10 +567,11 @@ export default function AdminVideosPage() {
 
           {/* 3. VIDEO POSTER / THUMBNAIL PHOTO (OPTIONAL) */}
           <MediaUploaderWithPreview
-            label="Video Poster / Thumbnail Photo (Optional)"
+            label="Video Poster / Thumbnail Photo (Optional, Max 10 MB)"
             value={formData.thumbnailUrl}
             fileKey={formData.thumbnailKey}
             mediaType="image"
+            maxSizeMb={10}
             onChange={(data) => {
               setFormData((prev) => ({
                 ...prev,

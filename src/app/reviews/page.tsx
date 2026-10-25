@@ -11,6 +11,8 @@ import {
 } from "@/components/sections/GoogleReviewsSection";
 import { ExternalLink, ShieldCheck } from "lucide-react";
 
+import { getReviews, getSiteSettings } from "@/lib/db-services";
+
 export const metadata: Metadata = {
   title: "Google Reviews & Testimonials | DK Dance Company",
   description:
@@ -21,7 +23,12 @@ const WRITE_REVIEW_URL =
   process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL ||
   "https://search.google.com/local/writereview?placeid=ChIJYaPHMiJZoTsR8_8feyt0-EE";
 
-export default function ReviewsPage() {
+export default async function ReviewsPage() {
+  const [reviews, settings] = await Promise.all([
+    getReviews(true),
+    getSiteSettings(),
+  ]);
+
   const ratingBreakdown = [
     { stars: 5, percentage: 96, count: "135+" },
     { stars: 4, percentage: 4, count: "5" },
@@ -121,11 +128,11 @@ export default function ReviewsPage() {
         </section>
 
         {/* Embedded Reviews Section */}
-        <GoogleReviewsSection isFullPage={true} />
+        <GoogleReviewsSection reviews={reviews} isFullPage={true} />
       </main>
 
-      <Footer />
-      <WhatsAppButton variant="floating" />
+      <Footer settings={settings} />
+      <WhatsAppButton variant="floating" phone={settings.contact.whatsapp} />
     </>
   );
 }

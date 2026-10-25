@@ -15,14 +15,38 @@ export function FloatingSocials({
   message,
 }: FloatingSocialsProps) {
   const pathname = usePathname();
+  const [liveSocials, setLiveSocials] = React.useState<{
+    whatsapp?: string;
+    instagram?: string;
+    youtube?: string;
+  }>({});
+
+  React.useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setLiveSocials({
+            whatsapp: data.data.contact?.whatsapp,
+            instagram: data.data.socialLinks?.instagram,
+            youtube: data.data.socialLinks?.youtube,
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Hide on admin panel pages
   if (pathname?.startsWith("/admin")) {
     return null;
   }
 
-  const targetPhone =
-    phone || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919995272083";
+  const rawPhone =
+    liveSocials.whatsapp ||
+    phone ||
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ||
+    "919995272083";
+  const targetPhone = rawPhone.replace(/\D/g, "") || "919995272083";
   const defaultText =
     message || "Hello DK Dance Company, I would like to enquire about dance classes.";
   const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(
@@ -30,9 +54,11 @@ export function FloatingSocials({
   )}`;
 
   const instagramUrl =
+    liveSocials.instagram ||
     process.env.NEXT_PUBLIC_INSTAGRAM_URL ||
     "https://instagram.com/dkdancecompany";
   const youtubeUrl =
+    liveSocials.youtube ||
     process.env.NEXT_PUBLIC_YOUTUBE_URL ||
     "https://youtube.com/@dkdancecompany";
 
