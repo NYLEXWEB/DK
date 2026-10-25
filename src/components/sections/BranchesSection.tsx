@@ -48,12 +48,6 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
               </h2>
             </FadeUp>
           </div>
-          <FadeUp delay={0.1}>
-            <p className="text-neutral-400 text-sm max-w-md font-light leading-relaxed">
-              Studios situated across Kozhikode, Kerala, complemented by our
-              international branch in Bournemouth, United Kingdom.
-            </p>
-          </FadeUp>
         </div>
 
         {/* Branch Grid */}

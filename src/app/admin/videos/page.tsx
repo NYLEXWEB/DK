@@ -271,10 +271,10 @@ export default function AdminVideosPage() {
         </button>
       </AdminHeader>
 
-      <main className="p-6 sm:p-8 space-y-6 flex-1">
+      <main className="p-4 sm:p-6 lg:p-8 space-y-6 flex-1">
         {/* Filter & Metric Tabs */}
         <div className="flex items-center justify-between gap-4 flex-wrap pb-2 border-b border-neutral-900">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
             {[
               { id: "all", label: "All Videos", count: videos.length },
               {
@@ -296,7 +296,7 @@ export default function AdminVideosPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveFilter(tab.id as any)}
-                className={`px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer ${
+                className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer min-h-[38px] ${
                   activeFilter === tab.id
                     ? "bg-white text-black font-normal"
                     : "bg-neutral-900 text-neutral-400 hover:text-white"
@@ -310,7 +310,7 @@ export default function AdminVideosPage() {
             ))}
           </div>
 
-          <span className="text-xs font-mono text-neutral-500 uppercase">
+          <span className="text-[11px] font-mono text-neutral-500 uppercase">
             Homepage showcase synchronizes with database
           </span>
         </div>
@@ -324,7 +324,7 @@ export default function AdminVideosPage() {
             </p>
           </div>
         ) : filteredVideos.length === 0 ? (
-          <div className="py-24 text-center border border-dashed border-neutral-800 bg-neutral-950 p-8 space-y-4">
+          <div className="py-24 text-center border border-dashed border-neutral-800 bg-neutral-950 p-6 sm:p-8 space-y-4">
             <Film className="w-10 h-10 text-neutral-600 mx-auto" />
             <p className="text-neutral-400 font-mono text-xs uppercase tracking-wider">
               No videos found in this view.
@@ -340,7 +340,7 @@ export default function AdminVideosPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredVideos.map((item) => (
               <div
                 key={item._id || item.url}
@@ -411,10 +411,10 @@ export default function AdminVideosPage() {
                   </div>
 
                   {/* Action Bar */}
-                  <div className="pt-4 mt-4 border-t border-neutral-900 flex items-center justify-between">
+                  <div className="pt-4 mt-4 border-t border-neutral-900 flex items-center justify-between gap-2">
                     <button
                       onClick={() => handleToggleFeatured(item)}
-                      className={`inline-flex items-center gap-1.5 text-[10px] font-mono uppercase px-2.5 py-1 transition-colors border cursor-pointer ${
+                      className={`inline-flex items-center gap-1.5 text-[10px] font-mono uppercase px-3 py-1.5 min-h-[36px] transition-colors border cursor-pointer ${
                         item.featuredOnHome !== false
                           ? "border-dk-yellow/50 bg-dk-yellow/10 text-dk-yellow hover:bg-dk-yellow/20"
                           : "border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white"
@@ -430,12 +430,12 @@ export default function AdminVideosPage() {
                       </span>
                     </button>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleOpenEdit(item)}
                         aria-label="Edit video details"
                         title="Edit video"
-                        className="p-1.5 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                        className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center text-neutral-400 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
@@ -443,7 +443,7 @@ export default function AdminVideosPage() {
                         onClick={() => setDeleteTarget(item)}
                         aria-label="Delete video"
                         title="Delete video"
-                        className="p-1.5 text-neutral-400 hover:text-dk-red transition-colors cursor-pointer"
+                        className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center text-neutral-400 hover:text-dk-red hover:bg-neutral-900 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -592,7 +592,7 @@ export default function AdminVideosPage() {
           </div>
 
           {/* 5. MODAL ACTIONS */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-900">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-4 border-t border-neutral-900">
             <button
               type="button"
               disabled={actionLoading}
@@ -600,14 +600,14 @@ export default function AdminVideosPage() {
                 setIsModalOpen(false);
                 setEditingItem(null);
               }}
-              className="px-4 py-2.5 text-xs font-mono uppercase text-neutral-400 hover:text-white cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] sm:min-h-0 text-xs font-mono uppercase text-neutral-400 hover:text-white cursor-pointer disabled:opacity-50 text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={actionLoading || !formData.url}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50 cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 min-h-[44px] sm:min-h-0 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50 cursor-pointer"
             >
               {actionLoading ? (
                 <>

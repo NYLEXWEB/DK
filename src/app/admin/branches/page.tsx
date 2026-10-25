@@ -244,7 +244,7 @@ export default function AdminBranchesPage() {
         </button>
       </AdminHeader>
 
-      <main className="p-6 sm:p-8 space-y-6 flex-1">
+      <main className="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 max-w-7xl">
         {loading ? (
           <div className="py-24 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-dk-yellow mb-2" />
@@ -253,7 +253,7 @@ export default function AdminBranchesPage() {
             </p>
           </div>
         ) : branches.length === 0 ? (
-          <div className="py-24 text-center border border-dashed border-neutral-800 bg-neutral-950 p-8">
+          <div className="py-24 text-center border border-dashed border-neutral-800 bg-neutral-950 p-6 sm:p-8">
             <p className="text-neutral-400 font-mono text-xs uppercase tracking-wider mb-4">
               No branch studios registered yet.
             </p>
@@ -265,7 +265,7 @@ export default function AdminBranchesPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {branches.map((b) => (
               <div
                 key={b.slug}
@@ -576,7 +576,7 @@ export default function AdminBranchesPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
             <div>
               <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
                 Display Order
@@ -594,7 +594,7 @@ export default function AdminBranchesPage() {
               />
             </div>
 
-            <div className="flex items-center gap-2 pt-5">
+            <div className="flex items-center gap-2 pt-0 sm:pt-5">
               <input
                 id="isActive"
                 type="checkbox"
@@ -602,29 +602,29 @@ export default function AdminBranchesPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, isActive: e.target.checked })
                 }
-                className="w-4 h-4 rounded-none accent-dk-yellow"
+                className="w-4 h-4 rounded-none accent-dk-yellow cursor-pointer"
               />
               <label
                 htmlFor="isActive"
-                className="text-xs font-mono uppercase text-neutral-300"
+                className="text-xs font-mono uppercase text-neutral-300 cursor-pointer select-none"
               >
                 Active Branch on Website
               </label>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-neutral-900 flex justify-end gap-3">
+          <div className="pt-4 border-t border-neutral-900 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 text-xs font-mono uppercase text-neutral-400 hover:text-white"
+              className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] sm:min-h-0 text-xs font-mono uppercase text-neutral-400 hover:text-white text-center cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-6 py-2 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-2.5 min-h-[44px] sm:min-h-0 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-wider transition-colors disabled:opacity-50 text-center cursor-pointer"
             >
               {actionLoading ? "Saving..." : "Save Branch"}
             </button>

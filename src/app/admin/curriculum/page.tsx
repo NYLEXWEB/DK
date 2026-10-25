@@ -219,13 +219,13 @@ export default function AdminCurriculumPage() {
         </button>
       </AdminHeader>
 
-      <main className="p-6 sm:p-8 space-y-6 flex-1 max-w-7xl">
+      <main className="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 max-w-7xl">
         {/* KPI & Filter Header */}
         <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <div className="px-3 py-2 bg-neutral-900 border border-neutral-800 flex items-center gap-2">
               <Dumbbell className="w-4 h-4 text-dk-yellow" />
-              <span className="text-xs font-mono uppercase text-neutral-400">Total Modules:</span>
+              <span className="text-xs font-mono uppercase text-neutral-400">Total:</span>
               <span className="text-xs font-mono font-semibold text-white">{modules.length}</span>
             </div>
             <div className="px-3 py-2 bg-neutral-900 border border-neutral-800 flex items-center gap-2">
@@ -242,21 +242,21 @@ export default function AdminCurriculumPage() {
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="relative min-w-[220px]">
+          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+            <div className="relative flex-1 sm:w-64 min-w-0">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search modules..."
-                className="w-full bg-neutral-900 border border-neutral-800 pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-dk-yellow font-mono"
+                className="w-full bg-neutral-900 border border-neutral-800 pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-dk-yellow font-mono min-h-[38px]"
               />
             </div>
-            <div className="flex border border-neutral-800 bg-neutral-900">
+            <div className="flex border border-neutral-800 bg-neutral-900 w-full sm:w-auto">
               <button
                 onClick={() => setFilterActive("all")}
-                className={`px-3 py-2 text-xs font-mono uppercase transition-colors ${
+                className={`flex-1 sm:flex-none px-3.5 py-2 text-xs font-mono uppercase transition-colors text-center ${
                   filterActive === "all" ? "bg-white text-black font-semibold" : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -264,7 +264,7 @@ export default function AdminCurriculumPage() {
               </button>
               <button
                 onClick={() => setFilterActive("active")}
-                className={`px-3 py-2 text-xs font-mono uppercase transition-colors ${
+                className={`flex-1 sm:flex-none px-3.5 py-2 text-xs font-mono uppercase transition-colors text-center ${
                   filterActive === "active" ? "bg-white text-black font-semibold" : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -272,7 +272,7 @@ export default function AdminCurriculumPage() {
               </button>
               <button
                 onClick={() => setFilterActive("inactive")}
-                className={`px-3 py-2 text-xs font-mono uppercase transition-colors ${
+                className={`flex-1 sm:flex-none px-3.5 py-2 text-xs font-mono uppercase transition-colors text-center ${
                   filterActive === "inactive" ? "bg-white text-black font-semibold" : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -289,7 +289,7 @@ export default function AdminCurriculumPage() {
             <p className="text-xs font-mono uppercase tracking-wider">Loading curriculum...</p>
           </div>
         ) : filteredModules.length === 0 ? (
-          <div className="py-20 border border-dashed border-neutral-800 text-center p-8 space-y-4">
+          <div className="py-20 border border-dashed border-neutral-800 text-center p-6 sm:p-8 space-y-4">
             <GraduationCap className="w-10 h-10 text-neutral-600 mx-auto" />
             <div className="space-y-1">
               <h3 className="text-base font-mono uppercase text-white">No Curriculum Modules Found</h3>
@@ -308,14 +308,14 @@ export default function AdminCurriculumPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredModules.map((mod) => {
               const isActive = mod.isActive !== false;
 
               return (
                 <div
                   key={mod._id}
-                  className={`group relative bg-neutral-950 border flex flex-col justify-between p-6 transition-all duration-300 ${
+                  className={`group relative bg-neutral-950 border flex flex-col justify-between p-4 sm:p-6 transition-all duration-300 ${
                     isActive ? "border-neutral-800 hover:border-neutral-700" : "border-neutral-900 opacity-70"
                   }`}
                 >

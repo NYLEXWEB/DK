@@ -220,12 +220,12 @@ export default function AdminSettingsPage() {
         )}
       </AdminHeader>
 
-      <main className="p-6 sm:p-8 space-y-8 flex-1 max-w-5xl">
+      <main className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 flex-1 max-w-5xl">
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-3 border-b border-neutral-900 pb-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 border-b border-neutral-900 pb-3">
           <button
             onClick={() => setActiveTab("cms")}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 text-xs font-mono uppercase tracking-wider transition-all ${
+            className={`inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-3 sm:py-2.5 min-h-[44px] sm:min-h-0 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === "cms"
                 ? "bg-white text-black font-semibold shadow-lg"
                 : "bg-neutral-900 text-neutral-400 hover:text-white"
@@ -237,7 +237,7 @@ export default function AdminSettingsPage() {
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 text-xs font-mono uppercase tracking-wider transition-all ${
+            className={`inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-3 sm:py-2.5 min-h-[44px] sm:min-h-0 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === "security"
                 ? "bg-white text-black font-semibold shadow-lg"
                 : "bg-neutral-900 text-neutral-400 hover:text-white"
@@ -252,7 +252,7 @@ export default function AdminSettingsPage() {
         {activeTab === "security" && (
           <div className="space-y-6">
             {/* Security Notice Card */}
-            <div className="p-6 bg-neutral-950 border border-neutral-800 rounded-none space-y-3">
+            <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 rounded-none space-y-3">
               <div className="flex items-center gap-2.5 text-dk-yellow">
                 <Shield className="w-5 h-5 text-dk-yellow" />
                 <h2 className="text-sm font-heading font-light uppercase tracking-wider text-white">
@@ -262,7 +262,7 @@ export default function AdminSettingsPage() {
               <p className="text-xs text-neutral-400 leading-relaxed font-light">
                 Update your administrative login username and password stored securely in your MongoDB Atlas database with bcrypt encryption. Once saved, changes apply across all devices immediately.
               </p>
-              <div className="flex items-center gap-3 pt-2 text-xs font-mono">
+              <div className="flex items-center gap-3 pt-2 text-xs font-mono flex-wrap">
                 <span className="text-neutral-500 uppercase">Current Username:</span>
                 <span className="px-2.5 py-0.5 bg-neutral-900 border border-neutral-800 text-dk-yellow font-normal">
                   {currentUsername}
@@ -294,7 +294,7 @@ export default function AdminSettingsPage() {
             )}
 
             {/* Credentials Form */}
-            <form onSubmit={handleUpdateCredentials} className="p-6 bg-neutral-950 border border-neutral-800 space-y-6">
+            <form onSubmit={handleUpdateCredentials} className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-6">
               {/* Username Field */}
               <div>
                 <label className="block text-xs font-mono uppercase text-neutral-300 mb-1.5 flex items-center gap-2">
@@ -431,7 +431,7 @@ export default function AdminSettingsPage() {
                 <button
                   type="submit"
                   disabled={savingCreds}
-                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50 active:scale-95"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 min-h-[44px] bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50 active:scale-95 cursor-pointer"
                 >
                   {savingCreds ? (
                     <>
@@ -460,9 +460,9 @@ export default function AdminSettingsPage() {
               </div>
             )}
 
-            <form onSubmit={handleSaveCMS} className="space-y-8">
+            <form onSubmit={handleSaveCMS} className="space-y-6 sm:space-y-8">
               {/* Section 1: Brand & Direction */}
-              <div className="p-6 bg-neutral-950 border border-neutral-800 space-y-4">
+              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
                   1. Brand Identity & Copy
                 </h2>
@@ -513,7 +513,7 @@ export default function AdminSettingsPage() {
               </div>
 
               {/* Section 2: Tuition & Fees */}
-              <div className="p-6 bg-neutral-950 border border-neutral-800 space-y-4">
+              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
                   2. Tuition & Admission Fees
                 </h2>
@@ -613,7 +613,7 @@ export default function AdminSettingsPage() {
               </div>
 
               {/* Section 3: Online Classes */}
-              <div className="p-6 bg-neutral-950 border border-neutral-800 space-y-4">
+              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
                   3. Online Digital Classes
                 </h2>
@@ -660,7 +660,7 @@ export default function AdminSettingsPage() {
               </div>
 
               {/* Section 4: Contact & Social */}
-              <div className="p-6 bg-neutral-950 border border-neutral-800 space-y-4">
+              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
                   4. Contact & Social Channels
                 </h2>
@@ -787,7 +787,7 @@ export default function AdminSettingsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 min-h-[44px] bg-white text-black hover:bg-dk-yellow font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {saving ? (
                     <>

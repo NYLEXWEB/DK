@@ -45,12 +45,12 @@ export function ConfirmDialog({
           </p>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-900">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 sm:gap-3 pt-4 border-t border-neutral-900">
           <button
             type="button"
             disabled={isLoading}
             onClick={onCancel}
-            className="px-4 py-2.5 text-xs font-mono uppercase text-neutral-400 hover:text-white transition-colors disabled:opacity-50"
+            className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] sm:min-h-0 text-xs font-mono uppercase text-neutral-400 hover:text-white transition-colors disabled:opacity-50 text-center cursor-pointer"
           >
             {cancelText}
           </button>
@@ -58,7 +58,7 @@ export function ConfirmDialog({
             type="button"
             disabled={isLoading}
             onClick={onConfirm}
-            className={`px-5 py-2.5 text-xs font-mono uppercase font-normal transition-all disabled:opacity-50 ${
+            className={`w-full sm:w-auto px-5 py-2.5 min-h-[44px] sm:min-h-0 text-xs font-mono uppercase font-normal transition-all disabled:opacity-50 text-center cursor-pointer ${
               isDestructive
                 ? "bg-dk-red text-white hover:bg-red-700"
                 : "bg-white text-black hover:bg-dk-yellow"

@@ -62,7 +62,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="max-w-md w-full bg-neutral-950 border border-neutral-800 p-8 sm:p-10 shadow-2xl">
+    <div className="max-w-md w-full bg-neutral-950 border border-neutral-800 p-6 sm:p-10 shadow-2xl">
       {/* Brand Logo */}
       <div className="text-center mb-8">
         <div className="relative w-48 h-14 mx-auto mb-4">
@@ -164,7 +164,7 @@ function LoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 sm:p-6">
       <Suspense
         fallback={
           <div className="text-xs font-mono uppercase tracking-widest text-neutral-500">

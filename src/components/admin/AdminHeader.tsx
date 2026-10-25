@@ -10,18 +10,22 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ title, subtitle, children }: AdminHeaderProps) {
   return (
-    <header className="p-6 sm:p-8 border-b border-neutral-900 bg-black flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-heading font-light uppercase tracking-tight text-white">
+    <header className="p-4 sm:p-6 lg:p-8 border-b border-neutral-900 bg-black flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="min-w-0">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-heading font-light uppercase tracking-tight text-white truncate">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-xs font-mono text-neutral-400 mt-1 uppercase tracking-wider">
+          <p className="text-[11px] sm:text-xs font-mono text-neutral-400 mt-1 uppercase tracking-wider leading-relaxed">
             {subtitle}
           </p>
         )}
       </div>
-      {children && <div className="flex items-center gap-3">{children}</div>}
+      {children && (
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
+          {children}
+        </div>
+      )}
     </header>
   );
 }

@@ -113,7 +113,7 @@ export default function AdminEnquiriesPage() {
         subtitle="Review, respond to, and manage prospective student applications"
       />
 
-      <main className="p-6 sm:p-8 space-y-6 flex-1">
+      <main className="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 max-w-7xl">
         {/* Status Filter Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {["all", "new", "read", "contacted", "closed"].map((status) => {
@@ -126,14 +126,14 @@ export default function AdminEnquiriesPage() {
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 ${
+                className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 min-h-[36px] ${
                   statusFilter === status
-                    ? "bg-white text-black font-normal"
+                    ? "bg-white text-black font-semibold shadow"
                     : "bg-neutral-900 text-neutral-400 hover:text-white"
                 }`}
               >
                 <span>{status}</span>
-                <span className="text-[10px] px-1.5 py-0.2 bg-black/40 text-neutral-300">
+                <span className="text-[10px] px-1.5 py-0.5 bg-black/40 text-neutral-300">
                   {count}
                 </span>
               </button>
@@ -160,7 +160,8 @@ export default function AdminEnquiriesPage() {
           </div>
         ) : (
           <div className="bg-neutral-950 border border-neutral-800 overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
                 <thead>
                   <tr className="border-b border-neutral-800 text-neutral-500 uppercase bg-black/40">
@@ -278,6 +279,128 @@ export default function AdminEnquiriesPage() {
                   })}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden divide-y divide-neutral-900">
+              {filteredEnquiries.map((enq) => {
+                const waUrl = formatWhatsAppUrl(
+                  enq.phone,
+                  `Hello ${enq.name}, this is DK Dance Company following up on your admission enquiry.`
+                );
+
+                return (
+                  <div
+                    key={enq._id}
+                    className={`p-4 space-y-3 transition-colors ${
+                      enq.status === "new" ? "bg-dk-yellow/5" : ""
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <button
+                          onClick={() => {
+                            setSelectedEnquiry(enq);
+                            if (enq.status === "new" && enq._id) {
+                              handleUpdateStatus(enq._id, "read");
+                            }
+                          }}
+                          className="font-heading uppercase text-white text-base font-medium text-left hover:text-dk-yellow cursor-pointer"
+                        >
+                          {enq.name}
+                        </button>
+                        <p className="text-[11px] font-mono text-neutral-500 mt-0.5">
+                          {formatDate(enq.createdAt)}
+                        </p>
+                      </div>
+
+                      <select
+                        value={enq.status}
+                        onChange={(e) =>
+                          enq._id &&
+                          handleUpdateStatus(
+                            enq._id,
+                            e.target.value as EnquiryStatus
+                          )
+                        }
+                        className={`bg-black border text-[11px] font-mono px-2 py-1 uppercase rounded-none focus:outline-none ${
+                          enq.status === "new"
+                            ? "border-dk-yellow text-dk-yellow font-bold"
+                            : enq.status === "contacted"
+                            ? "border-[#25D366] text-[#25D366]"
+                            : "border-neutral-800 text-neutral-400"
+                        }`}
+                      >
+                        <option value="new">NEW</option>
+                        <option value="read">READ</option>
+                        <option value="contacted">CONTACTED</option>
+                        <option value="closed">CLOSED</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+                      <span className="px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-dk-yellow">
+                        {enq.branch}
+                      </span>
+                      {enq.danceStyle && (
+                        <span className="px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-300">
+                          {enq.danceStyle}
+                        </span>
+                      )}
+                    </div>
+
+                    {enq.message && (
+                      <p className="text-xs text-neutral-400 line-clamp-2 font-mono leading-relaxed bg-black/40 p-2.5 border border-neutral-900">
+                        "{enq.message}"
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-neutral-900">
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={waUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 text-xs font-mono uppercase font-semibold min-h-[34px]"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>WhatsApp</span>
+                        </a>
+
+                        <a
+                          href={`tel:${enq.phone}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 text-neutral-200 border border-neutral-800 text-xs font-mono uppercase min-h-[34px]"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          <span>Call</span>
+                        </a>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => {
+                            setSelectedEnquiry(enq);
+                            if (enq.status === "new" && enq._id) {
+                              handleUpdateStatus(enq._id, "read");
+                            }
+                          }}
+                          className="p-2 text-neutral-400 hover:text-white bg-neutral-900 border border-neutral-800 min-h-[34px] min-w-[34px] flex items-center justify-center cursor-pointer"
+                          title="View Details"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(enq)}
+                          className="p-2 text-neutral-500 hover:text-dk-red bg-neutral-900 border border-neutral-800 min-h-[34px] min-w-[34px] flex items-center justify-center cursor-pointer"
+                          title="Delete Record"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

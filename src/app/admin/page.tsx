@@ -69,11 +69,11 @@ export default async function AdminDashboardPage() {
         </Link>
       </AdminHeader>
 
-      <main className="p-6 sm:p-8 space-y-8 flex-1">
+      <main className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 flex-1 max-w-7xl">
         {/* Metric Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
                 Dance Styles
               </span>
@@ -81,7 +81,7 @@ export default async function AdminDashboardPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-heading font-extralight text-white">
+                <span className="text-3xl sm:text-4xl font-heading font-extralight text-white">
                   {danceStyles.filter((s) => s.isActive !== false).length}
                 </span>
                 <span className="text-xs font-mono text-neutral-500">
@@ -90,15 +90,15 @@ export default async function AdminDashboardPage() {
               </div>
               <Link
                 href="/admin/dance-styles"
-                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-3 inline-block"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-2 sm:mt-3 inline-block"
               >
                 Manage dance styles →
               </Link>
             </div>
           </div>
 
-          <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
+          <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
                 Curriculum Modules
               </span>
@@ -106,7 +106,7 @@ export default async function AdminDashboardPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-heading font-extralight text-white">
+                <span className="text-3xl sm:text-4xl font-heading font-extralight text-white">
                   {curriculum.filter((m) => m.isActive !== false).length}
                 </span>
                 <span className="text-xs font-mono text-neutral-500">
@@ -115,75 +115,75 @@ export default async function AdminDashboardPage() {
               </div>
               <Link
                 href="/admin/curriculum"
-                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-white mt-3 inline-block"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-white mt-2 sm:mt-3 inline-block"
               >
                 Manage curriculum →
               </Link>
             </div>
           </div>
 
-          <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
+          <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
                 Active Branches
               </span>
               <MapPin className="w-4 h-4 text-dk-yellow" />
             </div>
             <div>
-              <span className="text-4xl font-heading font-extralight text-white block">
+              <span className="text-3xl sm:text-4xl font-heading font-extralight text-white block">
                 {branches.length}
               </span>
               <Link
                 href="/admin/branches"
-                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-3 inline-block"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-2 sm:mt-3 inline-block"
               >
                 Manage branches →
               </Link>
             </div>
           </div>
 
-          <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
+          <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
                 Photo Library
               </span>
               <ImageIcon className="w-4 h-4 text-white" />
             </div>
             <div>
-              <span className="text-4xl font-heading font-extralight text-white block">
+              <span className="text-3xl sm:text-4xl font-heading font-extralight text-white block">
                 {publishedImages}
               </span>
               <Link
                 href="/admin/media"
-                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-white mt-3 inline-block"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-white mt-2 sm:mt-3 inline-block"
               >
                 Manage photo library →
               </Link>
             </div>
           </div>
 
-          <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
+          <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
                 Published Videos
               </span>
               <Video className="w-4 h-4 text-dk-red" />
             </div>
             <div>
-              <span className="text-4xl font-heading font-extralight text-white block">
+              <span className="text-3xl sm:text-4xl font-heading font-extralight text-white block">
                 {publishedVideos}
               </span>
               <Link
                 href="/admin/videos"
-                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-red mt-3 inline-block"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-red mt-2 sm:mt-3 inline-block"
               >
                 Manage video showcase →
               </Link>
             </div>
           </div>
 
-          <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
+          <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
                 New Enquiries
               </span>
@@ -191,7 +191,7 @@ export default async function AdminDashboardPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-heading font-extralight text-white">
+                <span className="text-3xl sm:text-4xl font-heading font-extralight text-white">
                   {newEnquiriesCount}
                 </span>
                 <span className="text-xs font-mono text-neutral-500">
@@ -200,7 +200,7 @@ export default async function AdminDashboardPage() {
               </div>
               <Link
                 href="/admin/enquiries"
-                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-3 inline-block"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-2 sm:mt-3 inline-block"
               >
                 View unread leads →
               </Link>
@@ -209,19 +209,19 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Recent Enquiries Section */}
-        <div className="bg-neutral-950 border border-neutral-800 p-6 sm:p-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-neutral-950 border border-neutral-800 p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-lg font-heading font-light uppercase tracking-tight text-white">
+              <h2 className="text-base sm:text-lg font-heading font-light uppercase tracking-tight text-white">
                 Recent Admission Enquiries
               </h2>
-              <p className="text-xs font-mono text-neutral-400 mt-1">
+              <p className="text-[11px] sm:text-xs font-mono text-neutral-400 mt-1">
                 Latest student inquiries submitted across all branches and online tracks
               </p>
             </div>
             <Link
               href="/admin/enquiries"
-              className="text-xs font-mono uppercase tracking-widest text-dk-yellow hover:underline flex items-center gap-1"
+              className="text-xs font-mono uppercase tracking-widest text-dk-yellow hover:underline inline-flex items-center gap-1 self-start sm:self-auto"
             >
               <span>All Enquiries</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -233,46 +233,82 @@ export default async function AdminDashboardPage() {
               No inquiries submitted yet.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-mono">
-                <thead>
-                  <tr className="border-b border-neutral-800 text-neutral-500 uppercase">
-                    <th className="pb-3 font-medium">Date</th>
-                    <th className="pb-3 font-medium">Student / Parent</th>
-                    <th className="pb-3 font-medium">Phone</th>
-                    <th className="pb-3 font-medium">Branch</th>
-                    <th className="pb-3 font-medium">Style</th>
-                    <th className="pb-3 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-900 text-neutral-300">
-                  {recentEnquiries.map((enq) => (
-                    <tr key={enq._id} className="hover:bg-neutral-900/40">
-                      <td className="py-3 text-neutral-500">
-                        {formatDate(enq.createdAt)}
-                      </td>
-                      <td className="py-3 font-medium text-white">{enq.name}</td>
-                      <td className="py-3">{enq.phone}</td>
-                      <td className="py-3">{enq.branch}</td>
-                      <td className="py-3 text-neutral-400">{enq.danceStyle}</td>
-                      <td className="py-3">
-                        <span
-                          className={`px-2 py-0.5 text-[10px] uppercase font-normal ${
-                            enq.status === "new"
-                              ? "bg-dk-yellow text-black"
-                              : enq.status === "contacted"
-                              ? "bg-neutral-800 text-white"
-                              : "bg-neutral-900 text-neutral-400"
-                          }`}
-                        >
-                          {enq.status}
-                        </span>
-                      </td>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs font-mono">
+                  <thead>
+                    <tr className="border-b border-neutral-800 text-neutral-500 uppercase">
+                      <th className="pb-3 font-medium">Date</th>
+                      <th className="pb-3 font-medium">Student / Parent</th>
+                      <th className="pb-3 font-medium">Phone</th>
+                      <th className="pb-3 font-medium">Branch</th>
+                      <th className="pb-3 font-medium">Style</th>
+                      <th className="pb-3 font-medium">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-900 text-neutral-300">
+                    {recentEnquiries.map((enq) => (
+                      <tr key={enq._id} className="hover:bg-neutral-900/40">
+                        <td className="py-3 text-neutral-500">
+                          {formatDate(enq.createdAt)}
+                        </td>
+                        <td className="py-3 font-medium text-white">{enq.name}</td>
+                        <td className="py-3">{enq.phone}</td>
+                        <td className="py-3">{enq.branch}</td>
+                        <td className="py-3 text-neutral-400">{enq.danceStyle}</td>
+                        <td className="py-3">
+                          <span
+                            className={`px-2 py-0.5 text-[10px] uppercase font-normal ${
+                              enq.status === "new"
+                                ? "bg-dk-yellow text-black font-semibold"
+                                : enq.status === "contacted"
+                                ? "bg-neutral-800 text-white"
+                                : "bg-neutral-900 text-neutral-400"
+                            }`}
+                          >
+                            {enq.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="md:hidden divide-y divide-neutral-900 -mx-4">
+                {recentEnquiries.map((enq) => (
+                  <div key={enq._id} className="p-4 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-heading uppercase text-white text-sm font-semibold truncate">
+                        {enq.name}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 text-[10px] font-mono uppercase shrink-0 ${
+                          enq.status === "new"
+                            ? "bg-dk-yellow text-black font-bold"
+                            : enq.status === "contacted"
+                            ? "bg-neutral-800 text-white"
+                            : "bg-neutral-900 text-neutral-400"
+                        }`}
+                      >
+                        {enq.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+                      <span>{enq.phone}</span>
+                      <span>•</span>
+                      <span className="text-dk-yellow">{enq.branch}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-1">
+                      <span>{enq.danceStyle || "General Admission"}</span>
+                      <span>{formatDate(enq.createdAt)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </main>
