@@ -7,6 +7,9 @@ import { FadeUp, RevealImage } from "@/components/ui/Motion";
 import { Button } from "@/components/ui/Button";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { DANCE_STYLES, SPECIAL_TRAINING_MODULES } from "@/lib/constants";
+import { getDanceStyles, getCurriculumModules } from "@/lib/db-services";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Dance Styles & Special Training | DK Dance Company",
@@ -14,7 +17,15 @@ export const metadata: Metadata = {
     "Explore dance styles offered by DK Dance Company: Bollywood, Hip-Hop, Contemporary, Lyrical, Western, and Freestyle dance, along with specialized conditioning and acrobatics.",
 };
 
-export default function DanceStylesPage() {
+export default async function DanceStylesPage() {
+  const [dbStyles, dbCurriculum] = await Promise.all([
+    getDanceStyles(true),
+    getCurriculumModules(true),
+  ]);
+
+  const styles = dbStyles.length > 0 ? dbStyles : DANCE_STYLES;
+  const modules = dbCurriculum.length > 0 ? dbCurriculum : SPECIAL_TRAINING_MODULES;
+
   return (
     <>
       <Navbar />
@@ -41,7 +52,7 @@ export default function DanceStylesPage() {
 
         {/* Detailed Styles Breakdown */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 space-y-32 mb-36">
-          {DANCE_STYLES.map((style, index) => {
+          {styles.map((style, index) => {
             const isReversed = index % 2 === 1;
 
             return (
@@ -99,7 +110,7 @@ export default function DanceStylesPage() {
                         Key Training Objectives:
                       </span>
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-neutral-400 uppercase">
-                        {style.features.map((f) => (
+                        {(style.features || []).map((f) => (
                           <li
                             key={f}
                             className="flex items-center gap-2 py-2 border-b border-white/[0.06]"
@@ -159,11 +170,11 @@ export default function DanceStylesPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {SPECIAL_TRAINING_MODULES.map((item, idx) => (
+              {modules.map((item, idx) => (
                 <FadeUp key={item.title} delay={idx * 0.07}>
                   <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-dk-yellow/40 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl">
                     <span className="text-xs font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors">
-                      MODULE 0{idx + 1}
+                      MODULE {idx < 9 ? `0${idx + 1}` : idx + 1} // {String((item as any).badge || "CONDITIONING")}
                     </span>
                     <h3 className="text-xl font-heading font-light uppercase text-white mb-3">
                       {item.title}

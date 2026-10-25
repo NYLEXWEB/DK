@@ -6,12 +6,20 @@ import {
   Image as ImageIcon,
   Video,
   Inbox,
+  Sparkles,
+  GraduationCap,
   ArrowRight,
   ExternalLink,
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { getAuthSession } from "@/lib/auth";
-import { getBranches, getMedia, getEnquiries } from "@/lib/db-services";
+import {
+  getBranches,
+  getMedia,
+  getEnquiries,
+  getDanceStyles,
+  getCurriculumModules,
+} from "@/lib/db-services";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -22,10 +30,12 @@ export default async function AdminDashboardPage() {
     redirect("/admin/login");
   }
 
-  const [branches, mediaItems, enquiries] = await Promise.all([
+  const [branches, mediaItems, enquiries, danceStyles, curriculum] = await Promise.all([
     getBranches(),
     getMedia(),
     getEnquiries(),
+    getDanceStyles(),
+    getCurriculumModules(),
   ]);
 
   const publishedImages = mediaItems.filter(
@@ -61,7 +71,57 @@ export default async function AdminDashboardPage() {
 
       <main className="p-6 sm:p-8 space-y-8 flex-1">
         {/* Metric Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-mono uppercase text-neutral-400">
+                Dance Styles
+              </span>
+              <Sparkles className="w-4 h-4 text-dk-yellow" />
+            </div>
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-heading font-extralight text-white">
+                  {danceStyles.filter((s) => s.isActive !== false).length}
+                </span>
+                <span className="text-xs font-mono text-neutral-500">
+                  / {danceStyles.length} total
+                </span>
+              </div>
+              <Link
+                href="/admin/dance-styles"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-3 inline-block"
+              >
+                Manage dance styles →
+              </Link>
+            </div>
+          </div>
+
+          <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-mono uppercase text-neutral-400">
+                Curriculum Modules
+              </span>
+              <GraduationCap className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-heading font-extralight text-white">
+                  {curriculum.filter((m) => m.isActive !== false).length}
+                </span>
+                <span className="text-xs font-mono text-neutral-500">
+                  / {curriculum.length} total
+                </span>
+              </div>
+              <Link
+                href="/admin/curriculum"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-white mt-3 inline-block"
+              >
+                Manage curriculum →
+              </Link>
+            </div>
+          </div>
+
           <div className="p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">

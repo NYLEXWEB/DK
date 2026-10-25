@@ -32,17 +32,6 @@ export function BrandIntroSection() {
               </h2>
             </FadeUp>
           </div>
-
-          <div className="lg:col-span-4 flex flex-col justify-between pt-2 border-t lg:border-t-0 lg:border-l border-white/[0.08] lg:pl-12">
-            <FadeUp delay={0.2}>
-              <p className="text-neutral-400 text-sm sm:text-base leading-relaxed font-light">
-                Welcome to DK Dance Company (DKDC). We provide structured,
-                progressive dance education for children, teenagers, and adults —
-                nurturing passionate dancers from absolute beginners to
-                accomplished competitive artists.
-              </p>
-            </FadeUp>
-          </div>
         </div>
 
         {/* Balanced Editorial Composition: Compact Executive Founder Profile & Mission/Vision */}

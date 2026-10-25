@@ -15,17 +15,27 @@ import { GalleryMarquee } from "@/components/gallery/GalleryMarquee";
 import { EnquiryCTASection } from "@/components/sections/EnquiryCTASection";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { FadeUp } from "@/components/ui/Motion";
-import { getBranches, getMedia, getSiteSettings, getVideos } from "@/lib/db-services";
+import {
+  getBranches,
+  getMedia,
+  getSiteSettings,
+  getVideos,
+  getDanceStyles,
+  getCurriculumModules,
+} from "@/lib/db-services";
 
 export const revalidate = 60; // Revalidate every minute for live CMS updates
 
 export default async function HomePage() {
-  const [branches, mediaItems, siteSettings, videos] = await Promise.all([
-    getBranches(),
-    getMedia(),
-    getSiteSettings(),
-    getVideos({ onlyPublished: true, onlyFeatured: true }),
-  ]);
+  const [branches, mediaItems, siteSettings, videos, danceStyles, curriculum] =
+    await Promise.all([
+      getBranches(),
+      getMedia(),
+      getSiteSettings(),
+      getVideos({ onlyPublished: true, onlyFeatured: true }),
+      getDanceStyles(true),
+      getCurriculumModules(true),
+    ]);
 
   return (
     <>
@@ -43,7 +53,7 @@ export default async function HomePage() {
           <StatsCounterSection />
 
           {/* 3. Dance Disciplines & Styles */}
-          <DanceStylesSection />
+          <DanceStylesSection styles={danceStyles} curriculum={curriculum} />
 
           {/* 4. Who Can Join */}
           <WhoCanJoinSection />

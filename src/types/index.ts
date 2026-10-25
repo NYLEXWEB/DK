@@ -115,3 +115,31 @@ export interface AuthSession {
   exp: number;
   iat: number;
 }
+
+export interface DanceStyle {
+  _id?: string;
+  number: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  description: string;
+  image: string;
+  imageKey?: string;
+  features: string[];
+  displayOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CurriculumModule {
+  _id?: string;
+  title: string;
+  desc: string;
+  badge?: string;
+  displayOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

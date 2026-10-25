@@ -1,13 +1,15 @@
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { getDb, resetDbClient } from "./mongodb";
-import { Branch, MediaItem, Enquiry, SiteSettings } from "@/types";
+import { Branch, MediaItem, Enquiry, SiteSettings, DanceStyle, CurriculumModule } from "@/types";
 import { deleteUploadThingFile, deleteUploadThingFiles } from "./uploadthing-server";
 import {
   INITIAL_BRANCHES,
   INITIAL_GALLERY_ITEMS,
   INITIAL_VIDEOS,
   INITIAL_SITE_SETTINGS,
+  DANCE_STYLES,
+  SPECIAL_TRAINING_MODULES,
 } from "./constants";
 
 // In-memory runtime fallbacks when MongoDB is not connected in local dev
@@ -15,6 +17,19 @@ let memoryBranches: Branch[] = [...INITIAL_BRANCHES];
 let memoryMedia: MediaItem[] = [...INITIAL_GALLERY_ITEMS, ...INITIAL_VIDEOS];
 let memoryEnquiries: Enquiry[] = [];
 let memorySettings: SiteSettings = { ...INITIAL_SITE_SETTINGS };
+let memoryDanceStyles: DanceStyle[] = DANCE_STYLES.map((s, i) => ({
+  ...s,
+  _id: s.slug,
+  displayOrder: i + 1,
+  isActive: true,
+}));
+let memoryCurriculum: CurriculumModule[] = SPECIAL_TRAINING_MODULES.map((m, i) => ({
+  ...m,
+  _id: `mod-${i + 1}`,
+  badge: "CONDITIONING",
+  displayOrder: i + 1,
+  isActive: true,
+}));
 
 // ==========================================
 // BRANCHES
@@ -181,7 +196,7 @@ export async function deleteBranch(id: string): Promise<boolean> {
 // ==========================================
 export async function getMedia(
   category?: string,
-  mediaType: "image" | "video" | "all" = "image"
+  mediaType: "image" | "video" | "all" = "all"
 ): Promise<MediaItem[]> {
   const db = await getDb();
   if (!db) {
@@ -751,4 +766,313 @@ export async function updateAdminUser(
     return { success: false, error: "Database error while updating credentials." };
   }
 }
+
+// ==========================================
+// DANCE STYLES
+// ==========================================
+export async function getDanceStyles(onlyActive = false): Promise<DanceStyle[]> {
+  const db = await getDb();
+  if (!db) {
+    let items = memoryDanceStyles;
+    if (onlyActive) items = items.filter((s) => s.isActive !== false);
+    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  try {
+    const count = await db.collection("dance_styles").countDocuments();
+    if (count === 0) {
+      const seeded = DANCE_STYLES.map((s, i) => ({
+        ...s,
+        displayOrder: i + 1,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }));
+      await db.collection("dance_styles").insertMany(seeded as any);
+    }
+
+    const query: any = {};
+    if (onlyActive) {
+      query.isActive = { $ne: false };
+    }
+
+    const styles = await db
+      .collection<DanceStyle>("dance_styles")
+      .find(query)
+      .sort({ displayOrder: 1, createdAt: 1 })
+      .toArray();
+
+    return styles.map((s) => ({
+      ...s,
+      _id: s._id?.toString(),
+    }));
+  } catch (err) {
+    console.error("Error fetching dance styles:", err);
+    resetDbClient();
+    let items = memoryDanceStyles;
+    if (onlyActive) items = items.filter((s) => s.isActive !== false);
+    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+}
+
+export async function getDanceStyleBySlug(slug: string): Promise<DanceStyle | null> {
+  const db = await getDb();
+  if (!db) {
+    return memoryDanceStyles.find((s) => s.slug === slug || s._id === slug) || null;
+  }
+
+  try {
+    const query: any = ObjectId.isValid(slug)
+      ? { $or: [{ slug }, { _id: new ObjectId(slug) }, { _id: slug }] }
+      : { $or: [{ slug }, { _id: slug }] };
+    const style = await db.collection<DanceStyle>("dance_styles").findOne(query);
+    if (!style) return null;
+    return {
+      ...style,
+      _id: style._id?.toString(),
+    };
+  } catch (err) {
+    console.error("Error fetching dance style by slug:", err);
+    return null;
+  }
+}
+
+export async function createDanceStyle(data: Omit<DanceStyle, "_id">): Promise<DanceStyle> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+  let baseSlug = (data.slug || data.name)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  if (!db) {
+    const newStyle: DanceStyle = {
+      ...data,
+      slug: baseSlug,
+      _id: `style-${Date.now()}`,
+      createdAt: now,
+      updatedAt: now,
+    };
+    memoryDanceStyles.push(newStyle);
+    return newStyle;
+  }
+
+  let finalSlug = baseSlug;
+  let counter = 2;
+  while (await db.collection("dance_styles").findOne({ slug: finalSlug })) {
+    finalSlug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  const styleToInsert = {
+    ...data,
+    slug: finalSlug,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const result = await db.collection("dance_styles").insertOne(styleToInsert as any);
+  return {
+    ...styleToInsert,
+    _id: result.insertedId.toString(),
+  };
+}
+
+export async function updateDanceStyle(id: string, data: Partial<DanceStyle>): Promise<boolean> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    const index = memoryDanceStyles.findIndex((s) => s._id === id || s.slug === id);
+    if (index !== -1) {
+      memoryDanceStyles[index] = {
+        ...memoryDanceStyles[index],
+        ...data,
+        updatedAt: now,
+      };
+      return true;
+    }
+    return false;
+  }
+
+  try {
+    const query: any = ObjectId.isValid(id)
+      ? { $or: [{ _id: new ObjectId(id) }, { _id: id }, { slug: id }] }
+      : { $or: [{ _id: id }, { slug: id }] };
+    const { _id, ...updateData } = data as any;
+    const result = await db.collection("dance_styles").updateOne(query, {
+      $set: {
+        ...updateData,
+        updatedAt: now,
+      },
+    });
+    return result.matchedCount > 0;
+  } catch (err) {
+    console.error("Error updating dance style:", err);
+    return false;
+  }
+}
+
+export async function deleteDanceStyle(id: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) {
+    const target = memoryDanceStyles.find((s) => s._id === id || s.slug === id);
+    if (target) {
+      deleteUploadThingFiles([target.imageKey, target.image]).catch(() => {});
+    }
+    const initialLen = memoryDanceStyles.length;
+    memoryDanceStyles = memoryDanceStyles.filter((s) => s._id !== id && s.slug !== id);
+    return memoryDanceStyles.length < initialLen;
+  }
+
+  try {
+    const query: any = ObjectId.isValid(id)
+      ? { $or: [{ _id: new ObjectId(id) }, { _id: id }, { slug: id }] }
+      : { $or: [{ _id: id }, { slug: id }] };
+
+    const style = await db.collection<DanceStyle>("dance_styles").findOne(query);
+    if (style) {
+      await deleteUploadThingFiles([style.imageKey, style.image]);
+    }
+
+    const result = await db.collection("dance_styles").deleteOne(query);
+    return result.deletedCount > 0;
+  } catch (err) {
+    console.error("Error deleting dance style:", err);
+    return false;
+  }
+}
+
+// ==========================================
+// CURRICULUM MODULES
+// ==========================================
+export async function getCurriculumModules(onlyActive = false): Promise<CurriculumModule[]> {
+  const db = await getDb();
+  if (!db) {
+    let items = memoryCurriculum;
+    if (onlyActive) items = items.filter((m) => m.isActive !== false);
+    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  try {
+    const count = await db.collection("curriculum").countDocuments();
+    if (count === 0) {
+      const seeded = SPECIAL_TRAINING_MODULES.map((m, i) => ({
+        ...m,
+        badge: "CONDITIONING",
+        displayOrder: i + 1,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }));
+      await db.collection("curriculum").insertMany(seeded as any);
+    }
+
+    const query: any = {};
+    if (onlyActive) {
+      query.isActive = { $ne: false };
+    }
+
+    const modules = await db
+      .collection<CurriculumModule>("curriculum")
+      .find(query)
+      .sort({ displayOrder: 1, createdAt: 1 })
+      .toArray();
+
+    return modules.map((m) => ({
+      ...m,
+      _id: m._id?.toString(),
+    }));
+  } catch (err) {
+    console.error("Error fetching curriculum modules:", err);
+    resetDbClient();
+    let items = memoryCurriculum;
+    if (onlyActive) items = items.filter((m) => m.isActive !== false);
+    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+}
+
+export async function createCurriculumModule(data: Omit<CurriculumModule, "_id">): Promise<CurriculumModule> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    const newModule: CurriculumModule = {
+      ...data,
+      _id: `mod-${Date.now()}`,
+      createdAt: now,
+      updatedAt: now,
+    };
+    memoryCurriculum.push(newModule);
+    return newModule;
+  }
+
+  const moduleToInsert = {
+    ...data,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const result = await db.collection("curriculum").insertOne(moduleToInsert as any);
+  return {
+    ...moduleToInsert,
+    _id: result.insertedId.toString(),
+  };
+}
+
+export async function updateCurriculumModule(id: string, data: Partial<CurriculumModule>): Promise<boolean> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    const index = memoryCurriculum.findIndex((m) => m._id === id);
+    if (index !== -1) {
+      memoryCurriculum[index] = {
+        ...memoryCurriculum[index],
+        ...data,
+        updatedAt: now,
+      };
+      return true;
+    }
+    return false;
+  }
+
+  try {
+    if (!ObjectId.isValid(id)) return false;
+    const { _id, ...updateData } = data as any;
+    const result = await db.collection("curriculum").updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          ...updateData,
+          updatedAt: now,
+        },
+      }
+    );
+    return result.matchedCount > 0;
+  } catch (err) {
+    console.error("Error updating curriculum module:", err);
+    return false;
+  }
+}
+
+export async function deleteCurriculumModule(id: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) {
+    const initialLen = memoryCurriculum.length;
+    memoryCurriculum = memoryCurriculum.filter((m) => m._id !== id);
+    return memoryCurriculum.length < initialLen;
+  }
+
+  try {
+    if (!ObjectId.isValid(id)) return false;
+    const result = await db.collection("curriculum").deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount > 0;
+  } catch (err) {
+    console.error("Error deleting curriculum module:", err);
+    return false;
+  }
+}
+
 

@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getMedia, createMedia } from "@/lib/db-services";
+import { getMedia, getVideos, createMedia } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
-import { MediaCategory, MediaType } from "@/types";
+import { MediaCategory, MediaType, MediaItem } from "@/types";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category") || undefined;
-    const type = searchParams.get("type") || undefined;
+    const type = (searchParams.get("type") as "image" | "video" | "all") || undefined;
     const includeUnpublished = searchParams.get("all") === "true";
 
-    let items = await getMedia(category);
-    if (type) {
-      items = items.filter((m) => m.type === type);
+    let items: MediaItem[];
+    if (type === "video") {
+      items = await getVideos({
+        onlyPublished: !includeUnpublished,
+      });
+      if (category && category !== "All") {
+        items = items.filter((m) => m.category === category);
+      }
+    } else if (type === "image") {
+      items = await getMedia(category, "image");
+    } else {
+      items = await getMedia(category, "all");
     }
+
     const filtered = includeUnpublished ? items : items.filter((m) => m.published);
 
     return NextResponse.json({ success: true, data: filtered });

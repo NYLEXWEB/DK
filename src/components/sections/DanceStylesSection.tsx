@@ -7,9 +7,25 @@ import { ArrowUpRight } from "lucide-react";
 import { FadeUp } from "@/components/ui/Motion";
 import { DANCE_STYLES, SPECIAL_TRAINING_MODULES } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
+import { DanceStyle, CurriculumModule } from "@/types";
 
-export function DanceStylesSection() {
+interface DanceStylesSectionProps {
+  styles?: DanceStyle[];
+  curriculum?: CurriculumModule[];
+}
+
+export function DanceStylesSection({
+  styles: propStyles,
+  curriculum: propCurriculum,
+}: DanceStylesSectionProps) {
   const [activeStyleIndex, setActiveStyleIndex] = useState(0);
+
+  const displayStyles =
+    propStyles && propStyles.length > 0 ? propStyles : DANCE_STYLES;
+  const displayCurriculum =
+    propCurriculum && propCurriculum.length > 0
+      ? propCurriculum
+      : SPECIAL_TRAINING_MODULES;
 
   return (
     <section className="bg-neutral-950 text-white py-28 sm:py-36 relative">
@@ -39,7 +55,7 @@ export function DanceStylesSection() {
 
         {/* MOBILE STACKED CARDS VIEW (block lg:hidden) - Tall rectangular cards with sharp edges stacking on scroll */}
         <div className="block lg:hidden relative pb-40 mb-20 space-y-10">
-          {DANCE_STYLES.map((style, index) => (
+          {displayStyles.map((style, index) => (
             <div
               key={style.slug}
               className="sticky rounded-none bg-neutral-950 border border-white/15 overflow-hidden shadow-[0_-14px_35px_rgba(0,0,0,0.9),0_25px_50px_rgba(0,0,0,0.98)] will-change-transform"
@@ -115,7 +131,7 @@ export function DanceStylesSection() {
         <div className="hidden lg:grid lg:grid-cols-12 gap-12 items-center mb-28">
           {/* Left: Numbered Editorial Typography List */}
           <div className="lg:col-span-7 flex flex-col gap-2">
-            {DANCE_STYLES.map((style, index) => {
+            {displayStyles.map((style, index) => {
               const isActive = activeStyleIndex === index;
               return (
                 <div
@@ -170,7 +186,7 @@ export function DanceStylesSection() {
 
           {/* Right: Dynamic Image Preview */}
           <div className="lg:col-span-5 relative aspect-[4/5] bg-neutral-900 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
-            {DANCE_STYLES.map((style, index) => (
+            {displayStyles.map((style, index) => (
               <div
                 key={style.slug}
                 className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
@@ -214,20 +230,16 @@ export function DanceStylesSection() {
                 Special Training Curriculum
               </h3>
             </div>
-            <p className="text-xs text-neutral-400 font-mono uppercase max-w-sm">
-              Integrated across all programs to build foundational anatomical
-              strength and kinetic precision.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {SPECIAL_TRAINING_MODULES.map((item, idx) => (
+            {displayCurriculum.map((item, idx) => (
               <div
                 key={item.title}
                 className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl"
               >
                 <span className="text-[11px] font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors duration-300">
-                  0{idx + 1} // CONDITIONING
+                  {idx < 9 ? `0${idx + 1}` : idx + 1} // {String((item as any).badge || "CONDITIONING")}
                 </span>
                 <h4 className="text-base font-heading font-light uppercase text-white mb-2">
                   {item.title}
