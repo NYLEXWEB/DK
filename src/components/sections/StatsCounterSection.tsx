@@ -11,7 +11,7 @@ interface StatItem {
 
 const STATS_DATA: StatItem[] = [
   {
-    target: 3000,
+    target: 5000,
     suffix: "+",
     label: "Students Trained",
   },
@@ -31,7 +31,7 @@ const STATS_DATA: StatItem[] = [
     label: "Countries (India & UK)",
   },
   {
-    target: 50,
+    target: 100,
     suffix: "+",
     label: "Stage Productions",
   },

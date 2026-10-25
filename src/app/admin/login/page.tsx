@@ -3,12 +3,13 @@
 import React, { useState, Suspense } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Lock, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { Lock, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -118,16 +119,31 @@ function LoginForm() {
           >
             Password
           </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-black border border-neutral-800 px-4 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors"
-          />
+          <div className="relative flex items-center">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-black border border-neutral-800 pl-4 pr-11 py-3 text-sm text-white focus:outline-none focus:border-dk-yellow transition-colors"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              title={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-3 p-1.5 text-neutral-500 hover:text-white transition-colors cursor-pointer"
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4 text-neutral-400 hover:text-white" />
+              ) : (
+                <Eye className="w-4 h-4 text-neutral-400 hover:text-white" />
+              )}
+            </button>
+          </div>
         </div>
 
         <button

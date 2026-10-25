@@ -111,16 +111,16 @@ export function AdminSidebar() {
 
       {/* Mobile Drawer Backdrop & Menu */}
       {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-30 top-16 flex flex-col">
+        <div className="md:hidden fixed inset-0 z-50 top-16 flex flex-col">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 top-16 bg-black/80 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 top-16 bg-black/85 backdrop-blur-sm transition-opacity"
             onClick={() => setMobileOpen(false)}
             aria-hidden="true"
           />
 
           {/* Full height scrollable drawer */}
-          <div className="relative z-40 bg-neutral-950 border-b border-neutral-800 p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-4rem)] flex flex-col justify-between space-y-6 shadow-2xl">
+          <div className="relative z-50 bg-neutral-950 border-b border-neutral-800 p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-4rem)] flex flex-col justify-between space-y-6 shadow-2xl">
             <div className="space-y-4">
               <span className="text-[10px] font-mono uppercase tracking-widest text-dk-yellow block px-2">
                 Administrative Sections
@@ -182,7 +182,7 @@ export function AdminSidebar() {
       )}
 
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex md:w-64 bg-neutral-950 border-r border-neutral-800 flex-col justify-between shrink-0 min-h-screen">
+      <aside className="hidden md:flex md:w-64 bg-neutral-950 border-r border-neutral-800 flex-col justify-between shrink-0 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
       <div>
         {/* Logo */}
         <div className="p-6 border-b border-neutral-900">
