@@ -516,59 +516,13 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              {/* Section 2: Online Classes */}
-              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
-                <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  2. Online Digital Classes
-                </h2>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                    Headline
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.onlineClasses.headline}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        onlineClasses: {
-                          ...settings.onlineClasses,
-                          headline: e.target.value,
-                        },
-                      })
-                    }
-                    className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={settings.onlineClasses.description}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        onlineClasses: {
-                          ...settings.onlineClasses,
-                          description: e.target.value,
-                        },
-                      })
-                    }
-                    className="w-full bg-black border border-neutral-800 p-3 text-xs text-white focus:outline-none focus:border-dk-yellow"
-                  />
-                </div>
-              </div>
 
               {/* Section 3: DKDC By The Numbers (Milestones & Impact) */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900 pb-3">
                   <div>
                     <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow">
-                      3. DKDC By The Numbers (Milestones & Impact)
+                      2. DKDC By The Numbers (Milestones & Impact)
                     </h2>
                     <p className="text-[11px] text-neutral-400 font-light mt-0.5">
                       Customize the 6 headline counter metrics displayed on the homepage. Edit the target numbers, suffixes (+, etc.), and descriptive labels.
@@ -682,7 +636,7 @@ export default function AdminSettingsPage() {
               {/* Section 4: Contact & Social */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  4. Contact & Social Channels
+                  3. Contact & Social Channels
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
