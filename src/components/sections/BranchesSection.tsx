@@ -7,6 +7,7 @@ import { MapPin, ArrowUpRight, MessageCircle, Phone } from "lucide-react";
 import { FadeUp } from "@/components/ui/Motion";
 import { Branch } from "@/types";
 import { formatWhatsAppUrl } from "@/lib/utils";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 interface BranchesSectionProps {
   branches: Branch[];
@@ -115,9 +116,13 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                         {branch.name}
                       </h3>
                       {branch.description && (
-                        <p className="text-xs text-neutral-400 leading-relaxed mb-6 line-clamp-3 font-light break-words [overflow-wrap:anywhere]">
-                          {branch.description}
-                        </p>
+                        <div className="mb-5">
+                          <ExpandableText
+                            text={branch.description}
+                            limit={140}
+                            className="text-xs text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                          />
+                        </div>
                       )}
                       {branch.classTimings && (
                         <div className="text-[11px] font-mono text-neutral-400 mb-4 bg-white/[0.02] p-3.5 rounded-2xl border border-white/[0.06] backdrop-blur-sm break-words [overflow-wrap:anywhere]">

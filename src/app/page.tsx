@@ -49,7 +49,7 @@ export default async function HomePage() {
         {/* Subsequent Sections gliding over the fixed banner */}
         <div className="relative z-10 bg-black shadow-2xl">
           {/* 2. Brand Introduction & Director */}
-          <BrandIntroSection />
+          <BrandIntroSection settings={siteSettings} />
 
           {/* Animated Statistics Counter (3,000+ Students, 10+ Trainers, 6 Studios, 2 Countries) */}
           <StatsCounterSection stats={siteSettings.stats} />

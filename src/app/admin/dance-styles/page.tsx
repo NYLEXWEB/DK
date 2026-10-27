@@ -24,6 +24,7 @@ import { DanceStyle } from "@/types";
 import { useToast } from "@/context/ToastContext";
 import { adminFetch } from "@/lib/admin-fetch";
 import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export default function AdminDanceStylesPage() {
   const toast = useToast();
@@ -458,9 +459,11 @@ export default function AdminDanceStylesPage() {
                         {style.tagline || "No summary tagline provided."}
                       </p>
 
-                      <p className="text-[11px] text-neutral-400 line-clamp-3 leading-relaxed font-light break-words [overflow-wrap:anywhere]">
-                        {style.description || "No full description provided."}
-                      </p>
+                      <ExpandableText
+                        text={style.description || "No full description provided."}
+                        limit={120}
+                        className="text-[11px] text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                      />
 
                       {/* Feature Tags */}
                       {Array.isArray(style.features) && style.features.length > 0 && (

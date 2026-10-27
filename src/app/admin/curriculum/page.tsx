@@ -21,6 +21,7 @@ import { Modal } from "@/components/ui/Modal";
 import { CurriculumModule } from "@/types";
 import { useToast } from "@/context/ToastContext";
 import { adminFetch } from "@/lib/admin-fetch";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export default function AdminCurriculumPage() {
   const toast = useToast();
@@ -358,9 +359,11 @@ export default function AdminCurriculumPage() {
                       <h3 className="text-lg font-heading font-light tracking-wide text-white uppercase break-words [overflow-wrap:anywhere]">
                         {mod.title}
                       </h3>
-                      <p className="text-xs text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]">
-                        {mod.desc}
-                      </p>
+                      <ExpandableText
+                        text={mod.desc}
+                        limit={120}
+                        className="text-xs text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                      />
                     </div>
                   </div>
 

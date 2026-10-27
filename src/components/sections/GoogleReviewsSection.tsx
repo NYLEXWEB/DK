@@ -6,6 +6,7 @@ import { FadeUp } from "@/components/ui/Motion";
 import { ExternalLink, CheckCircle2 } from "lucide-react";
 
 import { ReviewItem } from "@/types";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export interface GoogleReview {
   id: string;
@@ -188,9 +189,11 @@ function ReviewCardItem({
         </div>
 
         {/* Review Text */}
-        <p className="text-neutral-300 text-sm leading-relaxed font-light break-words [overflow-wrap:anywhere]">
-          "{review.text}"
-        </p>
+        <ExpandableText
+          text={`"${review.text}"`}
+          limit={170}
+          className="text-neutral-300 text-sm leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+        />
       </div>
 
       {/* Card Bottom: Google Verified */}

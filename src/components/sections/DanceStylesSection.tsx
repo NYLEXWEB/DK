@@ -8,6 +8,7 @@ import { FadeUp } from "@/components/ui/Motion";
 import { DANCE_STYLES, SPECIAL_TRAINING_MODULES } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { DanceStyle, CurriculumModule } from "@/types";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 interface DanceStylesSectionProps {
   styles?: DanceStyle[];
@@ -248,9 +249,11 @@ export function DanceStylesSection({
                   <h4 className="text-base font-heading font-light uppercase text-white mb-2 break-words [overflow-wrap:anywhere]">
                     {item.title}
                   </h4>
-                  <p className="text-xs text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]">
-                    {item.desc}
-                  </p>
+                  <ExpandableText
+                    text={item.desc}
+                    limit={130}
+                    className="text-xs text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                  />
                 </div>
               </div>
             ))}

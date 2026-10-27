@@ -21,6 +21,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ReviewItem } from "@/types";
 import { useToast } from "@/context/ToastContext";
 import { adminFetch } from "@/lib/admin-fetch";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 const GOOGLE_COLORS = [
   "bg-[#EA4335]", // Google Red
@@ -435,9 +436,11 @@ export default function AdminReviewsPage() {
                   </div>
 
                   {/* Review Text */}
-                  <p className="text-neutral-300 text-xs sm:text-sm font-light leading-relaxed line-clamp-4 break-words [overflow-wrap:anywhere]">
-                    "{review.text}"
-                  </p>
+                  <ExpandableText
+                    text={`"${review.text}"`}
+                    limit={150}
+                    className="text-neutral-300 text-xs sm:text-sm font-light leading-relaxed break-words [overflow-wrap:anywhere]"
+                  />
                 </div>
 
                 {/* Bottom Actions */}

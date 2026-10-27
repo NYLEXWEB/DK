@@ -20,6 +20,7 @@ import { useToast } from "@/context/ToastContext";
 import { UploadButton } from "@/lib/uploadthing";
 import { adminFetch } from "@/lib/admin-fetch";
 import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export default function AdminBranchesPage() {
   const toast = useToast();
@@ -328,9 +329,13 @@ export default function AdminBranchesPage() {
                     <h3 className="text-lg font-heading font-light uppercase text-white mb-2 break-words [overflow-wrap:anywhere]">
                       {b.name}
                     </h3>
-                    <p className="text-xs text-neutral-400 line-clamp-2 mb-3 break-words [overflow-wrap:anywhere]">
-                      {b.description || "Studio branch in " + b.city}
-                    </p>
+                    <div className="mb-3">
+                      <ExpandableText
+                        text={b.description || "Studio branch in " + b.city}
+                        limit={120}
+                        className="text-xs text-neutral-400 break-words [overflow-wrap:anywhere]"
+                      />
+                    </div>
                     {b.address && (
                       <p className="text-[11px] font-mono text-neutral-500 mb-2 break-words [overflow-wrap:anywhere]">
                         Address: {b.address}

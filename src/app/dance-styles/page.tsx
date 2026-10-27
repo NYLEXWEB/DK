@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { DANCE_STYLES, SPECIAL_TRAINING_MODULES } from "@/lib/constants";
 import { getDanceStyles, getCurriculumModules } from "@/lib/db-services";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export const revalidate = 60;
 
@@ -184,9 +185,11 @@ export default async function DanceStylesPage() {
                       <h3 className="text-xl font-heading font-light uppercase text-white mb-3 break-words [overflow-wrap:anywhere]">
                         {item.title}
                       </h3>
-                      <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]">
-                        {item.desc}
-                      </p>
+                      <ExpandableText
+                        text={item.desc}
+                        limit={130}
+                        className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                      />
                     </div>
                   </div>
                 </FadeUp>

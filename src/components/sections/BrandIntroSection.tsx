@@ -4,8 +4,26 @@ import React from "react";
 import Image from "next/image";
 import { FadeUp } from "@/components/ui/Motion";
 import { Button } from "@/components/ui/Button";
+import { SiteSettings } from "@/types";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
-export function BrandIntroSection() {
+interface BrandIntroSectionProps {
+  settings?: SiteSettings;
+}
+
+export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
+  const introText =
+    settings?.intro ||
+    "A professional dance training institution dedicated to developing skills, creativity, confidence, and stage performance.";
+
+  const missionText =
+    settings?.mission ||
+    "To inspire, train, and empower every dancer through quality dance education and professional technical guidance.";
+
+  const visionText =
+    settings?.vision ||
+    "To build confident performers and create opportunities for dancers to learn, grow, and shine on state, national, and international stages.";
+
   return (
     <section className="bg-black text-white py-28 sm:py-36 relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
@@ -21,14 +39,10 @@ export function BrandIntroSection() {
 
         {/* Large Statement Intro */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mb-24">
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-10">
             <FadeUp delay={0.1}>
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[1.1] text-white">
-                A professional dance training institution dedicated to developing{" "}
-                <span className="text-neutral-500 font-thin">skills</span>,{" "}
-                <span className="text-neutral-500 font-thin">creativity</span>,{" "}
-                <span className="text-white font-light">confidence</span>, and{" "}
-                <span className="text-dk-yellow font-light">stage performance</span>.
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[1.2] text-white break-words [overflow-wrap:anywhere]">
+                {introText}
               </h2>
             </FadeUp>
           </div>
@@ -84,28 +98,30 @@ export function BrandIntroSection() {
           {/* Mission & Vision & Training Core */}
           <div className="lg:col-span-7 flex flex-col gap-6">
             <FadeUp delay={0.15}>
-              <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-yellow/40 transition-all duration-500">
+              <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-yellow/40 transition-all duration-500 min-w-0 max-w-full">
                 <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-dk-yellow to-transparent" />
                 <span className="editorial-eyebrow text-dk-yellow block mb-2">
                   Our Mission
                 </span>
-                <p className="text-lg sm:text-xl font-heading text-neutral-200 font-light leading-snug">
-                  To inspire, train, and empower every dancer through quality
-                  dance education and professional technical guidance.
-                </p>
+                <ExpandableText
+                  text={missionText}
+                  limit={180}
+                  className="text-base sm:text-lg font-heading text-neutral-200 font-light leading-snug break-words [overflow-wrap:anywhere]"
+                />
               </div>
             </FadeUp>
 
             <FadeUp delay={0.25}>
-              <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-red/40 transition-all duration-500">
+              <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-red/40 transition-all duration-500 min-w-0 max-w-full">
                 <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-dk-red to-transparent" />
                 <span className="editorial-eyebrow text-dk-red block mb-2">
                   Our Vision
                 </span>
-                <p className="text-lg sm:text-xl font-heading text-neutral-200 font-light leading-snug">
-                  To build confident performers and create opportunities for
-                  dancers to learn, grow, and shine on state, national, and international stages.
-                </p>
+                <ExpandableText
+                  text={visionText}
+                  limit={180}
+                  className="text-base sm:text-lg font-heading text-neutral-200 font-light leading-snug break-words [overflow-wrap:anywhere]"
+                />
               </div>
             </FadeUp>
 
