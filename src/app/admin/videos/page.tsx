@@ -78,8 +78,12 @@ export default function AdminVideosPage() {
       setLoading(true);
       const res = await adminFetch("/api/media?type=video&all=true");
       const data = await res.json();
-      if (data.success) {
-        setVideos(data.data);
+      if (data.success && Array.isArray(data.data)) {
+        setVideos(
+          [...data.data].sort(
+            (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+          )
+        );
       }
     } catch (err) {
       console.error("Failed to load videos:", err);
@@ -371,7 +375,7 @@ export default function AdminVideosPage() {
             {filteredVideos.map((item) => (
               <div
                 key={item._id || item.url}
-                className="bg-neutral-950 border border-neutral-800 overflow-hidden flex flex-col justify-between group hover:border-neutral-700 transition-colors"
+                className="bg-neutral-950 border border-neutral-800 overflow-hidden flex flex-col justify-between group hover:border-neutral-700 transition-colors min-w-0 max-w-full"
               >
                 {/* Video Player or Thumbnail */}
                 <div className="relative aspect-video bg-black overflow-hidden">
@@ -424,15 +428,15 @@ export default function AdminVideosPage() {
                 </div>
 
                 {/* Video Info */}
-                <div className="p-4 flex-1 flex flex-col justify-between">
-                  <div className="space-y-2">
+                <div className="p-4 flex-1 flex flex-col justify-between min-w-0 max-w-full">
+                  <div className="space-y-2 min-w-0 max-w-full">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[10px] font-mono uppercase text-dk-yellow">
                         {item.category}
                       </span>
                     </div>
 
-                    <h3 className="text-sm font-heading font-light uppercase text-white tracking-wide">
+                    <h3 className="text-sm font-heading font-light uppercase text-white tracking-wide break-words [overflow-wrap:anywhere]">
                       {item.title}
                     </h3>
                   </div>

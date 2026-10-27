@@ -86,30 +86,28 @@ export async function validateCredentials(username: string, pass: string): Promi
   try {
     const admin = await getAdminUser();
     const cleanUser = username.trim();
-    if (cleanUser !== admin.username) {
+    const cleanPass = pass.trim();
+
+    // Check username (case-insensitive)
+    if (cleanUser.toLowerCase() !== admin.username.toLowerCase()) {
       return false;
     }
 
+    // Verify password strictly against the stored bcrypt hash in DB
     let isMatch = false;
     try {
-      isMatch = bcrypt.compareSync(pass.trim(), admin.passwordHash);
+      isMatch = bcrypt.compareSync(cleanPass, admin.passwordHash);
     } catch {
       isMatch = false;
     }
 
-    if (!isMatch) {
-      const configuredUser = process.env.ADMIN_USERNAME || "admin";
-      const configuredPass = process.env.ADMIN_PASSWORD || "dkdc@admin2025";
-      if (cleanUser === configuredUser && pass.trim() === configuredPass) {
-        isMatch = true;
-      }
-    }
-
+    // Do NOT allow old fallback passwords once custom credentials are in place
     return isMatch;
   } catch (err) {
     console.error("Error validating credentials:", err);
+    // Only in fatal database outage fallback:
     const configuredUser = process.env.ADMIN_USERNAME || "admin";
     const configuredPass = process.env.ADMIN_PASSWORD || "dkdc@admin2025";
-    return username.trim() === configuredUser && pass.trim() === configuredPass;
+    return username.trim().toLowerCase() === configuredUser.toLowerCase() && pass.trim() === configuredPass;
   }
 }

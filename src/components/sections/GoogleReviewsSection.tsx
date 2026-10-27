@@ -166,14 +166,14 @@ function ReviewCardItem({
             {review.avatarLetter}
           </div>
 
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <h3 className="text-sm font-medium text-white truncate">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <h3 className="text-sm font-medium text-white truncate break-words [overflow-wrap:anywhere]">
                 {review.author}
               </h3>
               <CheckCircle2 className="w-3.5 h-3.5 text-[#4285F4] shrink-0" />
             </div>
-            <span className="text-[11px] text-neutral-400 block truncate">
+            <span className="text-[11px] text-neutral-400 block truncate break-words [overflow-wrap:anywhere]">
               {review.badge}
             </span>
           </div>
@@ -188,7 +188,7 @@ function ReviewCardItem({
         </div>
 
         {/* Review Text */}
-        <p className="text-neutral-300 text-sm leading-relaxed font-light">
+        <p className="text-neutral-300 text-sm leading-relaxed font-light break-words [overflow-wrap:anywhere]">
           "{review.text}"
         </p>
       </div>
@@ -256,9 +256,15 @@ export function GoogleReviewsSection({
   reviews?: ReviewItem[];
   isFullPage?: boolean;
 }) {
+  const sortedReviews = reviews
+    ? [...reviews].sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      )
+    : undefined;
+
   const displayReviews: GoogleReview[] =
-    reviews && reviews.length > 0
-      ? reviews.map((r, i) => ({
+    sortedReviews && sortedReviews.length > 0
+      ? sortedReviews.map((r, i) => ({
           id: r._id || `review-${i + 1}`,
           author: r.author,
           avatarLetter: r.avatarLetter || (r.author ? r.author[0].toUpperCase() : "G"),

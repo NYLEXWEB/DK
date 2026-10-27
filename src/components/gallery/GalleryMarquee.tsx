@@ -18,8 +18,10 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
     setMounted(true);
   }, []);
 
-  // Filter for photos only (strictly images in photo gallery)
-  const photoItems = items.filter((item) => item.type !== "video");
+  // Filter for photos only (strictly images in photo gallery) and sort by displayOrder
+  const photoItems = [...items.filter((item) => item.type !== "video")].sort(
+    (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+  );
 
   // Ensure enough items for smooth infinite loop by alternating into two rows
   const row1Base = photoItems.filter((_, idx) => idx % 2 === 0);

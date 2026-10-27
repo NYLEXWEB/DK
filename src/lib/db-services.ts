@@ -50,28 +50,38 @@ let memoryReviews: ReviewItem[] = INITIAL_REVIEWS.map((r, i) => ({
 export async function getBranches(): Promise<Branch[]> {
   const db = await getDb();
   if (!db) {
-    return memoryBranches.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...memoryBranches].sort(
+      (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+    );
   }
 
   try {
     const branches = await db
       .collection<Branch>("branches")
       .find({})
-      .sort({ displayOrder: 1 })
       .toArray();
 
     if (branches.length === 0) {
-      return memoryBranches;
+      return [...memoryBranches].sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      );
     }
 
-    return branches.map((b) => ({
-      ...b,
-      _id: b._id?.toString(),
-    }));
+    return branches
+      .map((b) => ({
+        ...b,
+        displayOrder: Number(b.displayOrder) || 1,
+        _id: b._id?.toString(),
+      }))
+      .sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      );
   } catch (err) {
     console.error("Error fetching branches:", err);
     resetDbClient();
-    return memoryBranches;
+    return [...memoryBranches].sort(
+      (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+    );
   }
 }
 
@@ -116,6 +126,7 @@ export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
   const item: Branch = {
     ...data,
     slug: finalSlug,
+    displayOrder: Number(data.displayOrder) || 1,
     createdAt: now,
     updatedAt: now,
   };
@@ -161,6 +172,9 @@ export async function updateBranch(
       ? { $or: [{ _id: new ObjectId(id) }, { _id: id }, { slug: id }] }
       : { $or: [{ _id: id }, { slug: id }] };
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     const result = await db.collection("branches").updateOne(query, {
       $set: {
         ...updateData,
@@ -235,21 +249,27 @@ export async function getMedia(
     const media = await db
       .collection<MediaItem>("media")
       .find(query)
-      .sort({ displayOrder: 1, createdAt: -1 })
       .toArray();
 
     if (media.length === 0 && !category) {
-      return memoryMedia.filter((m) => mediaType === "all" || m.type === mediaType);
+      return [...memoryMedia]
+        .filter((m) => mediaType === "all" || m.type === mediaType)
+        .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
     }
 
-    return media.map((m) => ({
-      ...m,
-      _id: m._id?.toString(),
-    }));
+    return media
+      .map((m) => ({
+        ...m,
+        displayOrder: Number(m.displayOrder) || 1,
+        _id: m._id?.toString(),
+      }))
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   } catch (err) {
     console.error("Error fetching media:", err);
     resetDbClient();
-    return memoryMedia.filter((m) => mediaType === "all" || m.type === mediaType);
+    return [...memoryMedia]
+      .filter((m) => mediaType === "all" || m.type === mediaType)
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 }
 
@@ -285,7 +305,6 @@ export async function getVideos(options?: {
     let videos = await db
       .collection<MediaItem>("media")
       .find(query)
-      .sort({ displayOrder: 1, createdAt: -1 })
       .toArray();
 
     // If query has onlyFeatured and returned 0, fallback to all published videos
@@ -293,23 +312,31 @@ export async function getVideos(options?: {
       videos = await db
         .collection<MediaItem>("media")
         .find({ type: "video", published: true })
-        .sort({ displayOrder: 1, createdAt: -1 })
         .toArray();
     }
 
     // If still 0 videos in MongoDB (e.g. before admin uploads or seeds videos), fallback to initial seed videos
     if (videos.length === 0) {
-      return initialSeedVideos;
+      return [...initialSeedVideos].sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      );
     }
 
-    return videos.map((m) => ({
-      ...m,
-      _id: m._id?.toString(),
-    }));
+    return videos
+      .map((m) => ({
+        ...m,
+        displayOrder: Number(m.displayOrder) || 1,
+        _id: m._id?.toString(),
+      }))
+      .sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      );
   } catch (err) {
     console.error("Error fetching videos:", err);
     resetDbClient();
-    return initialSeedVideos;
+    return [...initialSeedVideos].sort(
+      (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+    );
   }
 }
 
@@ -318,6 +345,7 @@ export async function createMedia(data: Omit<MediaItem, "_id">): Promise<MediaIt
   const now = new Date().toISOString();
   const item: MediaItem = {
     ...data,
+    displayOrder: Number(data.displayOrder) || 1,
     createdAt: now,
     updatedAt: now,
   };
@@ -351,6 +379,10 @@ export async function updateMedia(
       memoryMedia[index] = {
         ...memoryMedia[index],
         ...data,
+        displayOrder:
+          data.displayOrder !== undefined
+            ? Number(data.displayOrder) || 1
+            : memoryMedia[index].displayOrder,
         updatedAt: now,
       };
       return true;
@@ -361,6 +393,9 @@ export async function updateMedia(
   try {
     if (!ObjectId.isValid(id)) return false;
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     const result = await db.collection("media").updateOne(
       { _id: new ObjectId(id) },
       {
@@ -545,16 +580,25 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       .findOne({});
 
     if (!settings) {
-      return memorySettings;
+      return {
+        ...memorySettings,
+        stats: memorySettings.stats || INITIAL_SITE_SETTINGS.stats,
+      };
     }
 
     return {
       ...settings,
+      stats: settings.stats && Array.isArray(settings.stats) && settings.stats.length === 6
+        ? settings.stats
+        : INITIAL_SITE_SETTINGS.stats,
       _id: settings._id?.toString(),
     };
   } catch (err) {
     console.error("Error fetching site settings:", err);
-    return memorySettings;
+    return {
+      ...memorySettings,
+      stats: memorySettings.stats || INITIAL_SITE_SETTINGS.stats,
+    };
   }
 }
 
@@ -773,6 +817,11 @@ export async function updateAdminUser(
       },
       { upsert: true }
     );
+    memoryAdminUser = {
+      username: cleanUsername,
+      passwordHash: newPasswordHash,
+      updatedAt: now,
+    };
     return { success: true, username: cleanUsername };
   } catch (err) {
     console.error("Error updating admin user in MongoDB:", err);
@@ -788,7 +837,7 @@ export async function getDanceStyles(onlyActive = false): Promise<DanceStyle[]> 
   if (!db) {
     let items = memoryDanceStyles;
     if (onlyActive) items = items.filter((s) => s.isActive !== false);
-    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...items].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 
   try {
@@ -812,19 +861,21 @@ export async function getDanceStyles(onlyActive = false): Promise<DanceStyle[]> 
     const styles = await db
       .collection<DanceStyle>("dance_styles")
       .find(query)
-      .sort({ displayOrder: 1, createdAt: 1 })
       .toArray();
 
-    return styles.map((s) => ({
-      ...s,
-      _id: s._id?.toString(),
-    }));
+    return styles
+      .map((s) => ({
+        ...s,
+        displayOrder: Number(s.displayOrder) || 1,
+        _id: s._id?.toString(),
+      }))
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   } catch (err) {
     console.error("Error fetching dance styles:", err);
     resetDbClient();
     let items = memoryDanceStyles;
     if (onlyActive) items = items.filter((s) => s.isActive !== false);
-    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...items].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 }
 
@@ -881,6 +932,7 @@ export async function createDanceStyle(data: Omit<DanceStyle, "_id">): Promise<D
   const styleToInsert = {
     ...data,
     slug: finalSlug,
+    displayOrder: Number(data.displayOrder) || 1,
     createdAt: now,
     updatedAt: now,
   };
@@ -914,6 +966,9 @@ export async function updateDanceStyle(id: string, data: Partial<DanceStyle>): P
       ? { $or: [{ _id: new ObjectId(id) }, { _id: id }, { slug: id }] }
       : { $or: [{ _id: id }, { slug: id }] };
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     const result = await db.collection("dance_styles").updateOne(query, {
       $set: {
         ...updateData,
@@ -965,7 +1020,7 @@ export async function getCurriculumModules(onlyActive = false): Promise<Curricul
   if (!db) {
     let items = memoryCurriculum;
     if (onlyActive) items = items.filter((m) => m.isActive !== false);
-    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...items].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 
   try {
@@ -990,19 +1045,21 @@ export async function getCurriculumModules(onlyActive = false): Promise<Curricul
     const modules = await db
       .collection<CurriculumModule>("curriculum")
       .find(query)
-      .sort({ displayOrder: 1, createdAt: 1 })
       .toArray();
 
-    return modules.map((m) => ({
-      ...m,
-      _id: m._id?.toString(),
-    }));
+    return modules
+      .map((m) => ({
+        ...m,
+        displayOrder: Number(m.displayOrder) || 1,
+        _id: m._id?.toString(),
+      }))
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   } catch (err) {
     console.error("Error fetching curriculum modules:", err);
     resetDbClient();
     let items = memoryCurriculum;
     if (onlyActive) items = items.filter((m) => m.isActive !== false);
-    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...items].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 }
 
@@ -1013,6 +1070,7 @@ export async function createCurriculumModule(data: Omit<CurriculumModule, "_id">
   if (!db) {
     const newModule: CurriculumModule = {
       ...data,
+      displayOrder: Number(data.displayOrder) || 1,
       _id: `mod-${Date.now()}`,
       createdAt: now,
       updatedAt: now,
@@ -1023,6 +1081,7 @@ export async function createCurriculumModule(data: Omit<CurriculumModule, "_id">
 
   const moduleToInsert = {
     ...data,
+    displayOrder: Number(data.displayOrder) || 1,
     createdAt: now,
     updatedAt: now,
   };
@@ -1054,6 +1113,9 @@ export async function updateCurriculumModule(id: string, data: Partial<Curriculu
   try {
     if (!ObjectId.isValid(id)) return false;
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     const result = await db.collection("curriculum").updateOne(
       { _id: new ObjectId(id) },
       {
@@ -1104,7 +1166,7 @@ export async function getReviews(onlyPublished: boolean = false): Promise<Review
   const db = await getDb();
   if (!db) {
     const list = onlyPublished ? memoryReviews.filter((r) => r.published !== false) : memoryReviews;
-    return [...list].sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...list].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 
   try {
@@ -1131,18 +1193,20 @@ export async function getReviews(onlyPublished: boolean = false): Promise<Review
     const query = onlyPublished ? { published: { $ne: false } } : {};
     const reviews = await collection
       .find(query)
-      .sort({ displayOrder: 1, createdAt: -1 })
       .toArray();
 
-    return reviews.map((r) => ({
-      ...r,
-      _id: r._id?.toString(),
-    }));
+    return reviews
+      .map((r) => ({
+        ...r,
+        displayOrder: Number(r.displayOrder) || 1,
+        _id: r._id?.toString(),
+      }))
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   } catch (err) {
     console.error("Error fetching reviews:", err);
     resetDbClient();
     const list = onlyPublished ? memoryReviews.filter((r) => r.published !== false) : memoryReviews;
-    return [...list].sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...list].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 }
 
@@ -1220,6 +1284,9 @@ export async function updateReview(id: string, data: Partial<ReviewItem>): Promi
   try {
     if (!ObjectId.isValid(id)) return false;
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     if (updateData.author && !updateData.avatarLetter) {
       updateData.avatarLetter = updateData.author.trim()[0].toUpperCase();
     }

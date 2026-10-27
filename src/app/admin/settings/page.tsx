@@ -59,7 +59,11 @@ export default function AdminSettingsPage() {
 
         const settingsData = await settingsRes.json();
         if (settingsData.success && settingsData.data) {
-          setSettings(settingsData.data);
+          const loaded = settingsData.data;
+          if (!loaded.stats || !Array.isArray(loaded.stats) || loaded.stats.length !== 6) {
+            loaded.stats = INITIAL_SITE_SETTINGS.stats;
+          }
+          setSettings(loaded);
         }
 
         const credsData = await credsRes.json();
@@ -559,10 +563,126 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              {/* Section 3: Contact & Social */}
+              {/* Section 3: DKDC By The Numbers (Milestones & Impact) */}
+              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900 pb-3">
+                  <div>
+                    <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow">
+                      3. DKDC By The Numbers (Milestones & Impact)
+                    </h2>
+                    <p className="text-[11px] text-neutral-400 font-light mt-0.5">
+                      Customize the 6 headline counter metrics displayed on the homepage. Edit the target numbers, suffixes (+, etc.), and descriptive labels.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono text-neutral-500 uppercase px-2 py-1 bg-neutral-900 border border-neutral-800 self-start sm:self-auto shrink-0">
+                    6 Fixed Metrics
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                  {(settings.stats && settings.stats.length === 6
+                    ? settings.stats
+                    : INITIAL_SITE_SETTINGS.stats || []
+                  ).map((stat, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3.5 bg-black border border-neutral-800 hover:border-neutral-700 transition-colors space-y-3 min-w-0"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-dk-yellow">
+                          Metric #{idx + 1}
+                        </span>
+                        <span className="text-[11px] font-mono font-medium text-white px-2 py-0.5 bg-neutral-900 border border-neutral-800 rounded">
+                          Preview: {stat.target}
+                          {stat.suffix || ""}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                            Target Count
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            required
+                            value={stat.target}
+                            onChange={(e) => {
+                              const updated = [
+                                ...(settings.stats && settings.stats.length === 6
+                                  ? settings.stats
+                                  : INITIAL_SITE_SETTINGS.stats || []),
+                              ];
+                              updated[idx] = {
+                                ...updated[idx],
+                                target: parseInt(e.target.value, 10) || 0,
+                              };
+                              setSettings({ ...settings, stats: updated });
+                            }}
+                            className="w-full bg-neutral-950 border border-neutral-800 px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-dk-yellow"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                            Suffix (e.g. +)
+                          </label>
+                          <input
+                            type="text"
+                            maxLength={8}
+                            value={stat.suffix ?? ""}
+                            onChange={(e) => {
+                              const updated = [
+                                ...(settings.stats && settings.stats.length === 6
+                                  ? settings.stats
+                                  : INITIAL_SITE_SETTINGS.stats || []),
+                              ];
+                              updated[idx] = {
+                                ...updated[idx],
+                                suffix: e.target.value,
+                              };
+                              setSettings({ ...settings, stats: updated });
+                            }}
+                            placeholder="+, %, etc."
+                            className="w-full bg-neutral-950 border border-neutral-800 px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-dk-yellow"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                          Display Label / Title
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={stat.label}
+                          onChange={(e) => {
+                            const updated = [
+                              ...(settings.stats && settings.stats.length === 6
+                                ? settings.stats
+                                : INITIAL_SITE_SETTINGS.stats || []),
+                            ];
+                            updated[idx] = {
+                              ...updated[idx],
+                              label: e.target.value,
+                            };
+                            setSettings({ ...settings, stats: updated });
+                          }}
+                          placeholder="e.g. Students Trained"
+                          className="w-full bg-neutral-950 border border-neutral-800 px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-dk-yellow break-words [overflow-wrap:anywhere]"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Section 4: Contact & Social */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  3. Contact & Social Channels
+                  4. Contact & Social Channels
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -52,7 +52,7 @@ export default async function HomePage() {
           <BrandIntroSection />
 
           {/* Animated Statistics Counter (3,000+ Students, 10+ Trainers, 6 Studios, 2 Countries) */}
-          <StatsCounterSection />
+          <StatsCounterSection stats={siteSettings.stats} />
 
           {/* 3. Dance Disciplines & Styles */}
           <DanceStylesSection styles={danceStyles} curriculum={curriculum} />
