@@ -56,7 +56,6 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ metadata, file }) => {
       const fileUrl =
         (file as any).ufsUrl ||
-        file.url ||
         (file.key ? `https://utfs.io/f/${file.key}` : "");
       return {
         uploadedBy: metadata.uploadedBy,
@@ -81,7 +80,6 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ metadata, file }) => {
       const fileUrl =
         (file as any).ufsUrl ||
-        file.url ||
         (file.key ? `https://utfs.io/f/${file.key}` : "");
       return {
         uploadedBy: metadata.uploadedBy,
@@ -104,7 +102,9 @@ export const ourFileRouter = {
       return { uploadedBy: user.username };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      const fileUrl = (file as any).ufsUrl || file.url;
+      const fileUrl =
+        (file as any).ufsUrl ||
+        (file.key ? `https://utfs.io/f/${file.key}` : "");
       return {
         uploadedBy: metadata.uploadedBy,
         url: fileUrl,

@@ -42,3 +42,4 @@ next-env.d.ts
 
 # documentation & testing checklist
 /Test.md
+/VERCEL_READINESS_REPORT.md

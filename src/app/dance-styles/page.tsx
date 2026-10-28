@@ -85,7 +85,7 @@ export default async function DanceStylesPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
                     <div className="absolute top-4 left-4 z-10">
                       <span className="font-mono text-xs px-3 py-1 rounded-full bg-black/70 text-dk-yellow border border-white/10 backdrop-blur-md">
-                        {style.number} // DISCIPLINE
+                        {style.number}{" // DISCIPLINE"}
                       </span>
                     </div>
                   </RevealImage>
@@ -180,7 +180,7 @@ export default async function DanceStylesPage() {
                   <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-dk-yellow/40 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl min-w-0 max-w-full overflow-hidden flex flex-col justify-between">
                     <div className="min-w-0 max-w-full">
                       <span className="text-xs font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors break-words [overflow-wrap:anywhere]">
-                        MODULE {idx < 9 ? `0${idx + 1}` : idx + 1} // {String((item as any).badge || "CONDITIONING")}
+                        MODULE {idx < 9 ? `0${idx + 1}` : idx + 1}{" // "}{String((item as any).badge || "CONDITIONING")}
                       </span>
                       <h3 className="text-xl font-heading font-light uppercase text-white mb-3 break-words [overflow-wrap:anywhere]">
                         {item.title}

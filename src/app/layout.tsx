@@ -2,8 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/context/ToastContext";
-import { InitialPreloader } from "@/components/ui/InitialPreloader";
-import { AutoRefreshSync } from "@/components/ui/AutoRefreshSync";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -132,8 +130,6 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-black text-white font-light tracking-[-0.01em] antialiased selection:bg-[#FFF102] selection:text-black min-h-screen flex flex-col justify-between`}>
         <ToastProvider>
-          <InitialPreloader />
-          <AutoRefreshSync />
           {children}
         </ToastProvider>
       </body>

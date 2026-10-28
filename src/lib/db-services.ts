@@ -20,7 +20,6 @@ import {
   SPECIAL_TRAINING_MODULES,
   INITIAL_REVIEWS,
 } from "./constants";
-import { setServerContentUpdated } from "./sync-events";
 
 // In-memory runtime fallbacks when MongoDB is not connected in local dev
 let memoryBranches: Branch[] = [...INITIAL_BRANCHES];
@@ -44,6 +43,40 @@ let memoryReviews: ReviewItem[] = INITIAL_REVIEWS.map((r, i) => ({
   ...r,
   _id: `rev-${i + 1}`,
 }));
+
+// ==========================================
+// HIGH PERFORMANCE IN-MEMORY QUERY CACHING
+// ==========================================
+interface CacheEntry<T> {
+  data: T;
+  expiry: number;
+}
+const globalQueryCache = new Map<string, CacheEntry<any>>();
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds TTL
+
+export function invalidateCache(keyPrefix?: string) {
+  if (keyPrefix) {
+    for (const k of globalQueryCache.keys()) {
+      if (k.startsWith(keyPrefix)) {
+        globalQueryCache.delete(k);
+      }
+    }
+  } else {
+    globalQueryCache.clear();
+  }
+}
+
+function getFromCache<T>(key: string): T | null {
+  const entry = globalQueryCache.get(key);
+  if (entry && entry.expiry > Date.now()) {
+    return entry.data;
+  }
+  return null;
+}
+
+function setToCache<T>(key: string, data: T, ttlMs = CACHE_TTL_MS): void {
+  globalQueryCache.set(key, { data, expiry: Date.now() + ttlMs });
+}
 
 // ==========================================
 // ORDERING & POSITION MANAGEMENT
@@ -177,6 +210,9 @@ export async function resequenceCollection(
 // BRANCHES
 // ==========================================
 export async function getBranches(): Promise<Branch[]> {
+  const cached = getFromCache<Branch[]>("branches");
+  if (cached) return cached;
+
   const db = await getDb();
   if (!db) {
     return [...memoryBranches].sort(
@@ -191,12 +227,14 @@ export async function getBranches(): Promise<Branch[]> {
       .toArray();
 
     if (branches.length === 0) {
-      return [...memoryBranches].sort(
+      const fallback = [...memoryBranches].sort(
         (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
       );
+      setToCache("branches", fallback);
+      return fallback;
     }
 
-    return branches
+    const result = branches
       .map((b) => ({
         ...b,
         displayOrder: Number(b.displayOrder) || 1,
@@ -205,9 +243,11 @@ export async function getBranches(): Promise<Branch[]> {
       .sort(
         (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
       );
+
+    setToCache("branches", result);
+    return result;
   } catch (err) {
     console.error("Error fetching branches:", err);
-    resetDbClient();
     return [...memoryBranches].sort(
       (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
     );
@@ -722,6 +762,9 @@ export async function deleteEnquiry(id: string): Promise<boolean> {
 // SITE SETTINGS
 // ==========================================
 export async function getSiteSettings(): Promise<SiteSettings> {
+  const cached = getFromCache<SiteSettings>("siteSettings");
+  if (cached) return cached;
+
   const db = await getDb();
   if (!db) {
     return memorySettings;
@@ -733,13 +776,15 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       .findOne({});
 
     if (!settings) {
-      return {
+      const fallback = {
         ...memorySettings,
         stats: memorySettings.stats || INITIAL_SITE_SETTINGS.stats,
       };
+      setToCache("siteSettings", fallback);
+      return fallback;
     }
 
-    return {
+    const result: SiteSettings = {
       heroVideoUrl: settings.heroVideoUrl || INITIAL_SITE_SETTINGS.heroVideoUrl,
       ...settings,
       stats: settings.stats && Array.isArray(settings.stats) && settings.stats.length === 6
@@ -747,6 +792,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         : INITIAL_SITE_SETTINGS.stats,
       _id: settings._id?.toString(),
     };
+    setToCache("siteSettings", result);
+    return result;
   } catch (err) {
     console.error("Error fetching site settings:", err);
     return {
@@ -760,6 +807,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 export async function updateSiteSettings(
   data: Partial<SiteSettings>
 ): Promise<boolean> {
+  invalidateCache("siteSettings");
   const db = await getDb();
   const now = new Date().toISOString();
 
@@ -784,6 +832,7 @@ export async function updateSiteSettings(
       },
       { upsert: true }
     );
+    invalidateCache("siteSettings");
     setServerContentUpdated();
     return true;
   } catch (err) {

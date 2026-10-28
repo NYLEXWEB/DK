@@ -351,7 +351,7 @@ export default function AdminEnquiriesPage() {
 
                     {enq.message && (
                       <p className="text-xs text-neutral-400 line-clamp-2 font-mono leading-relaxed bg-black/40 p-2.5 border border-neutral-900">
-                        "{enq.message}"
+                        &quot;{enq.message}&quot;
                       </p>
                     )}
 

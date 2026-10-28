@@ -1,4 +1,12 @@
 import { MongoClient, Db } from "mongodb";
+import dns from "dns";
+
+// Optimize DNS lookup to prioritize IPv4 to prevent 15-second SRV hangs on dual-stack networks
+try {
+  if (typeof (dns as any).setDefaultResultOrder === "function") {
+    (dns as any).setDefaultResultOrder("ipv4first");
+  }
+} catch {}
 
 const uri = process.env.MONGODB_URI || "";
 const dbName = process.env.MONGODB_DB_NAME || "dkdancecompany";
@@ -32,11 +40,11 @@ async function getConnectedClient(): Promise<MongoClient | null> {
 
   if (!globalWithMongo._mongoClientPromise) {
     const client = new MongoClient(uri, {
-      maxPoolSize: 10,
+      maxPoolSize: 20,
       minPoolSize: 1,
-      maxIdleTimeMS: 30000,
-      serverSelectionTimeoutMS: 15000,
-      connectTimeoutMS: 15000,
+      maxIdleTimeMS: 60000,
+      serverSelectionTimeoutMS: 4000,
+      connectTimeoutMS: 4000,
       socketTimeoutMS: 45000,
       retryWrites: true,
       retryReads: true,

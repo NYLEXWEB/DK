@@ -2,6 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Lock, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
@@ -167,12 +168,12 @@ function LoginForm() {
       </form>
 
       <div className="mt-8 pt-6 border-t border-neutral-900 text-center">
-        <a
+        <Link
           href="/"
           className="text-[11px] font-mono uppercase tracking-widest text-neutral-500 hover:text-white transition-colors"
         >
           ← Return To Public Site
-        </a>
+        </Link>
       </div>
     </div>
   );
