@@ -88,8 +88,12 @@ export async function reorderCollectionItems(
 ): Promise<void> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error(`Database service unavailable: failed to reorder ${collectionName}.`);
+    }
     let list: Array<any> = [];
     if (collectionName === "curriculum") list = memoryCurriculum;
     else if (collectionName === "dance_styles") list = memoryDanceStyles;
@@ -150,6 +154,7 @@ export async function reorderCollectionItems(
     }
   } catch (err) {
     console.error(`Error in reorderCollectionItems for ${collectionName}:`, err);
+    throw err;
   }
 }
 
@@ -158,8 +163,12 @@ export async function resequenceCollection(
 ): Promise<void> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error(`Database service unavailable: failed to resequence ${collectionName}.`);
+    }
     let list: Array<any> = [];
     if (collectionName === "curriculum") list = memoryCurriculum;
     else if (collectionName === "dance_styles") list = memoryDanceStyles;
@@ -200,6 +209,7 @@ export async function resequenceCollection(
     }
   } catch (err) {
     console.error(`Error in resequenceCollection for ${collectionName}:`, err);
+    throw err;
   }
 }
 
@@ -278,6 +288,7 @@ export async function getBranchBySlug(slug: string): Promise<Branch | null> {
 export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   let finalSlug = data.slug;
   if (db) {
@@ -298,6 +309,9 @@ export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
   };
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to create branch.");
+    }
     const newBranch: Branch = {
       ...item,
       _id: "mem_" + Date.now(),
@@ -307,14 +321,19 @@ export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
     return newBranch;
   }
 
-  const result = await db.collection("branches").insertOne(item as any);
-  const insertedId = result.insertedId.toString();
-  await reorderCollectionItems("branches", insertedId, item.displayOrder);
-  invalidateCache("branches");
-  return {
-    ...item,
-    _id: insertedId,
-  };
+  try {
+    const result = await db.collection("branches").insertOne(item as any);
+    const insertedId = result.insertedId.toString();
+    await reorderCollectionItems("branches", insertedId, item.displayOrder);
+    invalidateCache("branches");
+    return {
+      ...item,
+      _id: insertedId,
+    };
+  } catch (err) {
+    console.error("Error creating branch in database:", err);
+    throw err;
+  }
 }
 
 export async function updateBranch(
@@ -323,8 +342,12 @@ export async function updateBranch(
 ): Promise<boolean> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to update branch.");
+    }
     const index = memoryBranches.findIndex((b) => b._id === id || b.slug === id);
     if (index !== -1) {
       memoryBranches[index] = {
@@ -366,13 +389,18 @@ export async function updateBranch(
     return false;
   } catch (err) {
     console.error("Error updating branch:", err);
-    return false;
+    throw err;
   }
 }
 
 export async function deleteBranch(id: string): Promise<boolean> {
   const db = await getDb();
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to delete branch.");
+    }
     const target = memoryBranches.find((b) => b._id === id || b.slug === id);
     if (target) {
       deleteUploadThingFiles([target.imageKey, target.imageUrl]).catch(() => {});
@@ -390,19 +418,21 @@ export async function deleteBranch(id: string): Promise<boolean> {
       : { $or: [{ _id: id }, { slug: id }] };
 
     const branch = await db.collection<Branch>("branches").findOne(query);
-    if (branch) {
-      await deleteUploadThingFiles([branch.imageKey, branch.imageUrl]);
-    }
+    if (!branch) return false;
 
     const result = await db.collection("branches").deleteOne(query);
     if (result.deletedCount > 0) {
       await resequenceCollection("branches");
       invalidateCache("branches");
+      deleteUploadThingFiles([branch.imageKey, branch.imageUrl]).catch((err) => {
+        console.warn("Failed to delete UploadThing file after branch deletion:", err);
+      });
+      return true;
     }
-    return result.deletedCount > 0;
+    return false;
   } catch (err) {
     console.error("Error deleting branch:", err);
-    return false;
+    throw err;
   }
 }
 
@@ -531,6 +561,7 @@ export async function getVideos(options?: {
 export async function createMedia(data: Omit<MediaItem, "_id">): Promise<MediaItem> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
   const item: MediaItem = {
     ...data,
     displayOrder: Number(data.displayOrder) || 1,
@@ -539,6 +570,9 @@ export async function createMedia(data: Omit<MediaItem, "_id">): Promise<MediaIt
   };
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to create media item.");
+    }
     const newItem: MediaItem = {
       ...item,
       _id: "mem_media_" + Date.now(),
@@ -547,13 +581,18 @@ export async function createMedia(data: Omit<MediaItem, "_id">): Promise<MediaIt
     return newItem;
   }
 
-  const result = await db.collection("media").insertOne(item as any);
-  const insertedId = result.insertedId.toString();
-  await reorderCollectionItems("media", insertedId, item.displayOrder);
-  return {
-    ...item,
-    _id: insertedId,
-  };
+  try {
+    const result = await db.collection("media").insertOne(item as any);
+    const insertedId = result.insertedId.toString();
+    await reorderCollectionItems("media", insertedId, item.displayOrder);
+    return {
+      ...item,
+      _id: insertedId,
+    };
+  } catch (err) {
+    console.error("Error creating media item in database:", err);
+    throw err;
+  }
 }
 
 export async function updateMedia(
@@ -562,8 +601,12 @@ export async function updateMedia(
 ): Promise<boolean> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to update media item.");
+    }
     const index = memoryMedia.findIndex((m) => m._id === id);
     if (index !== -1) {
       memoryMedia[index] = {
@@ -605,13 +648,18 @@ export async function updateMedia(
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating media:", err);
-    return false;
+    throw err;
   }
 }
 
 export async function deleteMedia(id: string): Promise<MediaItem | null> {
   const db = await getDb();
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to delete media item.");
+    }
     const item = memoryMedia.find((m) => m._id === id);
     if (item) {
       deleteUploadThingFiles([
@@ -634,23 +682,26 @@ export async function deleteMedia(id: string): Promise<MediaItem | null> {
       .findOne({ _id: new ObjectId(id) })) as any;
     if (!item) return null;
 
-    // Delete associated files from UploadThing Cloud Storage
-    await deleteUploadThingFiles([
-      item.key,
-      item.url,
-      item.thumbnailKey,
-      item.thumbnailUrl,
-    ]);
-
-    await db.collection("media").deleteOne({ _id: new ObjectId(id) });
-    await resequenceCollection("media");
-    return {
-      ...item,
-      _id: item._id?.toString(),
-    };
+    const result = await db.collection("media").deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount > 0) {
+      await resequenceCollection("media");
+      deleteUploadThingFiles([
+        item.key,
+        item.url,
+        item.thumbnailKey,
+        item.thumbnailUrl,
+      ]).catch((err) => {
+        console.warn("Failed to delete UploadThing files after media deletion:", err);
+      });
+      return {
+        ...item,
+        _id: item._id?.toString(),
+      };
+    }
+    return null;
   } catch (err) {
     console.error("Error deleting media:", err);
-    return null;
+    throw err;
   }
 }
 
@@ -689,6 +740,7 @@ export async function createEnquiry(
 ): Promise<Enquiry> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
   const item: Enquiry = {
     ...data,
     status: "new",
@@ -697,6 +749,9 @@ export async function createEnquiry(
   };
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to submit enquiry.");
+    }
     const newEnquiry: Enquiry = {
       ...item,
       _id: "mem_enq_" + Date.now(),
@@ -705,11 +760,16 @@ export async function createEnquiry(
     return newEnquiry;
   }
 
-  const result = await db.collection("enquiries").insertOne(item as any);
-  return {
-    ...item,
-    _id: result.insertedId.toString(),
-  };
+  try {
+    const result = await db.collection("enquiries").insertOne(item as any);
+    return {
+      ...item,
+      _id: result.insertedId.toString(),
+    };
+  } catch (err) {
+    console.error("Error creating enquiry in database:", err);
+    throw err;
+  }
 }
 
 export async function updateEnquiryStatus(
@@ -718,8 +778,12 @@ export async function updateEnquiryStatus(
 ): Promise<boolean> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to update enquiry status.");
+    }
     const index = memoryEnquiries.findIndex((e) => e._id === id);
     if (index !== -1) {
       memoryEnquiries[index].status = status;
@@ -740,13 +804,18 @@ export async function updateEnquiryStatus(
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating enquiry:", err);
-    return false;
+    throw err;
   }
 }
 
 export async function deleteEnquiry(id: string): Promise<boolean> {
   const db = await getDb();
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to delete enquiry.");
+    }
     const len = memoryEnquiries.length;
     memoryEnquiries = memoryEnquiries.filter((e) => e._id !== id);
     return memoryEnquiries.length < len;
@@ -760,7 +829,7 @@ export async function deleteEnquiry(id: string): Promise<boolean> {
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting enquiry:", err);
-    return false;
+    throw err;
   }
 }
 
@@ -816,8 +885,12 @@ export async function updateSiteSettings(
   invalidateCache("siteSettings");
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to update site settings.");
+    }
     memorySettings = {
       ...memorySettings,
       ...data,
@@ -842,7 +915,7 @@ export async function updateSiteSettings(
     return true;
   } catch (err) {
     console.error("Error updating site settings:", err);
-    return false;
+    throw err;
   }
 }
 
@@ -855,7 +928,12 @@ export async function seedDatabase(): Promise<{
   mediaSeeded: number;
 }> {
   const db = await getDb();
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: cannot seed database without MongoDB connection.");
+    }
     return {
       branchesSeeded: memoryBranches.length,
       settingsSeeded: true,
@@ -1016,8 +1094,12 @@ export async function updateAdminUser(
 
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to update administrator credentials.");
+    }
     memoryAdminUser = {
       username: cleanUsername,
       passwordHash: newPasswordHash,
@@ -1047,7 +1129,7 @@ export async function updateAdminUser(
     return { success: true, username: cleanUsername };
   } catch (err) {
     console.error("Error updating admin user in MongoDB:", err);
-    return { success: false, error: "Database error while updating credentials." };
+    throw err;
   }
 }
 
@@ -1126,6 +1208,7 @@ export async function getDanceStyleBySlug(slug: string): Promise<DanceStyle | nu
 export async function createDanceStyle(data: Omit<DanceStyle, "_id">): Promise<DanceStyle> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
   let baseSlug = (data.slug || data.name)
     .toLowerCase()
     .trim()
@@ -1133,6 +1216,9 @@ export async function createDanceStyle(data: Omit<DanceStyle, "_id">): Promise<D
     .replace(/^-+|-+$/g, "");
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to create dance style.");
+    }
     const newStyle: DanceStyle = {
       ...data,
       slug: baseSlug,
@@ -1144,35 +1230,44 @@ export async function createDanceStyle(data: Omit<DanceStyle, "_id">): Promise<D
     return newStyle;
   }
 
-  let finalSlug = baseSlug;
-  let counter = 2;
-  while (await db.collection("dance_styles").findOne({ slug: finalSlug })) {
-    finalSlug = `${baseSlug}-${counter}`;
-    counter++;
+  try {
+    let finalSlug = baseSlug;
+    let counter = 2;
+    while (await db.collection("dance_styles").findOne({ slug: finalSlug })) {
+      finalSlug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
+    const styleToInsert = {
+      ...data,
+      slug: finalSlug,
+      displayOrder: Number(data.displayOrder) || 1,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const result = await db.collection("dance_styles").insertOne(styleToInsert as any);
+    const insertedId = result.insertedId.toString();
+    await reorderCollectionItems("dance_styles", insertedId, styleToInsert.displayOrder);
+    return {
+      ...styleToInsert,
+      _id: insertedId,
+    };
+  } catch (err) {
+    console.error("Error creating dance style in database:", err);
+    throw err;
   }
-
-  const styleToInsert = {
-    ...data,
-    slug: finalSlug,
-    displayOrder: Number(data.displayOrder) || 1,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  const result = await db.collection("dance_styles").insertOne(styleToInsert as any);
-  const insertedId = result.insertedId.toString();
-  await reorderCollectionItems("dance_styles", insertedId, styleToInsert.displayOrder);
-  return {
-    ...styleToInsert,
-    _id: insertedId,
-  };
 }
 
 export async function updateDanceStyle(id: string, data: Partial<DanceStyle>): Promise<boolean> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to update dance style.");
+    }
     const index = memoryDanceStyles.findIndex((s) => s._id === id || s.slug === id);
     if (index !== -1) {
       memoryDanceStyles[index] = {
@@ -1209,13 +1304,18 @@ export async function updateDanceStyle(id: string, data: Partial<DanceStyle>): P
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating dance style:", err);
-    return false;
+    throw err;
   }
 }
 
 export async function deleteDanceStyle(id: string): Promise<boolean> {
   const db = await getDb();
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to delete dance style.");
+    }
     const target = memoryDanceStyles.find((s) => s._id === id || s.slug === id);
     if (target) {
       deleteUploadThingFiles([target.imageKey, target.image]).catch(() => {});
@@ -1232,18 +1332,20 @@ export async function deleteDanceStyle(id: string): Promise<boolean> {
       : { $or: [{ _id: id }, { slug: id }] };
 
     const style = await db.collection<DanceStyle>("dance_styles").findOne(query);
-    if (style) {
-      await deleteUploadThingFiles([style.imageKey, style.image]);
-    }
+    if (!style) return false;
 
     const result = await db.collection("dance_styles").deleteOne(query);
     if (result.deletedCount > 0) {
       await resequenceCollection("dance_styles");
+      deleteUploadThingFiles([style.imageKey, style.image]).catch((err) => {
+        console.warn("Failed to delete UploadThing file after dance style deletion:", err);
+      });
+      return true;
     }
-    return result.deletedCount > 0;
+    return false;
   } catch (err) {
     console.error("Error deleting dance style:", err);
-    return false;
+    throw err;
   }
 }
 
@@ -1301,8 +1403,12 @@ export async function getCurriculumModules(onlyActive = false): Promise<Curricul
 export async function createCurriculumModule(data: Omit<CurriculumModule, "_id">): Promise<CurriculumModule> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to create curriculum module.");
+    }
     const newModule: CurriculumModule = {
       ...data,
       displayOrder: Number(data.displayOrder) || 1,
@@ -1314,27 +1420,36 @@ export async function createCurriculumModule(data: Omit<CurriculumModule, "_id">
     return newModule;
   }
 
-  const moduleToInsert = {
-    ...data,
-    displayOrder: Number(data.displayOrder) || 1,
-    createdAt: now,
-    updatedAt: now,
-  };
+  try {
+    const moduleToInsert = {
+      ...data,
+      displayOrder: Number(data.displayOrder) || 1,
+      createdAt: now,
+      updatedAt: now,
+    };
 
-  const result = await db.collection("curriculum").insertOne(moduleToInsert as any);
-  const insertedId = result.insertedId.toString();
-  await reorderCollectionItems("curriculum", insertedId, moduleToInsert.displayOrder);
-  return {
-    ...moduleToInsert,
-    _id: insertedId,
-  };
+    const result = await db.collection("curriculum").insertOne(moduleToInsert as any);
+    const insertedId = result.insertedId.toString();
+    await reorderCollectionItems("curriculum", insertedId, moduleToInsert.displayOrder);
+    return {
+      ...moduleToInsert,
+      _id: insertedId,
+    };
+  } catch (err) {
+    console.error("Error creating curriculum module in database:", err);
+    throw err;
+  }
 }
 
 export async function updateCurriculumModule(id: string, data: Partial<CurriculumModule>): Promise<boolean> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to update curriculum module.");
+    }
     const index = memoryCurriculum.findIndex((m) => m._id === id);
     if (index !== -1) {
       memoryCurriculum[index] = {
@@ -1372,13 +1487,18 @@ export async function updateCurriculumModule(id: string, data: Partial<Curriculu
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating curriculum module:", err);
-    return false;
+    throw err;
   }
 }
 
 export async function deleteCurriculumModule(id: string): Promise<boolean> {
   const db = await getDb();
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to delete curriculum module.");
+    }
     const initialLen = memoryCurriculum.length;
     memoryCurriculum = memoryCurriculum.filter((m) => m._id !== id);
     await resequenceCollection("curriculum");
@@ -1394,7 +1514,7 @@ export async function deleteCurriculumModule(id: string): Promise<boolean> {
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting curriculum module:", err);
-    return false;
+    throw err;
   }
 }
 
@@ -1498,7 +1618,12 @@ export async function createReview(data: Omit<ReviewItem, "_id">): Promise<Revie
     updatedAt: now,
   };
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to create review.");
+    }
     const newReview = { ...reviewDoc, _id: `rev-${Date.now()}` };
     memoryReviews.push(newReview);
     return newReview;
@@ -1521,8 +1646,12 @@ export async function createReview(data: Omit<ReviewItem, "_id">): Promise<Revie
 export async function updateReview(id: string, data: Partial<ReviewItem>): Promise<boolean> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to update review.");
+    }
     const idx = memoryReviews.findIndex((r) => r._id === id);
     if (idx !== -1) {
       memoryReviews[idx] = { ...memoryReviews[idx], ...data, updatedAt: now };
@@ -1559,13 +1688,18 @@ export async function updateReview(id: string, data: Partial<ReviewItem>): Promi
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating review:", err);
-    return false;
+    throw err;
   }
 }
 
 export async function deleteReview(id: string): Promise<boolean> {
   const db = await getDb();
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!db) {
+    if (isProduction) {
+      throw new Error("Database service unavailable: failed to delete review.");
+    }
     const initialLen = memoryReviews.length;
     memoryReviews = memoryReviews.filter((r) => r._id !== id);
     await resequenceCollection("reviews");
@@ -1581,7 +1715,7 @@ export async function deleteReview(id: string): Promise<boolean> {
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting review:", err);
-    return false;
+    throw err;
   }
 }
 

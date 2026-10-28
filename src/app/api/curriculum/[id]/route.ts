@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { updateCurriculumModule, deleteCurriculumModule } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
 
@@ -30,14 +31,8 @@ export async function PATCH(
       );
     }
 
-    import("next/cache").then(({ revalidatePath }) => {
-      try {
-        revalidatePath("/");
-        revalidatePath("/dance-styles");
-      } catch (err) {
-        console.warn("Revalidate error on update curriculum module:", err);
-      }
-    });
+    revalidatePath("/");
+    revalidatePath("/dance-styles");
 
     return NextResponse.json({
       success: true,
@@ -71,14 +66,8 @@ export async function DELETE(
       );
     }
 
-    import("next/cache").then(({ revalidatePath }) => {
-      try {
-        revalidatePath("/");
-        revalidatePath("/dance-styles");
-      } catch (err) {
-        console.warn("Revalidate error on delete curriculum module:", err);
-      }
-    });
+    revalidatePath("/");
+    revalidatePath("/dance-styles");
 
     return NextResponse.json({
       success: true,
