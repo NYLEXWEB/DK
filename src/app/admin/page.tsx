@@ -8,6 +8,9 @@ import {
   Inbox,
   Sparkles,
   GraduationCap,
+  Star,
+  HardDrive,
+  AlertTriangle,
   ArrowRight,
   ExternalLink,
 } from "lucide-react";
@@ -19,7 +22,9 @@ import {
   getEnquiries,
   getDanceStyles,
   getCurriculumModules,
+  getReviews,
 } from "@/lib/db-services";
+import { getUploadThingStorageUsage } from "@/lib/uploadthing-server";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -30,13 +35,27 @@ export default async function AdminDashboardPage() {
     redirect("/admin/login");
   }
 
-  const [branches, mediaItems, enquiries, danceStyles, curriculum] = await Promise.all([
+  const [
+    branches,
+    mediaItems,
+    enquiries,
+    danceStyles,
+    curriculum,
+    reviews,
+    storageUsage,
+  ] = await Promise.all([
     getBranches(),
     getMedia(),
     getEnquiries(),
     getDanceStyles(),
     getCurriculumModules(),
+    getReviews(),
+    getUploadThingStorageUsage(),
   ]);
+
+  const publishedReviews = reviews.filter(
+    (r) => r.published !== false
+  ).length;
 
   const publishedImages = mediaItems.filter(
     (m) => m.type === "image" && m.published
@@ -70,8 +89,54 @@ export default async function AdminDashboardPage() {
       </AdminHeader>
 
       <main className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 flex-1 max-w-7xl">
+        {/* Cloud Storage Warning Banner if usage reaches 1 GB (50%) or higher */}
+        {storageUsage.isWarning && (
+          <div
+            className={`p-4 border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+              storageUsage.isCritical
+                ? "bg-red-950/30 border-dk-red text-red-200"
+                : "bg-amber-950/30 border-amber-500/60 text-amber-200"
+            }`}
+          >
+            <div className="flex items-start sm:items-center gap-3">
+              <AlertTriangle
+                className={`w-5 h-5 shrink-0 mt-0.5 sm:mt-0 ${
+                  storageUsage.isCritical ? "text-dk-red" : "text-amber-400"
+                }`}
+              />
+              <div>
+                <p className="text-xs sm:text-sm font-medium">
+                  {storageUsage.isCritical
+                    ? "Critical Cloud Storage Alert: Storage is at 85%+ capacity!"
+                    : "Cloud Storage Warning: Storage has reached 50%+ capacity (1 GB threshold)"}
+                </p>
+                <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
+                  You have used{" "}
+                  <span className="font-semibold text-white">
+                    {storageUsage.totalMb >= 1024
+                      ? `${storageUsage.totalGb} GB`
+                      : `${storageUsage.totalMb} MB`}
+                  </span>{" "}
+                  of the 2,048 MB (2 GB) UploadThing free tier limit ({storageUsage.percentageUsed}% used across {storageUsage.filesUploaded} files).
+                  Please delete unused photos or videos to prevent upload failures.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/admin/media"
+              className={`shrink-0 px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors border ${
+                storageUsage.isCritical
+                  ? "bg-dk-red text-white border-dk-red hover:bg-red-600"
+                  : "bg-amber-400 text-black border-amber-400 hover:bg-amber-300 font-semibold"
+              }`}
+            >
+              Clean Up Media →
+            </Link>
+          </div>
+        )}
+
         {/* Metric Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
@@ -145,6 +210,31 @@ export default async function AdminDashboardPage() {
           <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
+                Google Reviews
+              </span>
+              <Star className="w-4 h-4 text-dk-yellow" />
+            </div>
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl sm:text-4xl font-heading font-extralight text-white">
+                  {publishedReviews}
+                </span>
+                <span className="text-xs font-mono text-neutral-500">
+                  / {reviews.length} total
+                </span>
+              </div>
+              <Link
+                href="/admin/reviews"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-2 sm:mt-3 inline-block"
+              >
+                Manage reviews →
+              </Link>
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <span className="text-xs font-mono uppercase text-neutral-400">
                 Photo Library
               </span>
               <ImageIcon className="w-4 h-4 text-white" />
@@ -178,6 +268,63 @@ export default async function AdminDashboardPage() {
                 className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-red mt-2 sm:mt-3 inline-block"
               >
                 Manage video showcase →
+              </Link>
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <span className="text-xs font-mono uppercase text-neutral-400">
+                Cloud Storage (2 GB)
+              </span>
+              <HardDrive
+                className={`w-4 h-4 ${
+                  storageUsage.isCritical
+                    ? "text-dk-red"
+                    : storageUsage.isWarning
+                    ? "text-amber-400"
+                    : "text-dk-yellow"
+                }`}
+              />
+            </div>
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl sm:text-4xl font-heading font-extralight text-white">
+                  {storageUsage.totalMb >= 1024
+                    ? `${storageUsage.totalGb} GB`
+                    : `${storageUsage.totalMb} MB`}
+                </span>
+                <span className="text-xs font-mono text-neutral-500">
+                  / {storageUsage.limitGb} GB
+                </span>
+              </div>
+
+              {/* Visual Storage Bar */}
+              <div className="w-full bg-neutral-900 h-1.5 rounded-full overflow-hidden mt-2.5">
+                <div
+                  className={`h-full transition-all duration-500 ${
+                    storageUsage.isCritical
+                      ? "bg-dk-red"
+                      : storageUsage.isWarning
+                      ? "bg-amber-400"
+                      : "bg-dk-yellow"
+                  }`}
+                  style={{
+                    width: `${Math.max(2, Math.min(100, storageUsage.percentageUsed))}%`,
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500 mt-2">
+                <span>{storageUsage.percentageUsed}% used</span>
+                <span>{storageUsage.filesUploaded} files</span>
+              </div>
+
+              <Link
+                href="/admin/media"
+                className="text-[11px] font-mono uppercase text-neutral-500 hover:text-dk-yellow mt-2 sm:mt-2.5 inline-block"
+              >
+                Manage media files →
               </Link>
             </div>
           </div>

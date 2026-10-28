@@ -20,6 +20,7 @@ import {
   SPECIAL_TRAINING_MODULES,
   INITIAL_REVIEWS,
 } from "./constants";
+import { setServerContentUpdated } from "./sync-events";
 
 // In-memory runtime fallbacks when MongoDB is not connected in local dev
 let memoryBranches: Branch[] = [...INITIAL_BRANCHES];
@@ -43,6 +44,134 @@ let memoryReviews: ReviewItem[] = INITIAL_REVIEWS.map((r, i) => ({
   ...r,
   _id: `rev-${i + 1}`,
 }));
+
+// ==========================================
+// ORDERING & POSITION MANAGEMENT
+// ==========================================
+export async function reorderCollectionItems(
+  collectionName: "curriculum" | "dance_styles" | "branches" | "reviews" | "media",
+  targetId: string,
+  targetPosition: number
+): Promise<void> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    let list: Array<any> = [];
+    if (collectionName === "curriculum") list = memoryCurriculum;
+    else if (collectionName === "dance_styles") list = memoryDanceStyles;
+    else if (collectionName === "branches") list = memoryBranches;
+    else if (collectionName === "reviews") list = memoryReviews;
+    else if (collectionName === "media") list = memoryMedia;
+
+    const idx = list.findIndex((it) => it._id === targetId || it.slug === targetId);
+    if (idx !== -1) {
+      const [item] = list.splice(idx, 1);
+      const pos = Math.max(1, Math.min(Math.round(targetPosition), list.length + 1));
+      list.splice(pos - 1, 0, item);
+      list.forEach((it, i) => {
+        it.displayOrder = i + 1;
+        it.updatedAt = now;
+      });
+    }
+    return;
+  }
+
+  try {
+    const items = await db
+      .collection(collectionName)
+      .find({})
+      .sort({ displayOrder: 1, createdAt: 1 })
+      .toArray();
+
+    if (items.length === 0) return;
+
+    const targetIdx = items.findIndex((it) => {
+      const itId = it._id?.toString();
+      const itSlug = (it as any).slug;
+      return itId === targetId || itSlug === targetId;
+    });
+
+    if (targetIdx === -1) return;
+
+    const [targetItem] = items.splice(targetIdx, 1);
+    const clampedPos = Math.max(1, Math.min(Math.round(targetPosition), items.length + 1));
+    items.splice(clampedPos - 1, 0, targetItem);
+
+    const bulkOps = [];
+    for (let i = 0; i < items.length; i++) {
+      const expectedOrder = i + 1;
+      if (items[i].displayOrder !== expectedOrder) {
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: items[i]._id },
+            update: { $set: { displayOrder: expectedOrder, updatedAt: now } },
+          },
+        });
+        items[i].displayOrder = expectedOrder;
+      }
+    }
+
+    if (bulkOps.length > 0) {
+      await db.collection(collectionName).bulkWrite(bulkOps);
+    }
+    setServerContentUpdated();
+  } catch (err) {
+    console.error(`Error in reorderCollectionItems for ${collectionName}:`, err);
+  }
+}
+
+export async function resequenceCollection(
+  collectionName: "curriculum" | "dance_styles" | "branches" | "reviews" | "media"
+): Promise<void> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    let list: Array<any> = [];
+    if (collectionName === "curriculum") list = memoryCurriculum;
+    else if (collectionName === "dance_styles") list = memoryDanceStyles;
+    else if (collectionName === "branches") list = memoryBranches;
+    else if (collectionName === "reviews") list = memoryReviews;
+    else if (collectionName === "media") list = memoryMedia;
+
+    list.sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
+    list.forEach((it, i) => {
+      it.displayOrder = i + 1;
+      it.updatedAt = now;
+    });
+    setServerContentUpdated();
+    return;
+  }
+
+  try {
+    const items = await db
+      .collection(collectionName)
+      .find({})
+      .sort({ displayOrder: 1, createdAt: 1 })
+      .toArray();
+
+    const bulkOps = [];
+    for (let i = 0; i < items.length; i++) {
+      const expectedOrder = i + 1;
+      if (items[i].displayOrder !== expectedOrder) {
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: items[i]._id },
+            update: { $set: { displayOrder: expectedOrder, updatedAt: now } },
+          },
+        });
+      }
+    }
+
+    if (bulkOps.length > 0) {
+      await db.collection(collectionName).bulkWrite(bulkOps);
+    }
+    setServerContentUpdated();
+  } catch (err) {
+    console.error(`Error in resequenceCollection for ${collectionName}:`, err);
+  }
+}
 
 // ==========================================
 // BRANCHES
@@ -141,9 +270,11 @@ export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
   }
 
   const result = await db.collection("branches").insertOne(item as any);
+  const insertedId = result.insertedId.toString();
+  await reorderCollectionItems("branches", insertedId, item.displayOrder);
   return {
     ...item,
-    _id: result.insertedId.toString(),
+    _id: insertedId,
   };
 }
 
@@ -162,6 +293,9 @@ export async function updateBranch(
         ...data,
         updatedAt: now,
       };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("branches", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -181,6 +315,10 @@ export async function updateBranch(
         updatedAt: now,
       },
     });
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("branches", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating branch:", err);
@@ -197,6 +335,7 @@ export async function deleteBranch(id: string): Promise<boolean> {
     }
     const initialLen = memoryBranches.length;
     memoryBranches = memoryBranches.filter((b) => b._id !== id && b.slug !== id);
+    await resequenceCollection("branches");
     return memoryBranches.length < initialLen;
   }
 
@@ -211,6 +350,9 @@ export async function deleteBranch(id: string): Promise<boolean> {
     }
 
     const result = await db.collection("branches").deleteOne(query);
+    if (result.deletedCount > 0) {
+      await resequenceCollection("branches");
+    }
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting branch:", err);
@@ -360,9 +502,11 @@ export async function createMedia(data: Omit<MediaItem, "_id">): Promise<MediaIt
   }
 
   const result = await db.collection("media").insertOne(item as any);
+  const insertedId = result.insertedId.toString();
+  await reorderCollectionItems("media", insertedId, item.displayOrder);
   return {
     ...item,
-    _id: result.insertedId.toString(),
+    _id: insertedId,
   };
 }
 
@@ -385,6 +529,9 @@ export async function updateMedia(
             : memoryMedia[index].displayOrder,
         updatedAt: now,
       };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("media", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -405,6 +552,10 @@ export async function updateMedia(
         },
       }
     );
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("media", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating media:", err);
@@ -424,6 +575,7 @@ export async function deleteMedia(id: string): Promise<MediaItem | null> {
         item.thumbnailUrl,
       ]).catch(() => {});
       memoryMedia = memoryMedia.filter((m) => m._id !== id);
+      await resequenceCollection("media");
       return item;
     }
     return null;
@@ -445,6 +597,7 @@ export async function deleteMedia(id: string): Promise<MediaItem | null> {
     ]);
 
     await db.collection("media").deleteOne({ _id: new ObjectId(id) });
+    await resequenceCollection("media");
     return {
       ...item,
       _id: item._id?.toString(),
@@ -587,6 +740,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     }
 
     return {
+      heroVideoUrl: settings.heroVideoUrl || INITIAL_SITE_SETTINGS.heroVideoUrl,
       ...settings,
       stats: settings.stats && Array.isArray(settings.stats) && settings.stats.length === 6
         ? settings.stats
@@ -596,6 +750,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   } catch (err) {
     console.error("Error fetching site settings:", err);
     return {
+      heroVideoUrl: memorySettings.heroVideoUrl || INITIAL_SITE_SETTINGS.heroVideoUrl,
       ...memorySettings,
       stats: memorySettings.stats || INITIAL_SITE_SETTINGS.stats,
     };
@@ -629,6 +784,7 @@ export async function updateSiteSettings(
       },
       { upsert: true }
     );
+    setServerContentUpdated();
     return true;
   } catch (err) {
     console.error("Error updating site settings:", err);
@@ -763,17 +919,12 @@ export async function updateAdminUser(
 ): Promise<{ success: boolean; error?: string; username?: string }> {
   const admin = await getAdminUser();
 
-  // Validate current password
+  // Validate current password strictly against bcrypt hash
   let isValid = false;
   try {
     isValid = bcrypt.compareSync(currentPassword, admin.passwordHash);
   } catch {
     isValid = false;
-  }
-
-  // Fallback check against plaintext or env password in edge cases
-  if (!isValid && currentPassword === (process.env.ADMIN_PASSWORD || "dkdc@admin2025")) {
-    isValid = true;
   }
 
   if (!isValid) {
@@ -806,8 +957,9 @@ export async function updateAdminUser(
   }
 
   try {
+    const filter = admin._id ? { _id: new ObjectId(admin._id) } : {};
     await db.collection("admin_users").updateOne(
-      {},
+      filter,
       {
         $set: {
           username: cleanUsername,
@@ -938,9 +1090,11 @@ export async function createDanceStyle(data: Omit<DanceStyle, "_id">): Promise<D
   };
 
   const result = await db.collection("dance_styles").insertOne(styleToInsert as any);
+  const insertedId = result.insertedId.toString();
+  await reorderCollectionItems("dance_styles", insertedId, styleToInsert.displayOrder);
   return {
     ...styleToInsert,
-    _id: result.insertedId.toString(),
+    _id: insertedId,
   };
 }
 
@@ -956,6 +1110,9 @@ export async function updateDanceStyle(id: string, data: Partial<DanceStyle>): P
         ...data,
         updatedAt: now,
       };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("dance_styles", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -975,6 +1132,10 @@ export async function updateDanceStyle(id: string, data: Partial<DanceStyle>): P
         updatedAt: now,
       },
     });
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("dance_styles", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating dance style:", err);
@@ -991,6 +1152,7 @@ export async function deleteDanceStyle(id: string): Promise<boolean> {
     }
     const initialLen = memoryDanceStyles.length;
     memoryDanceStyles = memoryDanceStyles.filter((s) => s._id !== id && s.slug !== id);
+    await resequenceCollection("dance_styles");
     return memoryDanceStyles.length < initialLen;
   }
 
@@ -1005,6 +1167,9 @@ export async function deleteDanceStyle(id: string): Promise<boolean> {
     }
 
     const result = await db.collection("dance_styles").deleteOne(query);
+    if (result.deletedCount > 0) {
+      await resequenceCollection("dance_styles");
+    }
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting dance style:", err);
@@ -1087,9 +1252,11 @@ export async function createCurriculumModule(data: Omit<CurriculumModule, "_id">
   };
 
   const result = await db.collection("curriculum").insertOne(moduleToInsert as any);
+  const insertedId = result.insertedId.toString();
+  await reorderCollectionItems("curriculum", insertedId, moduleToInsert.displayOrder);
   return {
     ...moduleToInsert,
-    _id: result.insertedId.toString(),
+    _id: insertedId,
   };
 }
 
@@ -1105,6 +1272,9 @@ export async function updateCurriculumModule(id: string, data: Partial<Curriculu
         ...data,
         updatedAt: now,
       };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("curriculum", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -1125,6 +1295,10 @@ export async function updateCurriculumModule(id: string, data: Partial<Curriculu
         },
       }
     );
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("curriculum", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating curriculum module:", err);
@@ -1137,12 +1311,16 @@ export async function deleteCurriculumModule(id: string): Promise<boolean> {
   if (!db) {
     const initialLen = memoryCurriculum.length;
     memoryCurriculum = memoryCurriculum.filter((m) => m._id !== id);
+    await resequenceCollection("curriculum");
     return memoryCurriculum.length < initialLen;
   }
 
   try {
     if (!ObjectId.isValid(id)) return false;
     const result = await db.collection("curriculum").deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount > 0) {
+      await resequenceCollection("curriculum");
+    }
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting curriculum module:", err);
@@ -1258,9 +1436,11 @@ export async function createReview(data: Omit<ReviewItem, "_id">): Promise<Revie
 
   try {
     const result = await db.collection("reviews").insertOne(reviewDoc as any);
+    const insertedId = result.insertedId.toString();
+    await reorderCollectionItems("reviews", insertedId, reviewDoc.displayOrder);
     return {
       ...reviewDoc,
-      _id: result.insertedId.toString(),
+      _id: insertedId,
     };
   } catch (err) {
     console.error("Error creating review:", err);
@@ -1276,6 +1456,9 @@ export async function updateReview(id: string, data: Partial<ReviewItem>): Promi
     const idx = memoryReviews.findIndex((r) => r._id === id);
     if (idx !== -1) {
       memoryReviews[idx] = { ...memoryReviews[idx], ...data, updatedAt: now };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("reviews", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -1299,6 +1482,10 @@ export async function updateReview(id: string, data: Partial<ReviewItem>): Promi
         },
       }
     );
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("reviews", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating review:", err);
@@ -1311,12 +1498,16 @@ export async function deleteReview(id: string): Promise<boolean> {
   if (!db) {
     const initialLen = memoryReviews.length;
     memoryReviews = memoryReviews.filter((r) => r._id !== id);
+    await resequenceCollection("reviews");
     return memoryReviews.length < initialLen;
   }
 
   try {
     if (!ObjectId.isValid(id)) return false;
     const result = await db.collection("reviews").deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount > 0) {
+      await resequenceCollection("reviews");
+    }
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting review:", err);

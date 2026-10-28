@@ -5,7 +5,9 @@ import bcrypt from "bcryptjs";
 import { AuthSession } from "@/types";
 import { getAdminUser } from "./db-services";
 
-const JWT_SECRET = process.env.ADMIN_JWT_SECRET || "dkdancecompany_jwt_fallback_secret_32chars_min";
+const JWT_SECRET =
+  process.env.ADMIN_JWT_SECRET ||
+  "dkdancecompany_jwt_secret_key_32chars_long!";
 const secretKey = new TextEncoder().encode(JWT_SECRET);
 export const COOKIE_NAME = "dkdc_session";
 
@@ -101,13 +103,10 @@ export async function validateCredentials(username: string, pass: string): Promi
       isMatch = false;
     }
 
-    // Do NOT allow old fallback passwords once custom credentials are in place
+    // Return strict bcrypt comparison result; no old password fallback
     return isMatch;
   } catch (err) {
-    console.error("Error validating credentials:", err);
-    // Only in fatal database outage fallback:
-    const configuredUser = process.env.ADMIN_USERNAME || "admin";
-    const configuredPass = process.env.ADMIN_PASSWORD || "dkdc@admin2025";
-    return username.trim().toLowerCase() === configuredUser.toLowerCase() && pass.trim() === configuredPass;
+    console.error("Error validating credentials against database:", err);
+    return false;
   }
 }

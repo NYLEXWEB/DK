@@ -53,6 +53,7 @@ export const INITIAL_SITE_SETTINGS: SiteSettings = {
     { target: 100, suffix: "+", label: "Stage Productions" },
     { target: 12, suffix: "+", label: "Years of Legacy" },
   ],
+  heroVideoUrl: "/images/videos/8688823-hd_1080_1920_25fps.mp4",
 };
 
 export const INITIAL_BRANCHES: Branch[] = [

@@ -44,7 +44,7 @@ export default async function HomePage() {
       <Navbar />
       <main className="w-full overflow-x-clip">
         {/* 1. Hero with Fixed Parallax Banner */}
-        <HeroSection />
+        <HeroSection videoUrl={siteSettings.heroVideoUrl} />
 
         {/* Subsequent Sections gliding over the fixed banner */}
         <div className="relative z-10 bg-black shadow-2xl">

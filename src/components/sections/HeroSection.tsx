@@ -4,13 +4,20 @@ import React from "react";
 import { FadeUp } from "@/components/ui/Motion";
 import { Button } from "@/components/ui/Button";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  videoUrl?: string;
+}
+
+export function HeroSection({ videoUrl }: HeroSectionProps) {
+  const activeVideo = videoUrl || "/images/videos/8688823-hd_1080_1920_25fps.mp4";
+
   return (
     <section className="relative min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-white text-neutral-950 pt-28 sm:pt-32 pb-16 sm:pb-20">
       {/* 1. Background Video Layer - Full & Vibrant */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
         <video
-          src="/images/videos/8688823-hd_1080_1920_25fps.mp4"
+          key={activeVideo}
+          src={activeVideo}
           autoPlay
           loop
           muted

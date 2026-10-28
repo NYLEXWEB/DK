@@ -82,6 +82,12 @@ export function MediaUploaderWithPreview({
       // 2. Upload to server endpoint which handles UploadThing Cloud / Local storage
       const body = new FormData();
       body.append("file", file);
+      if (effectiveMaxMb) {
+        body.append("maxSizeMb", String(effectiveMaxMb));
+      }
+      if (effectiveMaxMb === 15) {
+        body.append("isHero", "true");
+      }
 
       const res = await adminFetch("/api/upload", {
         method: "POST",

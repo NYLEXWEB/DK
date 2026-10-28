@@ -107,6 +107,8 @@ export interface SiteSettings {
     tiktok?: string;
   };
   stats?: StatItem[];
+  heroVideoUrl?: string;
+  heroVideoKey?: string;
   updatedAt?: string;
 }
 

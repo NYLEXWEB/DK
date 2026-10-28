@@ -22,6 +22,7 @@ import { SiteSettings } from "@/types";
 import { INITIAL_SITE_SETTINGS } from "@/lib/constants";
 import { useToast } from "@/context/ToastContext";
 import { adminFetch } from "@/lib/admin-fetch";
+import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
 
 export default function AdminSettingsPage() {
   const { toast } = useToast();
@@ -516,13 +517,56 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
+              {/* Section 2: Hero Background Video (Max 15 MB) */}
+              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900 pb-3">
+                  <div>
+                    <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow">
+                      2. Hero Background Video
+                    </h2>
+                    <p className="text-[11px] text-neutral-400 font-light mt-0.5">
+                      Change the high-impact looping background video displayed on the public homepage hero banner. Maximum allowed upload size: 15 MB.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono text-dk-yellow uppercase px-2 py-1 bg-dk-yellow/10 border border-dk-yellow/30 self-start sm:self-auto shrink-0 font-bold">
+                    Max 15 MB
+                  </span>
+                </div>
+
+                <div className="pt-2">
+                  <MediaUploaderWithPreview
+                    label="Hero Looping Video (.mp4, .webm, .mov — max 15MB)"
+                    value={settings.heroVideoUrl || "/images/videos/8688823-hd_1080_1920_25fps.mp4"}
+                    fileKey={settings.heroVideoKey}
+                    mediaType="video"
+                    maxSizeMb={15}
+                    placeholder="https://utfs.io/... or /images/videos/..."
+                    onChange={(data) => {
+                      setSettings({
+                        ...settings,
+                        heroVideoUrl: data.url,
+                        heroVideoKey: data.key,
+                      });
+                      toast.success("Hero video selected. Click 'Save All Changes' to apply live to homepage.");
+                    }}
+                    onClear={() => {
+                      setSettings({
+                        ...settings,
+                        heroVideoUrl: "/images/videos/8688823-hd_1080_1920_25fps.mp4",
+                        heroVideoKey: undefined,
+                      });
+                      toast.info("Hero video reset to default showreel.");
+                    }}
+                  />
+                </div>
+              </div>
 
               {/* Section 3: DKDC By The Numbers (Milestones & Impact) */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900 pb-3">
                   <div>
                     <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow">
-                      2. DKDC By The Numbers (Milestones & Impact)
+                      3. DKDC By The Numbers (Milestones & Impact)
                     </h2>
                     <p className="text-[11px] text-neutral-400 font-light mt-0.5">
                       Customize the 6 headline counter metrics displayed on the homepage. Edit the target numbers, suffixes (+, etc.), and descriptive labels.
@@ -636,7 +680,7 @@ export default function AdminSettingsPage() {
               {/* Section 4: Contact & Social */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  3. Contact & Social Channels
+                  4. Contact & Social Channels
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
