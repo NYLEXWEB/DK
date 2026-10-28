@@ -7,13 +7,11 @@ import {
   Check,
   X,
   ExternalLink,
-  Copy,
   Loader2,
   AlertCircle,
-  FileImage,
   RefreshCw,
 } from "lucide-react";
-import { adminFetch } from "@/lib/admin-fetch";
+import { uploadFiles } from "@/lib/uploadthing";
 
 interface MediaUploaderWithPreviewProps {
   label?: string;
@@ -39,8 +37,8 @@ export function MediaUploaderWithPreview({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [selectedFileSize, setSelectedFileSize] = useState<string | null>(null);
 
@@ -59,11 +57,24 @@ export function MediaUploaderWithPreview({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Strict client-side file size limit enforcement (10MB for photos, 50MB for videos)
+    // Strict client-side file size limit enforcement (10MB for photos, 50MB for videos, 15MB for hero video)
     const maxBytes = effectiveMaxMb * 1024 * 1024;
     if (file.size > maxBytes) {
       const err = `${mediaType === "video" ? "Video" : "Image"} size exceeds ${effectiveMaxMb} MB limit (Selected: ${formatBytes(file.size)}). Please select a ${mediaType === "video" ? "video" : "photo"} under ${effectiveMaxMb} MB.`;
       setUploadError(err);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
+    const isVideo =
+      mediaType === "video" ||
+      file.type.startsWith("video/") ||
+      Boolean(file.name.match(/\.(mp4|mov|webm|m4v)$/i));
+
+    if (isVideo && !file.name.match(/\.(mp4|mov|webm|m4v)$/i)) {
+      setUploadError("Invalid video format. Allowed formats: .mp4, .mov, .webm, .m4v");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -77,64 +88,78 @@ export function MediaUploaderWithPreview({
     setSelectedFileSize(formatBytes(file.size));
     setUploadError(null);
     setIsUploading(true);
+    setUploadProgress(0);
 
     try {
-      // 2. Upload to server endpoint which handles UploadThing Cloud / Local storage
-      const body = new FormData();
-      body.append("file", file);
-      if (effectiveMaxMb) {
-        body.append("maxSizeMb", String(effectiveMaxMb));
-      }
-      if (effectiveMaxMb === 15) {
-        body.append("isHero", "true");
-      }
+      // 2. Select appropriate UploadThing endpoint
+      const endpoint = isVideo
+        ? (effectiveMaxMb === 15 ? "heroVideoUploader" : "videoUploader")
+        : "imageUploader";
 
-      const res = await adminFetch("/api/upload", {
-        method: "POST",
-        body,
+      // 3. Upload file binaries directly from the browser to UploadThing Cloud Storage
+      // This bypasses the Next.js serverless route and Vercel's strict 4.5 MB request body limit.
+      const res = await uploadFiles(endpoint, {
+        files: [file],
+        headers: () => {
+          const authHeaders: Record<string, string> = {};
+          if (typeof window !== "undefined") {
+            const token = localStorage.getItem("dkdc_token");
+            if (token) {
+              authHeaders.Authorization = `Bearer ${token}`;
+            }
+          }
+          return authHeaders;
+        },
+        onUploadProgress: ({ progress }) => {
+          setUploadProgress(Math.round(progress));
+        },
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to upload file");
+      if (!res || res.length === 0) {
+        throw new Error("No response received from UploadThing cloud storage.");
       }
 
-      // 3. Update parent form with permanent cloud URL
+      const uploaded = res[0];
+      const cloudUrl =
+        uploaded.ufsUrl ||
+        uploaded.url ||
+        (uploaded.serverData as any)?.url ||
+        `https://utfs.io/f/${uploaded.key}`;
+
+      const cloudKey =
+        uploaded.key ||
+        (uploaded.serverData as any)?.key ||
+        "";
+
+      const uploadedName =
+        uploaded.name ||
+        (uploaded.serverData as any)?.name ||
+        file.name;
+
+      const detectedType: "image" | "video" =
+        (uploaded.serverData as any)?.type ||
+        (isVideo ? "video" : "image");
+
+      // 4. Update parent form with permanent cloud URL & metadata
       onChange({
-        url: data.url,
-        key: data.key,
-        name: data.name || file.name,
-        type: data.type || (file.type.startsWith("video/") ? "video" : "image"),
+        url: cloudUrl,
+        key: cloudKey,
+        name: uploadedName,
+        type: detectedType,
       });
     } catch (err: any) {
-      console.error("Upload failed:", err);
-      setUploadError(err.message || "Failed to upload media. Please try again.");
+      console.error("Direct upload failed:", err);
+      setLocalPreview(null);
+      setSelectedFileName(null);
+      setSelectedFileSize(null);
+      setUploadError(err.message || "Failed to upload media directly to Cloud Storage. Please try again.");
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
       // Reset input value so re-selecting same file triggers onChange
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-    }
-  };
-
-  const handleDirectUrlChange = (newUrl: string) => {
-    setLocalPreview(null);
-    setSelectedFileName(null);
-    setUploadError(null);
-    onChange({
-      url: newUrl.trim(),
-      key: fileKey || "",
-      type: mediaType,
-    });
-  };
-
-  const handleCopyLink = () => {
-    const urlToCopy = value || localPreview;
-    if (urlToCopy) {
-      navigator.clipboard.writeText(urlToCopy);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -171,7 +196,9 @@ export function MediaUploaderWithPreview({
             {isUploading ? (
               <>
                 <Loader2 className="w-3 h-3 animate-spin text-dk-yellow" />
-                <span className="text-dk-yellow">Uploading to Cloud...</span>
+                <span className="text-dk-yellow">
+                  Uploading to Cloud... {uploadProgress > 0 ? `${uploadProgress}%` : ""}
+                </span>
               </>
             ) : (
               <>
@@ -265,11 +292,19 @@ export function MediaUploaderWithPreview({
 
             {/* Uploading Spinner Overlay */}
             {isUploading && (
-              <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center gap-2 z-20">
+              <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center gap-2.5 z-20 p-4">
                 <Loader2 className="w-6 h-6 animate-spin text-dk-yellow" />
                 <span className="text-xs font-mono uppercase tracking-wider text-white">
-                  Uploading to Cloud Storage...
+                  Uploading to Cloud Storage... {uploadProgress > 0 ? `${uploadProgress}%` : ""}
                 </span>
+                {uploadProgress > 0 && (
+                  <div className="w-48 bg-neutral-800 h-1.5 overflow-hidden rounded-full">
+                    <div
+                      className="bg-dk-yellow h-full transition-all duration-200"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                )}
                 {selectedFileSize && (
                   <span className="text-[10px] font-mono text-neutral-400">
                     {selectedFileSize}
