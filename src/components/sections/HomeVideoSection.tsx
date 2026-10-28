@@ -113,7 +113,7 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
         <button
           onClick={handleClose}
           aria-label="Close video"
-          className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100010] inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-neutral-900/95 hover:bg-dk-yellow hover:text-black text-white border-2 border-white/20 hover:border-dk-yellow text-xs sm:text-sm font-heading font-semibold uppercase tracking-widest shadow-[0_10px_35px_rgba(0,0,0,0.9)] transition-all duration-200 cursor-pointer active:scale-95"
+          className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100010] inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-neutral-900/95 hover:bg-dk-yellow hover:text-black text-white border-2 border-white/20 hover:border-dk-yellow text-xs sm:text-sm font-heading font-semibold uppercase tracking-widest transition-all duration-200 cursor-pointer active:scale-95"
         >
           <X className="w-5 h-5 stroke-[2.5]" />
           <span>Close</span>
@@ -140,7 +140,7 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
           <button
             onClick={handlePrev}
             aria-label="Previous video"
-            className="fixed left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xl active:scale-95"
+            className="fixed left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
           >
             <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8" />
           </button>
@@ -151,7 +151,7 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
           <button
             onClick={handleNext}
             aria-label="Next video"
-            className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xl active:scale-95"
+            className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
           >
             <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8" />
           </button>
@@ -159,7 +159,7 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
 
         {/* Video Player Box */}
         <div
-          className="relative w-full max-w-5xl aspect-video bg-black border border-neutral-800 shadow-[0_20px_60px_rgba(0,0,0,0.95)] flex items-center justify-center overflow-hidden"
+          className="relative w-full max-w-5xl aspect-video bg-black border border-neutral-800 flex items-center justify-center overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {activeEmbedUrl ? (
@@ -224,10 +224,10 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
           <FadeUp delay={0.15}>
             <Link
               href="/gallery"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/[0.04] border border-white/[0.1] text-neutral-300 hover:text-white hover:border-dk-yellow/50 font-mono text-xs uppercase tracking-widest transition-all duration-300 w-fit"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/[0.04] border border-white/[0.1] text-neutral-300 hover:text-white hover:border-dk-yellow/50 font-mono text-xs uppercase tracking-widest transition-all duration-300 w-fit hover:scale-105 active:scale-95 group"
             >
               <span>Full Archive</span>
-              <ArrowRight className="w-3.5 h-3.5 text-dk-yellow" />
+              <ArrowRight className="w-3.5 h-3.5 text-dk-yellow transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </FadeUp>
         </div>
@@ -242,10 +242,10 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
               <div
                 key={video._id || `vid_${idx}`}
                 onClick={() => handleOpen(idx)}
-                className="group cursor-pointer flex flex-col transition-all duration-300"
+                className="group cursor-pointer flex flex-col transition-all duration-300 hover:-translate-y-1.5"
               >
                 {/* Square Box Container with Sharp Edges */}
-                <div className="relative aspect-square w-full bg-neutral-900 border border-neutral-800 overflow-hidden group-hover:border-dk-yellow/80 group-hover:shadow-[0_10px_30px_rgba(0,0,0,0.8)] transition-all duration-300">
+                <div className="relative aspect-square w-full bg-neutral-900 border border-neutral-800 overflow-hidden group-hover:border-dk-yellow/80 transition-all duration-300">
                   <Image
                     src={thumb}
                     alt={video.title || "DKDC Video"}
@@ -259,7 +259,7 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
 
                   {/* Sharp Minimalist Play Button */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-black/75 border border-white/20 flex items-center justify-center text-white group-hover:bg-dk-yellow group-hover:text-black group-hover:scale-110 transition-all duration-300 shadow-xl">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-black/75 border border-white/20 flex items-center justify-center text-white group-hover:bg-dk-yellow group-hover:text-black group-hover:scale-110 transition-all duration-300">
                       <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current ml-0.5" />
                     </div>
                   </div>

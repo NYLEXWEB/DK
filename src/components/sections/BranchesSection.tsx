@@ -40,7 +40,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
           <div>
             <FadeUp>
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4 transition-transform duration-300 hover:scale-105">
                 <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
                 <span className="editorial-eyebrow text-neutral-400">
                   04 — NETWORK & STUDIOS
@@ -64,7 +64,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
 
             return (
               <FadeUp key={branch.slug} delay={index * 0.08}>
-                <div className="rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 flex flex-col justify-between h-full group overflow-hidden shadow-xl min-w-0 max-w-full">
+                <div className="rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-dk-yellow/40 hover:bg-white/[0.04] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between h-full group overflow-hidden min-w-0 max-w-full">
                   {/* Branch Image Preview */}
                   <div className="relative aspect-[16/10] bg-neutral-900 overflow-hidden">
                     {branch.imageUrl ? (
@@ -93,7 +93,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                     {/* International Badge */}
                     {isInternational && (
                       <div className="absolute top-4 left-4 z-10">
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-dk-yellow text-black font-normal shadow-md">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-dk-yellow text-black font-normal">
                           International Branch
                         </span>
                       </div>
@@ -112,7 +112,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                         <MapPin className="w-3.5 h-3.5 text-dk-red shrink-0" />
                         <span className="break-words [overflow-wrap:anywhere]">{branch.city}, {branch.country}</span>
                       </div>
-                      <h3 className="text-2xl font-heading font-light uppercase tracking-tight text-white mb-3 break-words [overflow-wrap:anywhere]">
+                      <h3 className="text-2xl font-heading font-light uppercase tracking-tight text-white mb-3 group-hover:text-dk-yellow transition-colors break-words [overflow-wrap:anywhere]">
                         {branch.name}
                       </h3>
                       {branch.description && (
@@ -152,7 +152,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                           href={branch.googleMapsUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-neutral-950 hover:bg-[#1a73e8] hover:text-white border border-white/20 font-mono text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-[0_4px_20px_rgba(26,115,232,0.45)] active:scale-95 group/maps shrink-0"
+                          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-neutral-950 hover:bg-[#1a73e8] hover:text-white border border-white/20 font-mono text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-300 active:scale-95 group/maps shrink-0 hover:scale-105"
                           title={`Open ${branch.name} location on Google Maps`}
                         >
                           <GoogleMapsPinIcon className="w-3.5 h-3.5 shrink-0 group-hover/maps:scale-110 transition-transform" />
@@ -171,7 +171,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                           href={`tel:${branch.phone || "+919995272083"}`}
                           aria-label={`Call ${branch.name} branch`}
                           title={`Call ${branch.phone || "+919995272083"}`}
-                          className="p-2.5 rounded-full border border-white/10 text-neutral-300 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-200"
+                          className="p-2.5 rounded-full border border-white/10 text-neutral-300 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-200 hover:scale-110 active:scale-95"
                         >
                           <Phone className="w-3.5 h-3.5" />
                         </a>
@@ -182,16 +182,17 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Enquire via WhatsApp for ${branch.name}`}
-                          className="p-2.5 rounded-full border border-white/10 text-neutral-400 hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/10 transition-all duration-200"
+                          className="p-2.5 rounded-full border border-white/10 text-neutral-400 hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/10 transition-all duration-200 hover:scale-110 active:scale-95"
                         >
                           <MessageCircle className="w-3.5 h-3.5" />
                         </a>
 
                         <Link
                           href={`/branches/${branch.slug}`}
-                          className="text-xs font-mono uppercase text-neutral-400 hover:text-white transition-colors duration-200 pl-1"
+                          className="text-xs font-mono uppercase text-neutral-400 hover:text-white transition-colors duration-200 pl-1 group/det"
                         >
-                          Details →
+                          <span>Details</span>
+                          <span className="inline-block transition-transform duration-200 group-hover/det:translate-x-1"> →</span>
                         </Link>
                       </div>
                     </div>
@@ -206,10 +207,10 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
           <div className="mt-16 text-center">
             <Link
               href="/branches"
-              className="inline-flex items-center gap-2 text-xs font-heading uppercase tracking-widest text-neutral-400 hover:text-dk-yellow transition-colors duration-200"
+              className="inline-flex items-center gap-2 text-xs font-heading uppercase tracking-widest text-neutral-400 hover:text-dk-yellow transition-colors duration-200 group"
             >
               <span>Explore All Studio Details & Schedules</span>
-              <span>→</span>
+              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
             </Link>
           </div>
         )}

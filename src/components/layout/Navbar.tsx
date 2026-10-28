@@ -68,7 +68,7 @@ export function Navbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-neutral-950/90 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_12px_35px_-10px_rgba(0,0,0,0.85)] py-4 sm:py-4.5 px-6 sm:px-10 lg:px-14 text-white"
+            ? "bg-neutral-950/90 backdrop-blur-2xl border-b border-white/[0.08] py-4 sm:py-4.5 px-6 sm:px-10 lg:px-14 text-white"
             : isLightHero
             ? "bg-transparent py-6 sm:py-7 px-6 sm:px-10 lg:px-14 text-neutral-900"
             : "bg-transparent py-6 sm:py-7 px-6 sm:px-10 lg:px-14 text-white"
@@ -87,7 +87,7 @@ export function Navbar() {
                   }
                 }}
                 aria-label="Back to previous page"
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer shrink-0 ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95 ${
                   isLightHero
                     ? "bg-black/[0.05] hover:bg-black/[0.1] border border-black/10 text-neutral-800 hover:text-black"
                     : "bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-dk-yellow/50 text-neutral-300 hover:text-white"
@@ -105,9 +105,9 @@ export function Navbar() {
               aria-label="DK Dance Company Homepage"
             >
               <div
-                className={`relative w-44 sm:w-56 md:w-64 h-11 sm:h-14 transition-all duration-300 group-hover:scale-[1.02] ${
+                className={`relative w-44 sm:w-56 md:w-64 h-11 sm:h-14 transition-all duration-300 group-hover:scale-[1.03] active:scale-[0.98] ${
                   isScrolled
-                    ? "filter drop-shadow-[0_0_1px_rgba(255,255,255,0.9)] drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+                    ? "filter drop-shadow-[0_0_1px_rgba(255,255,255,0.9)]"
                     : ""
                 }`}
               >
@@ -123,7 +123,7 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Navigation Links - Pure Clean Typography, Slim Font, No Rounded Selection Box */}
+          {/* Desktop Navigation Links - Pure Clean Typography with Subtle Hairline Indicator */}
           <nav
             aria-label="Main Navigation"
             className="hidden lg:flex items-center gap-6 xl:gap-8"
@@ -138,7 +138,7 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-[13px] sm:text-sm font-light tracking-wide transition-colors duration-200 ${
+                  className={`text-[13px] sm:text-sm font-light tracking-wide transition-all duration-200 relative py-1 group/nav ${
                     isLightHero
                       ? isActive
                         ? "text-black font-medium"
@@ -148,7 +148,13 @@ export function Navbar() {
                       : "text-neutral-400 hover:text-white"
                   }`}
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  {/* Subtle Expanding Hairline Accent */}
+                  <span
+                    className={`absolute bottom-0 left-0 h-[1.5px] bg-dk-yellow transition-all duration-300 ${
+                      isActive ? "w-full" : "w-0 group-hover/nav:w-full"
+                    }`}
+                  />
                 </Link>
               );
             })}
@@ -158,14 +164,14 @@ export function Navbar() {
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/contact"
-              className={`hidden sm:inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-medium text-xs uppercase tracking-wider transition-all duration-300 active:scale-95 ${
+              className={`hidden sm:inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-medium text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 group/cta ${
                 isLightHero
-                  ? "bg-neutral-950 text-white hover:bg-dk-yellow hover:text-neutral-950 shadow-md"
-                  : "bg-dk-yellow hover:bg-[#fff433] text-neutral-950 shadow-[0_2px_16px_rgba(255,241,2,0.32)]"
+                  ? "bg-neutral-950 text-white hover:bg-dk-yellow hover:text-neutral-950 border border-neutral-950/20"
+                  : "bg-dk-yellow hover:bg-[#fff433] text-neutral-950 border border-dk-yellow/40 hover:border-amber-400"
               }`}
             >
               <span>Enquire</span>
-              <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" />
             </Link>
 
             {/* Mobile Hamburger Button */}
@@ -173,7 +179,7 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={mobileMenuOpen}
-              className={`lg:hidden p-2.5 rounded-full transition-all duration-200 focus:outline-none ${
+              className={`lg:hidden p-2.5 rounded-full transition-all duration-200 focus:outline-none hover:scale-105 active:scale-95 ${
                 isLightHero
                   ? "bg-black/[0.06] hover:bg-black/[0.12] border border-black/10 text-neutral-900"
                   : "bg-white/[0.08] hover:bg-white/[0.14] border border-white/10 text-white hover:text-dk-yellow"
@@ -238,7 +244,7 @@ export function Navbar() {
           <Link
             href="/contact"
             onClick={() => setMobileMenuOpen(false)}
-            className="w-full text-center py-3.5 rounded-full bg-dk-yellow text-neutral-950 font-medium text-xs uppercase tracking-wider shadow-md active:scale-98 transition-all"
+            className="w-full text-center py-3.5 rounded-full bg-dk-yellow text-neutral-950 font-medium text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-98 transition-all"
           >
             Enquire Now
           </Link>

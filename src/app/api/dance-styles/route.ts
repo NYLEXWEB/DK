@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getDanceStyles, createDanceStyle } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
 
@@ -65,15 +66,8 @@ export async function POST(req: NextRequest) {
       isActive: Boolean(isActive),
     });
 
-    import("next/cache").then(({ revalidatePath }) => {
-      try {
-        revalidatePath("/");
-        revalidatePath("/dance-styles");
-      } catch (err) {
-        console.warn("Revalidate error on create dance style:", err);
-      }
-    });
-
+    revalidatePath("/");
+    revalidatePath("/dance-styles");
     return NextResponse.json(
       { success: true, data: newStyle },
       { status: 201 }

@@ -101,12 +101,12 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
 
       {/* Row 1 / Layer 1: Moving to LEFT */}
       <div className="mb-4 sm:mb-5 lg:mb-6 overflow-hidden">
-        <div className="animate-marquee-left marquee-track flex gap-4 sm:gap-6 items-center">
+        <div className="animate-marquee-left hover:[animation-play-state:paused] marquee-track flex gap-4 sm:gap-6 items-center">
           {loopRow1.map((item, idx) => (
             <div
               key={`row1-${item._id || item.url}-${idx}`}
               onClick={() => setActiveItem(item)}
-              className="group relative aspect-[16/10] w-[280px] sm:w-[380px] md:w-[420px] lg:w-[450px] xl:w-[490px] shrink-0 rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer border border-white/[0.1] bg-neutral-950 shadow-2xl transition-all duration-500 hover:border-white/30 hover:scale-[1.01]"
+              className="group relative aspect-[16/10] w-[280px] sm:w-[380px] md:w-[420px] lg:w-[450px] xl:w-[490px] shrink-0 rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer border border-white/[0.08] bg-neutral-950 transition-all duration-300 hover:border-dk-yellow/50 hover:scale-[1.02]"
             >
               <div className="relative w-full h-full">
                 <Image
@@ -125,12 +125,12 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
 
       {/* Row 2 / Layer 2: Moving to RIGHT */}
       <div className="overflow-hidden">
-        <div className="animate-marquee-right marquee-track flex gap-4 sm:gap-6 items-center">
+        <div className="animate-marquee-right hover:[animation-play-state:paused] marquee-track flex gap-4 sm:gap-6 items-center">
           {loopRow2.map((item, idx) => (
             <div
               key={`row2-${item._id || item.url}-${idx}`}
               onClick={() => setActiveItem(item)}
-              className="group relative aspect-[16/10] w-[280px] sm:w-[380px] md:w-[420px] lg:w-[450px] xl:w-[490px] shrink-0 rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer border border-white/[0.1] bg-neutral-950 shadow-2xl transition-all duration-500 hover:border-white/30 hover:scale-[1.01]"
+              className="group relative aspect-[16/10] w-[280px] sm:w-[380px] md:w-[420px] lg:w-[450px] xl:w-[490px] shrink-0 rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer border border-white/[0.08] bg-neutral-950 transition-all duration-300 hover:border-dk-yellow/50 hover:scale-[1.02]"
             >
               <div className="relative w-full h-full">
                 <Image
@@ -159,7 +159,7 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
           <button
             onClick={handleClose}
             aria-label="Close photo preview"
-            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100010] inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-neutral-900/95 hover:bg-dk-yellow hover:text-black text-white border-2 border-white/20 hover:border-dk-yellow text-xs sm:text-sm font-heading font-semibold uppercase tracking-widest shadow-[0_10px_35px_rgba(0,0,0,0.9)] transition-all duration-200 cursor-pointer active:scale-95"
+            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100010] inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-neutral-900/95 hover:bg-dk-yellow hover:text-black text-white border-2 border-white/20 hover:border-dk-yellow text-xs sm:text-sm font-heading font-semibold uppercase tracking-widest transition-all duration-200 cursor-pointer active:scale-95"
           >
             <X className="w-5 h-5 stroke-[2.5]" />
             <span>Close</span>
@@ -174,7 +174,7 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
                   handlePrev();
                 }}
                 aria-label="Previous photo"
-                className="fixed left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xl active:scale-95"
+                className="fixed left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
               >
                 <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8" />
               </button>
@@ -184,7 +184,7 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
                   handleNext();
                 }}
                 aria-label="Next photo"
-                className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xl active:scale-95"
+                className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
               >
                 <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8" />
               </button>
@@ -196,7 +196,7 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
             className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center overflow-hidden border border-white/10 rounded-2xl shadow-2xl bg-black">
+            <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center overflow-hidden border border-white/10 rounded-2xl bg-black">
               <Image
                 src={activeItem.url}
                 alt={activeItem.title}

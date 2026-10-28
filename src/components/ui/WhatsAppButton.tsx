@@ -61,7 +61,7 @@ export function WhatsAppButton({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-full bg-white/[0.04] border border-white/[0.12] text-white hover:border-[#25D366]/60 hover:text-[#25D366] hover:bg-[#25D366]/10 backdrop-blur-md text-xs uppercase tracking-wider font-light transition-all duration-300 active:scale-95 shadow-sm ${className}`}
+      className={`inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-full bg-white/[0.04] border border-white/[0.12] text-white hover:border-[#25D366]/60 hover:text-[#25D366] hover:bg-[#25D366]/10 backdrop-blur-md text-xs uppercase tracking-wider font-light transition-all duration-300 hover:scale-105 active:scale-95 ${className}`}
     >
       <MessageCircle className="w-4 h-4" />
       <span>{children || "WhatsApp Enquiry"}</span>

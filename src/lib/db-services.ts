@@ -303,12 +303,14 @@ export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
       _id: "mem_" + Date.now(),
     };
     memoryBranches.push(newBranch);
+    invalidateCache("branches");
     return newBranch;
   }
 
   const result = await db.collection("branches").insertOne(item as any);
   const insertedId = result.insertedId.toString();
   await reorderCollectionItems("branches", insertedId, item.displayOrder);
+  invalidateCache("branches");
   return {
     ...item,
     _id: insertedId,
@@ -333,6 +335,7 @@ export async function updateBranch(
       if (data.displayOrder !== undefined) {
         await reorderCollectionItems("branches", id, Number(data.displayOrder) || 1);
       }
+      invalidateCache("branches");
       return true;
     }
     return false;
@@ -356,7 +359,11 @@ export async function updateBranch(
     if (updateData.displayOrder !== undefined) {
       await reorderCollectionItems("branches", id, updateData.displayOrder);
     }
-    return result.matchedCount > 0;
+    if (result.matchedCount > 0) {
+      invalidateCache("branches");
+      return true;
+    }
+    return false;
   } catch (err) {
     console.error("Error updating branch:", err);
     return false;
@@ -373,6 +380,7 @@ export async function deleteBranch(id: string): Promise<boolean> {
     const initialLen = memoryBranches.length;
     memoryBranches = memoryBranches.filter((b) => b._id !== id && b.slug !== id);
     await resequenceCollection("branches");
+    invalidateCache("branches");
     return memoryBranches.length < initialLen;
   }
 
@@ -389,6 +397,7 @@ export async function deleteBranch(id: string): Promise<boolean> {
     const result = await db.collection("branches").deleteOne(query);
     if (result.deletedCount > 0) {
       await resequenceCollection("branches");
+      invalidateCache("branches");
     }
     return result.deletedCount > 0;
   } catch (err) {

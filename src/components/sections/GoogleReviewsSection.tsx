@@ -139,10 +139,10 @@ function ReviewCardItem({
 }) {
   return (
     <div
-      className={`h-full rounded-3xl border border-white/[0.09] bg-[#0c0c0c] hover:bg-[#121212] hover:border-white/20 transition-all duration-300 flex flex-col justify-between group relative ${
+      className={`h-full rounded-3xl border border-white/[0.09] bg-[#0c0c0c] hover:bg-[#121212] hover:border-dk-yellow/40 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group relative ${
         isMobile
-          ? "p-6 sm:p-7 shadow-[0_-14px_35px_-5px_rgba(0,0,0,0.95)]"
-          : "p-7 sm:p-8 shadow-sm hover:shadow-2xl"
+          ? "p-6 sm:p-7"
+          : "p-7 sm:p-8"
       }`}
     >
       {/* Google G Emblem in Top Right */}
@@ -152,7 +152,7 @@ function ReviewCardItem({
             {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
           </span>
         )}
-        <div className="opacity-40 group-hover:opacity-100 transition-opacity">
+        <div className="opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
           <GoogleGLogo className="w-5 h-5" />
         </div>
       </div>
@@ -162,14 +162,14 @@ function ReviewCardItem({
         <div className="flex items-center gap-3.5 mb-5 pr-16">
           {/* Google Style Circular Avatar */}
           <div
-            className={`w-11 h-11 rounded-full flex items-center justify-center text-white text-base font-semibold shadow-inner shrink-0 ${review.avatarBg}`}
+            className={`w-11 h-11 rounded-full flex items-center justify-center text-white text-base font-semibold shrink-0 group-hover:scale-105 transition-transform duration-300 ${review.avatarBg}`}
           >
             {review.avatarLetter}
           </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 min-w-0">
-              <h3 className="text-sm font-medium text-white truncate break-words [overflow-wrap:anywhere]">
+              <h3 className="text-sm font-medium text-white truncate break-words [overflow-wrap:anywhere] group-hover:text-dk-yellow transition-colors">
                 {review.author}
               </h3>
               <CheckCircle2 className="w-3.5 h-3.5 text-[#4285F4] shrink-0" />
@@ -218,9 +218,9 @@ function ReviewCardItem({
 function WriteReviewCardItem({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <div
-      className={`h-full rounded-3xl border border-dashed border-white/20 bg-[#0c0c0c] hover:bg-white/[0.04] transition-all duration-300 flex flex-col justify-between text-center items-center group ${
+      className={`h-full rounded-3xl border border-dashed border-white/20 bg-[#0c0c0c] hover:bg-white/[0.04] hover:border-dk-yellow/40 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between text-center items-center group ${
         isMobile
-          ? "p-7 shadow-[0_-14px_35px_-5px_rgba(0,0,0,0.95)]"
+          ? "p-7"
           : "p-8"
       }`}
     >
@@ -228,7 +228,7 @@ function WriteReviewCardItem({ isMobile = false }: { isMobile?: boolean }) {
         <div className="w-14 h-14 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
           <GoogleGLogo className="w-8 h-8" />
         </div>
-        <h3 className="text-xl font-heading font-light uppercase tracking-tight text-white mb-2">
+        <h3 className="text-xl font-heading font-light uppercase tracking-tight text-white mb-2 group-hover:text-dk-yellow transition-colors">
           Share Your Story
         </h3>
         <p className="text-neutral-400 text-xs sm:text-sm font-light max-w-xs mx-auto mb-5 leading-relaxed">
@@ -238,7 +238,7 @@ function WriteReviewCardItem({ isMobile = false }: { isMobile?: boolean }) {
           href={WRITE_REVIEW_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs uppercase tracking-wider font-medium transition-all duration-300 active:scale-95 shadow-[0_4px_20px_rgba(66,133,244,0.3)]"
+          className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs uppercase tracking-wider font-medium transition-all duration-300 hover:scale-105 active:scale-95"
         >
           <GoogleGLogo className="w-4 h-4" />
           <span>Write a Google Review</span>
@@ -259,45 +259,36 @@ export function GoogleReviewsSection({
   reviews?: ReviewItem[];
   isFullPage?: boolean;
 }) {
-  const sortedReviews = reviews
-    ? [...reviews].sort(
-        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
-      )
-    : undefined;
-
   const displayReviews: GoogleReview[] =
-    sortedReviews && sortedReviews.length > 0
-      ? sortedReviews.map((r, i) => ({
-          id: r._id || `review-${i + 1}`,
-          author: r.author,
-          avatarLetter: r.avatarLetter || (r.author ? r.author[0].toUpperCase() : "G"),
-          avatarBg: r.avatarBg || "bg-[#4285F4]",
-          badge: r.badge || "Verified Google Reviewer",
-          rating: r.rating || 5,
-          timeAgo: r.timeAgo || "Recently",
-          text: r.text,
-        }))
+    reviews && reviews.length > 0
+      ? reviews.map((r, i) => {
+          const fallback = GOOGLE_REVIEWS_DATA[i % GOOGLE_REVIEWS_DATA.length];
+          const author = r.author || (r as any).name || "Student";
+          const firstLetter = (r.avatarLetter || author).charAt(0).toUpperCase();
+          return {
+            id: r._id || `db-rev-${i}`,
+            author: author,
+            avatarLetter: firstLetter,
+            avatarBg: r.avatarBg || (fallback ? fallback.avatarBg : "bg-[#4285F4]"),
+            badge: r.badge || (r as any).role || "Verified Student",
+            rating: r.rating || 5,
+            timeAgo: r.timeAgo || "Recently",
+            text: r.text || (r as any).comment || "",
+          };
+        })
       : GOOGLE_REVIEWS_DATA;
 
-  const averageRating =
-    displayReviews.length > 0
-      ? (
-          displayReviews.reduce((sum, r) => sum + (r.rating || 5), 0) /
-          displayReviews.length
-        ).toFixed(1)
-      : "5.0";
+  const totalRatingSum = displayReviews.reduce((acc, curr) => acc + curr.rating, 0);
+  const averageRating = (totalRatingSum / displayReviews.length).toFixed(1);
 
   return (
-    <section className="bg-black text-white py-24 sm:py-32 relative">
-      {/* Background Subtle Gradient */}
-      <div className="absolute inset-0 bg-radial-gradient from-blue-950/10 via-transparent to-transparent pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 sm:mb-20">
+    <section className="bg-black text-white py-24 sm:py-36 relative">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+        {/* Header Block */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16 sm:mb-20">
           <div className="max-w-2xl">
             <FadeUp>
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4 transition-transform duration-300 hover:scale-105">
                 <GoogleGLogo className="w-4 h-4" />
                 <span className="editorial-eyebrow text-neutral-300 font-medium">
                   VERIFIED GOOGLE REVIEWS
@@ -314,7 +305,7 @@ export function GoogleReviewsSection({
 
           {/* Google Rating Summary & Write Review Button */}
           <FadeUp delay={0.1}>
-            <div className="p-6 sm:p-7 rounded-3xl glass-panel border border-white/[0.1] bg-neutral-950/80 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center gap-6 shadow-2xl">
+            <div className="p-6 sm:p-7 rounded-3xl glass-panel border border-white/[0.1] bg-neutral-950/80 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center gap-6">
               <div className="flex items-center gap-4 border-b sm:border-b-0 sm:border-r border-white/10 pb-4 sm:pb-0 sm:pr-6">
                 <div className="w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0">
                   <GoogleGLogo className="w-7 h-7" />
@@ -337,7 +328,7 @@ export function GoogleReviewsSection({
                 href={WRITE_REVIEW_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-full bg-white text-neutral-950 hover:bg-neutral-200 font-normal text-xs uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-lg group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-full bg-white text-neutral-950 hover:bg-neutral-200 font-normal text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 group"
               >
                 <GoogleGLogo className="w-4 h-4" />
                 <span className="font-heading font-medium">Write a Google Review</span>
@@ -404,10 +395,10 @@ export function GoogleReviewsSection({
           <div className="mt-14 text-center">
             <Link
               href="/reviews"
-              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-400 hover:text-dk-yellow transition-colors duration-200"
+              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-400 hover:text-dk-yellow transition-colors duration-200 group"
             >
               <span>Explore All Google Reviews & Rating Details</span>
-              <span className="text-base">→</span>
+              <span className="text-base transition-transform duration-200 group-hover:translate-x-1">→</span>
             </Link>
           </div>
         )}

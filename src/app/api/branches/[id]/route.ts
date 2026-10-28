@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { updateBranch, deleteBranch } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
 
@@ -31,16 +32,9 @@ export async function PATCH(
       );
     }
 
-    import("next/cache").then(({ revalidatePath }) => {
-      try {
-        revalidatePath("/");
-        revalidatePath("/branches");
-        if (body.slug) revalidatePath(`/branches/${body.slug}`);
-      } catch (err) {
-        console.warn("Revalidate error on update branch:", err);
-      }
-    });
-
+    revalidatePath("/");
+    revalidatePath("/branches");
+    if (body.slug) revalidatePath(`/branches/${body.slug}`);
     return NextResponse.json({ success: true, message: "Branch updated" });
   } catch (error) {
     console.error("Error in PATCH /api/branches/[id]:", error);
@@ -70,15 +64,8 @@ export async function DELETE(
       );
     }
 
-    import("next/cache").then(({ revalidatePath }) => {
-      try {
-        revalidatePath("/");
-        revalidatePath("/branches");
-      } catch (err) {
-        console.warn("Revalidate error on delete branch:", err);
-      }
-    });
-
+    revalidatePath("/");
+    revalidatePath("/branches");
     return NextResponse.json({ success: true, message: "Branch deleted" });
   } catch (error) {
     console.error("Error in DELETE /api/branches/[id]:", error);

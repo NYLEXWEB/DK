@@ -29,7 +29,7 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         {/* Editorial Eyebrow */}
         <FadeUp>
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-8">
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-8 transition-transform duration-300 hover:scale-105">
             <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
             <span className="editorial-eyebrow text-neutral-400">
               01 — INSTITUTION PHILOSOPHY
@@ -53,10 +53,10 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
           {/* Refined Compact Founder Profile Card */}
           <div className="lg:col-span-5 flex flex-col items-start">
             <FadeUp delay={0.1}>
-              <div className="p-6 sm:p-7 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-white/20 transition-all duration-500 w-full max-w-md">
+              <div className="p-6 sm:p-7 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-yellow/40 hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300 w-full max-w-md">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-6">
                   {/* Compact, elegant portrait with luxury border */}
-                  <div className="relative w-28 h-36 sm:w-32 sm:h-40 rounded-2xl overflow-hidden shrink-0 border border-white/10 shadow-xl bg-neutral-900 group-hover:border-dk-yellow/50 transition-colors duration-300">
+                  <div className="relative w-28 h-36 sm:w-32 sm:h-40 rounded-2xl overflow-hidden shrink-0 border border-white/10 bg-neutral-900 group-hover:border-dk-yellow/50 transition-colors duration-300">
                     <Image
                       src="/images/dhanesh-krishnan.png"
                       alt="Dhanesh Krishnan K - Founder & Director"
@@ -73,7 +73,7 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
                       <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow" />
                       Founder & Director
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-heading font-light uppercase tracking-tight text-white mb-1">
+                    <h3 className="text-xl sm:text-2xl font-heading font-light uppercase tracking-tight text-white mb-1 group-hover:text-neutral-100 transition-colors">
                       Dhanesh Krishnan K
                     </h3>
                     <p className="text-xs text-neutral-400 font-mono mb-3">
@@ -87,7 +87,7 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
 
                 <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between text-xs font-mono text-neutral-400">
                   <span>DKDC Kozhikode & UK</span>
-                  <Button href="/about" variant="ghost" size="sm" icon className="text-xs py-1 px-3">
+                  <Button href="/about" variant="ghost" size="sm" icon className="text-xs py-1 px-3 group-hover:text-dk-yellow transition-colors">
                     Profile
                   </Button>
                 </div>
@@ -98,7 +98,7 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
           {/* Mission & Vision & Training Core */}
           <div className="lg:col-span-7 flex flex-col gap-6">
             <FadeUp delay={0.15}>
-              <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-yellow/40 transition-all duration-500 min-w-0 max-w-full">
+              <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-yellow/40 hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300 min-w-0 max-w-full">
                 <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-dk-yellow to-transparent" />
                 <span className="editorial-eyebrow text-dk-yellow block mb-2">
                   Our Mission
@@ -112,7 +112,7 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
             </FadeUp>
 
             <FadeUp delay={0.25}>
-              <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-red/40 transition-all duration-500 min-w-0 max-w-full">
+              <div className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-red/40 hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300 min-w-0 max-w-full">
                 <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-dk-red to-transparent" />
                 <span className="editorial-eyebrow text-dk-red block mb-2">
                   Our Vision
@@ -143,7 +143,7 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
                   ].map((pillar) => (
                     <span
                       key={pillar}
-                      className="text-xs font-mono uppercase tracking-wider px-3.5 py-1.5 rounded-full bg-white/[0.03] text-neutral-300 border border-white/[0.08] hover:border-white/20 hover:bg-white/[0.06] transition-all duration-300 backdrop-blur-sm"
+                      className="text-xs font-mono uppercase tracking-wider px-3.5 py-1.5 rounded-full bg-white/[0.03] text-neutral-300 border border-white/[0.08] hover:border-dk-yellow/40 hover:bg-white/[0.08] hover:text-white hover:scale-105 transition-all duration-200 backdrop-blur-sm cursor-default"
                     >
                       {pillar}
                     </span>

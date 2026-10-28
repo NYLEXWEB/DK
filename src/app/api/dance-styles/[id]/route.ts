@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { updateDanceStyle, deleteDanceStyle } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
 
@@ -40,15 +41,8 @@ export async function PATCH(
       );
     }
 
-    import("next/cache").then(({ revalidatePath }) => {
-      try {
-        revalidatePath("/");
-        revalidatePath("/dance-styles");
-      } catch (err) {
-        console.warn("Revalidate error on update dance style:", err);
-      }
-    });
-
+    revalidatePath("/");
+    revalidatePath("/dance-styles");
     return NextResponse.json({ success: true, message: "Dance style updated" });
   } catch (error) {
     console.error("Error in PATCH /api/dance-styles/[id]:", error);
@@ -78,15 +72,8 @@ export async function DELETE(
       );
     }
 
-    import("next/cache").then(({ revalidatePath }) => {
-      try {
-        revalidatePath("/");
-        revalidatePath("/dance-styles");
-      } catch (err) {
-        console.warn("Revalidate error on delete dance style:", err);
-      }
-    });
-
+    revalidatePath("/");
+    revalidatePath("/dance-styles");
     return NextResponse.json({ success: true, message: "Dance style deleted" });
   } catch (error) {
     console.error("Error in DELETE /api/dance-styles/[id]:", error);

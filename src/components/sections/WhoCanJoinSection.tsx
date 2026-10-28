@@ -70,7 +70,7 @@ export function WhoCanJoinSection() {
         {/* Header */}
         <div className="max-w-2xl mb-16 sm:mb-20">
           <FadeUp>
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4 transition-transform duration-300 hover:scale-105">
               <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
               <span className="editorial-eyebrow text-neutral-400">
                 03 — ELIGIBILITY & INCLUSIVITY
@@ -94,8 +94,8 @@ export function WhoCanJoinSection() {
             return (
               <FadeUp key={item.number} delay={index * 0.05}>
                 <div
-                  className={`group transition-colors duration-300 ${
-                    isOpen ? "bg-white/[0.02]" : "hover:bg-white/[0.01]"
+                  className={`group transition-all duration-300 px-3 sm:px-5 -mx-3 sm:-mx-5 rounded-2xl ${
+                    isOpen ? "bg-white/[0.03]" : "hover:bg-white/[0.02]"
                   }`}
                 >
                   {/* Question Row / Toggle Button */}

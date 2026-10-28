@@ -27,13 +27,12 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
         />
 
         {/* 2. Light & Subtle White Foggy Overlay - Video is Crystal Clear */}
-        {/* Soft, light base wash so the video stays vivid */}
         <div className="absolute inset-0 bg-white/25" />
 
-        {/* Left-side gentle contrast feathering so text is 100% readable while the dancer remains fully visible */}
+        {/* Left-side gentle contrast feathering so text is 100% readable while dancer remains fully visible */}
         <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/40 via-45% to-transparent" />
 
-        {/* Soft, airy ambient mist blooms (light volume, non-intrusive) */}
+        {/* Soft, airy ambient mist blooms */}
         <div className="absolute top-1/4 -left-10 w-[450px] h-[450px] rounded-full bg-white/30 blur-[90px]" />
         <div className="absolute bottom-1/4 left-1/3 w-[500px] h-[300px] rounded-full bg-white/25 blur-[100px]" />
 
@@ -49,7 +48,7 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
         <div className="max-w-2xl lg:max-w-3xl text-left">
           {/* Eyebrow Status Badge */}
           <FadeUp delay={0.1}>
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/70 border border-black/10 backdrop-blur-md mb-6 shadow-sm">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/70 border border-black/10 backdrop-blur-md mb-6 shadow-sm transition-transform duration-300 hover:scale-105">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-dk-yellow opacity-85" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-dk-yellow" />
@@ -70,7 +69,7 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
                 DISCIPLINE.
               </span>
               <span className="block font-normal tracking-tight text-neutral-950">
-                ARTISTRY<span className="text-dk-yellow drop-shadow-[0_2px_12px_rgba(255,241,2,0.85)]">.</span>
+                ARTISTRY<span className="text-dk-yellow drop-shadow-[0_2px_8px_rgba(255,241,2,0.6)]">.</span>
               </span>
             </h1>
           </FadeUp>
@@ -87,14 +86,14 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
             </p>
           </FadeUp>
 
-          {/* Minimalist Luxury CTA Group */}
+          {/* Minimalist Luxury CTA Group with Micro-interactions (No Heavy Shadows) */}
           <FadeUp delay={0.45}>
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 justify-start w-full">
               <Button
                 href="/dance-styles"
                 variant="accent"
                 size="md"
-                className="!bg-dk-yellow !text-neutral-950 font-medium shadow-[0_4px_24px_rgba(255,241,2,0.45)] hover:!bg-[#fff433] hover:shadow-[0_6px_30px_rgba(255,241,2,0.6)]"
+                className="!bg-dk-yellow !text-neutral-950 font-medium border border-dk-yellow/50 hover:!bg-[#fff433] hover:border-black/30 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
                 icon
               >
                 Explore Styles
@@ -103,7 +102,7 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
                 href="/contact"
                 variant="primary"
                 size="md"
-                className="!bg-neutral-950 !text-white hover:!bg-neutral-800 shadow-[0_4px_20px_rgba(0,0,0,0.18)]"
+                className="!bg-neutral-950 !text-white hover:!bg-neutral-800 border border-black/20 hover:border-black/50 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
               >
                 Join DKDC
               </Button>
@@ -111,7 +110,7 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
                 href="/branches"
                 variant="secondary"
                 size="md"
-                className="!bg-white/80 !text-neutral-900 !border-black/15 hover:!border-black/40 hover:!bg-white backdrop-blur-md shadow-sm"
+                className="!bg-white/80 !text-neutral-900 !border-black/15 hover:!border-black/40 hover:!bg-white backdrop-blur-md transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
               >
                 View Studios
               </Button>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getBranches, createBranch } from "@/lib/db-services";
 import { verifyRequestAuth } from "@/lib/auth";
 
@@ -81,16 +82,9 @@ export async function POST(req: NextRequest) {
       displayOrder: Number(displayOrder) || 0,
     });
 
-    import("next/cache").then(({ revalidatePath }) => {
-      try {
-        revalidatePath("/");
-        revalidatePath("/branches");
-        revalidatePath(`/branches/${newBranch.slug}`);
-      } catch (err) {
-        console.warn("Revalidate error on create branch:", err);
-      }
-    });
-
+    revalidatePath("/");
+    revalidatePath("/branches");
+    revalidatePath(`/branches/${newBranch.slug}`);
     return NextResponse.json(
       { success: true, data: newBranch },
       { status: 201 }

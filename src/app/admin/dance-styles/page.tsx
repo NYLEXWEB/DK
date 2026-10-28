@@ -696,7 +696,7 @@ export default function AdminDanceStylesPage() {
                 {formData.isActive ? "Published (Active on site)" : "Draft (Hidden from site)"}
               </span>
               <span className="text-[10px] font-mono text-neutral-500">
-                Draft styles stay saved here, but won't be shown to website visitors.
+                Draft styles stay saved here, but won&apos;t be shown to website visitors.
               </span>
             </div>
           </div>

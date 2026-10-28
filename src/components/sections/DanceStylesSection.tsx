@@ -38,7 +38,7 @@ export function DanceStylesSection({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
           <div>
             <FadeUp>
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4 transition-transform duration-300 hover:scale-105">
                 <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
                 <span className="editorial-eyebrow text-neutral-400">
                   02 — DISCIPLINES & TECHNIQUE
@@ -62,7 +62,7 @@ export function DanceStylesSection({
           {displayStyles.map((style, index) => (
             <div
               key={style.slug}
-              className="sticky rounded-none bg-neutral-950 border border-white/15 overflow-hidden shadow-[0_-14px_35px_rgba(0,0,0,0.9),0_25px_50px_rgba(0,0,0,0.98)] will-change-transform"
+              className="sticky rounded-none bg-neutral-950 border border-white/15 overflow-hidden will-change-transform transition-all duration-300"
               style={{
                 top: `calc(4.75rem + ${index * 14}px)`,
                 zIndex: index + 1,
@@ -85,10 +85,10 @@ export function DanceStylesSection({
                 </div>
                 <Link
                   href={`/dance-styles#${style.slug}`}
-                  className="w-9 h-9 rounded-none flex items-center justify-center border border-white/15 text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow transition-colors shrink-0"
+                  className="w-9 h-9 rounded-none flex items-center justify-center border border-white/15 text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow transition-colors shrink-0 group"
                   aria-label={`Explore ${style.name}`}
                 >
-                  <ArrowUpRight className="w-4 h-4" />
+                  <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </div>
 
@@ -121,10 +121,10 @@ export function DanceStylesSection({
                 </div>
                 <Link
                   href={`/contact?style=${encodeURIComponent(style.name)}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-dk-yellow hover:text-white px-3 py-1.5 bg-dk-yellow/10 border border-dk-yellow/30 hover:border-dk-yellow transition-all rounded-none"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-dk-yellow hover:text-white px-3 py-1.5 bg-dk-yellow/10 border border-dk-yellow/30 hover:border-dk-yellow transition-all rounded-none group"
                 >
                   <span>Enroll Now</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </div>
             </div>
@@ -144,14 +144,14 @@ export function DanceStylesSection({
                   onClick={() => setActiveStyleIndex(index)}
                   className={`group py-5 sm:py-6 cursor-pointer transition-all duration-300 flex items-center justify-between rounded-2xl touch-manipulation ${
                     isActive
-                      ? "px-5 sm:px-6 bg-white/[0.04] border border-white/[0.08] backdrop-blur-md shadow-lg"
-                      : "px-4 border border-transparent hover:bg-white/[0.02]"
+                      ? "px-5 sm:px-6 bg-white/[0.05] border border-dk-yellow/40 backdrop-blur-md -translate-x-1"
+                      : "px-4 border border-transparent hover:border-white/10 hover:bg-white/[0.02] hover:translate-x-1"
                   }`}
                 >
                   <div className="flex items-baseline gap-4 sm:gap-8">
                     <span
                       className={`font-mono text-xs sm:text-sm tracking-widest transition-colors duration-300 ${
-                        isActive ? "text-dk-yellow font-normal" : "text-neutral-600"
+                        isActive ? "text-dk-yellow font-normal" : "text-neutral-600 group-hover:text-neutral-400"
                       }`}
                     >
                       {style.number}
@@ -176,12 +176,12 @@ export function DanceStylesSection({
                     href={`/dance-styles#${style.slug}`}
                     className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 ${
                       isActive
-                        ? "border-dk-yellow text-dk-yellow bg-dk-yellow/10 shadow-[0_0_15px_rgba(255,215,0,0.15)]"
+                        ? "border-dk-yellow text-dk-yellow bg-dk-yellow/10"
                         : "border-white/10 text-neutral-500 group-hover:text-white group-hover:border-white/20 group-hover:bg-white/[0.05]"
                     }`}
                     aria-label={`Explore ${style.name}`}
                   >
-                    <ArrowUpRight className="w-4 h-4" />
+                    <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                 </div>
               );
@@ -189,7 +189,7 @@ export function DanceStylesSection({
           </div>
 
           {/* Right: Dynamic Image Preview */}
-          <div className="lg:col-span-5 relative aspect-[4/5] bg-neutral-900 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
+          <div className="lg:col-span-5 relative aspect-[4/5] bg-neutral-900 overflow-hidden rounded-3xl border border-white/[0.08]">
             {displayStyles.map((style, index) => (
               <div
                 key={style.slug}
@@ -207,7 +207,7 @@ export function DanceStylesSection({
                   sizes="(max-width: 1024px) 100vw, 40vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5 p-5 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 shadow-lg">
+                <div className="absolute bottom-5 left-5 right-5 p-5 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-dk-yellow block mb-1.5">
                     {style.number} — Featured Discipline
                   </span>
@@ -240,7 +240,7 @@ export function DanceStylesSection({
             {displayCurriculum.map((item, idx) => (
               <div
                 key={`${item.title}-${idx}`}
-                className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl min-w-0 max-w-full overflow-hidden flex flex-col justify-between"
+                className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-dk-yellow/40 hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300 group min-w-0 max-w-full overflow-hidden flex flex-col justify-between"
               >
                 <div className="min-w-0 max-w-full">
                   <span className="text-[11px] font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors duration-300 break-words [overflow-wrap:anywhere]">

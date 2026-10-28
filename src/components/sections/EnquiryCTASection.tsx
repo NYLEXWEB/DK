@@ -12,12 +12,12 @@ export function EnquiryCTASection() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-dk-yellow/10 via-dk-red/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-8">
-        <div className="p-6 sm:p-14 md:p-20 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] text-center shadow-2xl relative overflow-hidden">
+        <div className="p-6 sm:p-14 md:p-20 rounded-3xl glass-panel border border-white/[0.08] hover:border-dk-yellow/30 bg-white/[0.02] text-center relative overflow-hidden transition-all duration-500">
           <div className="absolute -top-24 -left-24 w-72 h-72 bg-dk-yellow/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-dk-red/10 rounded-full blur-3xl pointer-events-none" />
 
           <FadeUp>
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6 sm:mb-8">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6 sm:mb-8 transition-transform duration-300 hover:scale-105">
               <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
               <span className="editorial-eyebrow text-dk-yellow tracking-widest text-[10px] sm:text-xs">
                 BEGIN YOUR MOVEMENT JOURNEY

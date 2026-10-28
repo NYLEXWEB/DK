@@ -32,20 +32,20 @@ export function Button({
 
   const variantStyles = {
     primary:
-      "bg-white text-black hover:bg-neutral-100 hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] font-normal border border-white/20",
+      "bg-white text-black hover:bg-neutral-100 hover:border-white font-normal border border-white/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
     secondary:
-      "bg-white/[0.04] text-white border border-white/10 hover:border-white/30 hover:bg-white/[0.08] backdrop-blur-md",
+      "bg-white/[0.04] text-white border border-white/10 hover:border-white/30 hover:bg-white/[0.08] backdrop-blur-md transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
     accent:
-      "bg-dk-yellow text-black hover:bg-[#fff433] hover:shadow-[0_0_30px_rgba(255,241,2,0.35)] font-normal border border-dk-yellow/40",
+      "bg-dk-yellow text-black hover:bg-[#fff433] hover:border-amber-400 font-normal border border-dk-yellow/40 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
     ghost:
-      "bg-transparent text-neutral-400 hover:text-white underline-offset-8 hover:underline p-0 border-none",
+      "bg-transparent text-neutral-400 hover:text-white underline-offset-8 hover:underline p-0 border-none transition-colors duration-300",
   };
 
   const content = (
     <>
       <span>{children}</span>
       {icon && (
-        <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
       )}
     </>
   );

@@ -65,7 +65,7 @@ export function Footer({ settings }: { settings?: SiteSettings }) {
           {/* Brand Column */}
           <div className="lg:col-span-5 flex flex-col justify-between">
             <div>
-              <Link href="/" className="inline-block relative w-48 h-14 mb-6">
+              <Link href="/" className="inline-block relative w-48 h-14 mb-6 transition-transform duration-300 hover:scale-105">
                 <Image
                   src="/images/logo/logo.png"
                   alt="DK Dance Company Official Logo"
@@ -92,7 +92,7 @@ export function Footer({ settings }: { settings?: SiteSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on Instagram"
-                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-300"
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] hover:-translate-y-0.5 hover:scale-110 active:scale-95 transition-all duration-300"
               >
                 <Instagram className="w-4 h-4" />
               </a>
@@ -101,7 +101,7 @@ export function Footer({ settings }: { settings?: SiteSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on Facebook"
-                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-300"
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] hover:-translate-y-0.5 hover:scale-110 active:scale-95 transition-all duration-300"
               >
                 <Facebook className="w-4 h-4" />
               </a>
@@ -110,7 +110,7 @@ export function Footer({ settings }: { settings?: SiteSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DK Dance Company on YouTube"
-                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] transition-all duration-300"
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-dk-yellow hover:border-dk-yellow/40 hover:bg-white/[0.05] hover:-translate-y-0.5 hover:scale-110 active:scale-95 transition-all duration-300"
               >
                 <Youtube className="w-4 h-4" />
               </a>
@@ -119,7 +119,7 @@ export function Footer({ settings }: { settings?: SiteSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Chat on WhatsApp"
-                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/10 transition-all duration-300"
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.02] text-neutral-400 hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/10 hover:-translate-y-0.5 hover:scale-110 active:scale-95 transition-all duration-300"
               >
                 <MessageCircle className="w-4 h-4" />
               </a>
@@ -132,46 +132,25 @@ export function Footer({ settings }: { settings?: SiteSettings }) {
               Navigation
             </h4>
             <ul className="flex flex-col gap-3 text-sm text-neutral-400">
-              <li>
-                <Link href="/about" className="hover:text-white transition-colors duration-150">
-                  About DKDC
-                </Link>
-              </li>
-              <li>
-                <Link href="/dance-styles" className="hover:text-white transition-colors duration-150">
-                  Dance Styles
-                </Link>
-              </li>
-              <li>
-                <Link href="/branches" className="hover:text-white transition-colors duration-150">
-                  Branches
-                </Link>
-              </li>
-              <li>
-                <Link href="/gallery" className="hover:text-white transition-colors duration-150">
-                  Gallery
-                </Link>
-              </li>
-              <li>
-                <Link href="/reviews" className="hover:text-white transition-colors duration-150">
-                  Google Reviews
-                </Link>
-              </li>
-              <li>
-                <Link href="/online-classes" className="hover:text-white transition-colors duration-150">
-                  Online Classes
-                </Link>
-              </li>
-              <li>
-                <Link href="/rules" className="hover:text-white transition-colors duration-150">
-                  Rules & Regulations
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white transition-colors duration-150">
-                  Contact
-                </Link>
-              </li>
+              {[
+                { href: "/about", label: "About DKDC" },
+                { href: "/dance-styles", label: "Dance Styles" },
+                { href: "/branches", label: "Branches" },
+                { href: "/gallery", label: "Gallery" },
+                { href: "/reviews", label: "Google Reviews" },
+                { href: "/online-classes", label: "Online Classes" },
+                { href: "/rules", label: "Rules & Regulations" },
+                { href: "/contact", label: "Contact" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="hover:text-dk-yellow hover:translate-x-1 transition-all duration-200 inline-block"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -181,36 +160,23 @@ export function Footer({ settings }: { settings?: SiteSettings }) {
               Branches
             </h4>
             <ul className="flex flex-col gap-3 text-sm text-neutral-400">
-              <li>
-                <Link href="/branches/kunduparamba" className="hover:text-white transition-colors duration-150">
-                  Kunduparamba
-                </Link>
-              </li>
-              <li>
-                <Link href="/branches/westhill" className="hover:text-white transition-colors duration-150">
-                  Westhill
-                </Link>
-              </li>
-              <li>
-                <Link href="/branches/balussery" className="hover:text-white transition-colors duration-150">
-                  Balussery
-                </Link>
-              </li>
-              <li>
-                <Link href="/branches/kottooli" className="hover:text-white transition-colors duration-150">
-                  Kottooli
-                </Link>
-              </li>
-              <li>
-                <Link href="/branches/parambilbazar" className="hover:text-white transition-colors duration-150">
-                  Parambilbazar
-                </Link>
-              </li>
-              <li>
-                <Link href="/branches/bournemouth-uk" className="hover:text-white transition-colors duration-150 text-dk-yellow">
-                  Bournemouth, UK
-                </Link>
-              </li>
+              {[
+                { href: "/branches/kunduparamba", label: "Kunduparamba" },
+                { href: "/branches/westhill", label: "Westhill" },
+                { href: "/branches/balussery", label: "Balussery" },
+                { href: "/branches/kottooli", label: "Kottooli" },
+                { href: "/branches/parambilbazar", label: "Parambilbazar" },
+                { href: "/branches/bournemouth-uk", label: "Bournemouth, UK", isUk: true },
+              ].map((b) => (
+                <li key={b.href}>
+                  <Link
+                    href={b.href}
+                    className={`hover:text-dk-yellow hover:translate-x-1 transition-all duration-200 inline-block ${b.isUk ? "text-dk-yellow" : ""}`}
+                  >
+                    {b.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
