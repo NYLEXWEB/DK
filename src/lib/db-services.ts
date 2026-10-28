@@ -20,6 +20,7 @@ import {
   SPECIAL_TRAINING_MODULES,
   INITIAL_REVIEWS,
 } from "./constants";
+import { setServerContentUpdated } from "./sync-events";
 
 // In-memory runtime fallbacks when MongoDB is not connected in local dev
 let memoryBranches: Branch[] = [...INITIAL_BRANCHES];
@@ -45,33 +46,171 @@ let memoryReviews: ReviewItem[] = INITIAL_REVIEWS.map((r, i) => ({
 }));
 
 // ==========================================
+// ORDERING & POSITION MANAGEMENT
+// ==========================================
+export async function reorderCollectionItems(
+  collectionName: "curriculum" | "dance_styles" | "branches" | "reviews" | "media",
+  targetId: string,
+  targetPosition: number
+): Promise<void> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    let list: Array<any> = [];
+    if (collectionName === "curriculum") list = memoryCurriculum;
+    else if (collectionName === "dance_styles") list = memoryDanceStyles;
+    else if (collectionName === "branches") list = memoryBranches;
+    else if (collectionName === "reviews") list = memoryReviews;
+    else if (collectionName === "media") list = memoryMedia;
+
+    const idx = list.findIndex((it) => it._id === targetId || it.slug === targetId);
+    if (idx !== -1) {
+      const [item] = list.splice(idx, 1);
+      const pos = Math.max(1, Math.min(Math.round(targetPosition), list.length + 1));
+      list.splice(pos - 1, 0, item);
+      list.forEach((it, i) => {
+        it.displayOrder = i + 1;
+        it.updatedAt = now;
+      });
+    }
+    return;
+  }
+
+  try {
+    const items = await db
+      .collection(collectionName)
+      .find({})
+      .sort({ displayOrder: 1, createdAt: 1 })
+      .toArray();
+
+    if (items.length === 0) return;
+
+    const targetIdx = items.findIndex((it) => {
+      const itId = it._id?.toString();
+      const itSlug = (it as any).slug;
+      return itId === targetId || itSlug === targetId;
+    });
+
+    if (targetIdx === -1) return;
+
+    const [targetItem] = items.splice(targetIdx, 1);
+    const clampedPos = Math.max(1, Math.min(Math.round(targetPosition), items.length + 1));
+    items.splice(clampedPos - 1, 0, targetItem);
+
+    const bulkOps = [];
+    for (let i = 0; i < items.length; i++) {
+      const expectedOrder = i + 1;
+      if (items[i].displayOrder !== expectedOrder) {
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: items[i]._id },
+            update: { $set: { displayOrder: expectedOrder, updatedAt: now } },
+          },
+        });
+        items[i].displayOrder = expectedOrder;
+      }
+    }
+
+    if (bulkOps.length > 0) {
+      await db.collection(collectionName).bulkWrite(bulkOps);
+    }
+    setServerContentUpdated();
+  } catch (err) {
+    console.error(`Error in reorderCollectionItems for ${collectionName}:`, err);
+  }
+}
+
+export async function resequenceCollection(
+  collectionName: "curriculum" | "dance_styles" | "branches" | "reviews" | "media"
+): Promise<void> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+
+  if (!db) {
+    let list: Array<any> = [];
+    if (collectionName === "curriculum") list = memoryCurriculum;
+    else if (collectionName === "dance_styles") list = memoryDanceStyles;
+    else if (collectionName === "branches") list = memoryBranches;
+    else if (collectionName === "reviews") list = memoryReviews;
+    else if (collectionName === "media") list = memoryMedia;
+
+    list.sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
+    list.forEach((it, i) => {
+      it.displayOrder = i + 1;
+      it.updatedAt = now;
+    });
+    setServerContentUpdated();
+    return;
+  }
+
+  try {
+    const items = await db
+      .collection(collectionName)
+      .find({})
+      .sort({ displayOrder: 1, createdAt: 1 })
+      .toArray();
+
+    const bulkOps = [];
+    for (let i = 0; i < items.length; i++) {
+      const expectedOrder = i + 1;
+      if (items[i].displayOrder !== expectedOrder) {
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: items[i]._id },
+            update: { $set: { displayOrder: expectedOrder, updatedAt: now } },
+          },
+        });
+      }
+    }
+
+    if (bulkOps.length > 0) {
+      await db.collection(collectionName).bulkWrite(bulkOps);
+    }
+    setServerContentUpdated();
+  } catch (err) {
+    console.error(`Error in resequenceCollection for ${collectionName}:`, err);
+  }
+}
+
+// ==========================================
 // BRANCHES
 // ==========================================
 export async function getBranches(): Promise<Branch[]> {
   const db = await getDb();
   if (!db) {
-    return memoryBranches.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...memoryBranches].sort(
+      (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+    );
   }
 
   try {
     const branches = await db
       .collection<Branch>("branches")
       .find({})
-      .sort({ displayOrder: 1 })
       .toArray();
 
     if (branches.length === 0) {
-      return memoryBranches;
+      return [...memoryBranches].sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      );
     }
 
-    return branches.map((b) => ({
-      ...b,
-      _id: b._id?.toString(),
-    }));
+    return branches
+      .map((b) => ({
+        ...b,
+        displayOrder: Number(b.displayOrder) || 1,
+        _id: b._id?.toString(),
+      }))
+      .sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      );
   } catch (err) {
     console.error("Error fetching branches:", err);
     resetDbClient();
-    return memoryBranches;
+    return [...memoryBranches].sort(
+      (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+    );
   }
 }
 
@@ -116,6 +255,7 @@ export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
   const item: Branch = {
     ...data,
     slug: finalSlug,
+    displayOrder: Number(data.displayOrder) || 1,
     createdAt: now,
     updatedAt: now,
   };
@@ -130,9 +270,11 @@ export async function createBranch(data: Omit<Branch, "_id">): Promise<Branch> {
   }
 
   const result = await db.collection("branches").insertOne(item as any);
+  const insertedId = result.insertedId.toString();
+  await reorderCollectionItems("branches", insertedId, item.displayOrder);
   return {
     ...item,
-    _id: result.insertedId.toString(),
+    _id: insertedId,
   };
 }
 
@@ -151,6 +293,9 @@ export async function updateBranch(
         ...data,
         updatedAt: now,
       };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("branches", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -161,12 +306,19 @@ export async function updateBranch(
       ? { $or: [{ _id: new ObjectId(id) }, { _id: id }, { slug: id }] }
       : { $or: [{ _id: id }, { slug: id }] };
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     const result = await db.collection("branches").updateOne(query, {
       $set: {
         ...updateData,
         updatedAt: now,
       },
     });
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("branches", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating branch:", err);
@@ -183,6 +335,7 @@ export async function deleteBranch(id: string): Promise<boolean> {
     }
     const initialLen = memoryBranches.length;
     memoryBranches = memoryBranches.filter((b) => b._id !== id && b.slug !== id);
+    await resequenceCollection("branches");
     return memoryBranches.length < initialLen;
   }
 
@@ -197,6 +350,9 @@ export async function deleteBranch(id: string): Promise<boolean> {
     }
 
     const result = await db.collection("branches").deleteOne(query);
+    if (result.deletedCount > 0) {
+      await resequenceCollection("branches");
+    }
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting branch:", err);
@@ -235,21 +391,27 @@ export async function getMedia(
     const media = await db
       .collection<MediaItem>("media")
       .find(query)
-      .sort({ displayOrder: 1, createdAt: -1 })
       .toArray();
 
     if (media.length === 0 && !category) {
-      return memoryMedia.filter((m) => mediaType === "all" || m.type === mediaType);
+      return [...memoryMedia]
+        .filter((m) => mediaType === "all" || m.type === mediaType)
+        .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
     }
 
-    return media.map((m) => ({
-      ...m,
-      _id: m._id?.toString(),
-    }));
+    return media
+      .map((m) => ({
+        ...m,
+        displayOrder: Number(m.displayOrder) || 1,
+        _id: m._id?.toString(),
+      }))
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   } catch (err) {
     console.error("Error fetching media:", err);
     resetDbClient();
-    return memoryMedia.filter((m) => mediaType === "all" || m.type === mediaType);
+    return [...memoryMedia]
+      .filter((m) => mediaType === "all" || m.type === mediaType)
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 }
 
@@ -285,7 +447,6 @@ export async function getVideos(options?: {
     let videos = await db
       .collection<MediaItem>("media")
       .find(query)
-      .sort({ displayOrder: 1, createdAt: -1 })
       .toArray();
 
     // If query has onlyFeatured and returned 0, fallback to all published videos
@@ -293,23 +454,31 @@ export async function getVideos(options?: {
       videos = await db
         .collection<MediaItem>("media")
         .find({ type: "video", published: true })
-        .sort({ displayOrder: 1, createdAt: -1 })
         .toArray();
     }
 
     // If still 0 videos in MongoDB (e.g. before admin uploads or seeds videos), fallback to initial seed videos
     if (videos.length === 0) {
-      return initialSeedVideos;
+      return [...initialSeedVideos].sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      );
     }
 
-    return videos.map((m) => ({
-      ...m,
-      _id: m._id?.toString(),
-    }));
+    return videos
+      .map((m) => ({
+        ...m,
+        displayOrder: Number(m.displayOrder) || 1,
+        _id: m._id?.toString(),
+      }))
+      .sort(
+        (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+      );
   } catch (err) {
     console.error("Error fetching videos:", err);
     resetDbClient();
-    return initialSeedVideos;
+    return [...initialSeedVideos].sort(
+      (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+    );
   }
 }
 
@@ -318,6 +487,7 @@ export async function createMedia(data: Omit<MediaItem, "_id">): Promise<MediaIt
   const now = new Date().toISOString();
   const item: MediaItem = {
     ...data,
+    displayOrder: Number(data.displayOrder) || 1,
     createdAt: now,
     updatedAt: now,
   };
@@ -332,9 +502,11 @@ export async function createMedia(data: Omit<MediaItem, "_id">): Promise<MediaIt
   }
 
   const result = await db.collection("media").insertOne(item as any);
+  const insertedId = result.insertedId.toString();
+  await reorderCollectionItems("media", insertedId, item.displayOrder);
   return {
     ...item,
-    _id: result.insertedId.toString(),
+    _id: insertedId,
   };
 }
 
@@ -351,8 +523,15 @@ export async function updateMedia(
       memoryMedia[index] = {
         ...memoryMedia[index],
         ...data,
+        displayOrder:
+          data.displayOrder !== undefined
+            ? Number(data.displayOrder) || 1
+            : memoryMedia[index].displayOrder,
         updatedAt: now,
       };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("media", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -361,6 +540,9 @@ export async function updateMedia(
   try {
     if (!ObjectId.isValid(id)) return false;
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     const result = await db.collection("media").updateOne(
       { _id: new ObjectId(id) },
       {
@@ -370,6 +552,10 @@ export async function updateMedia(
         },
       }
     );
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("media", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating media:", err);
@@ -389,6 +575,7 @@ export async function deleteMedia(id: string): Promise<MediaItem | null> {
         item.thumbnailUrl,
       ]).catch(() => {});
       memoryMedia = memoryMedia.filter((m) => m._id !== id);
+      await resequenceCollection("media");
       return item;
     }
     return null;
@@ -410,6 +597,7 @@ export async function deleteMedia(id: string): Promise<MediaItem | null> {
     ]);
 
     await db.collection("media").deleteOne({ _id: new ObjectId(id) });
+    await resequenceCollection("media");
     return {
       ...item,
       _id: item._id?.toString(),
@@ -545,16 +733,27 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       .findOne({});
 
     if (!settings) {
-      return memorySettings;
+      return {
+        ...memorySettings,
+        stats: memorySettings.stats || INITIAL_SITE_SETTINGS.stats,
+      };
     }
 
     return {
+      heroVideoUrl: settings.heroVideoUrl || INITIAL_SITE_SETTINGS.heroVideoUrl,
       ...settings,
+      stats: settings.stats && Array.isArray(settings.stats) && settings.stats.length === 6
+        ? settings.stats
+        : INITIAL_SITE_SETTINGS.stats,
       _id: settings._id?.toString(),
     };
   } catch (err) {
     console.error("Error fetching site settings:", err);
-    return memorySettings;
+    return {
+      heroVideoUrl: memorySettings.heroVideoUrl || INITIAL_SITE_SETTINGS.heroVideoUrl,
+      ...memorySettings,
+      stats: memorySettings.stats || INITIAL_SITE_SETTINGS.stats,
+    };
   }
 }
 
@@ -585,6 +784,7 @@ export async function updateSiteSettings(
       },
       { upsert: true }
     );
+    setServerContentUpdated();
     return true;
   } catch (err) {
     console.error("Error updating site settings:", err);
@@ -719,17 +919,12 @@ export async function updateAdminUser(
 ): Promise<{ success: boolean; error?: string; username?: string }> {
   const admin = await getAdminUser();
 
-  // Validate current password
+  // Validate current password strictly against bcrypt hash
   let isValid = false;
   try {
     isValid = bcrypt.compareSync(currentPassword, admin.passwordHash);
   } catch {
     isValid = false;
-  }
-
-  // Fallback check against plaintext or env password in edge cases
-  if (!isValid && currentPassword === (process.env.ADMIN_PASSWORD || "dkdc@admin2025")) {
-    isValid = true;
   }
 
   if (!isValid) {
@@ -762,8 +957,9 @@ export async function updateAdminUser(
   }
 
   try {
+    const filter = admin._id ? { _id: new ObjectId(admin._id) } : {};
     await db.collection("admin_users").updateOne(
-      {},
+      filter,
       {
         $set: {
           username: cleanUsername,
@@ -773,6 +969,11 @@ export async function updateAdminUser(
       },
       { upsert: true }
     );
+    memoryAdminUser = {
+      username: cleanUsername,
+      passwordHash: newPasswordHash,
+      updatedAt: now,
+    };
     return { success: true, username: cleanUsername };
   } catch (err) {
     console.error("Error updating admin user in MongoDB:", err);
@@ -788,7 +989,7 @@ export async function getDanceStyles(onlyActive = false): Promise<DanceStyle[]> 
   if (!db) {
     let items = memoryDanceStyles;
     if (onlyActive) items = items.filter((s) => s.isActive !== false);
-    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...items].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 
   try {
@@ -812,19 +1013,21 @@ export async function getDanceStyles(onlyActive = false): Promise<DanceStyle[]> 
     const styles = await db
       .collection<DanceStyle>("dance_styles")
       .find(query)
-      .sort({ displayOrder: 1, createdAt: 1 })
       .toArray();
 
-    return styles.map((s) => ({
-      ...s,
-      _id: s._id?.toString(),
-    }));
+    return styles
+      .map((s) => ({
+        ...s,
+        displayOrder: Number(s.displayOrder) || 1,
+        _id: s._id?.toString(),
+      }))
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   } catch (err) {
     console.error("Error fetching dance styles:", err);
     resetDbClient();
     let items = memoryDanceStyles;
     if (onlyActive) items = items.filter((s) => s.isActive !== false);
-    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...items].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 }
 
@@ -881,14 +1084,17 @@ export async function createDanceStyle(data: Omit<DanceStyle, "_id">): Promise<D
   const styleToInsert = {
     ...data,
     slug: finalSlug,
+    displayOrder: Number(data.displayOrder) || 1,
     createdAt: now,
     updatedAt: now,
   };
 
   const result = await db.collection("dance_styles").insertOne(styleToInsert as any);
+  const insertedId = result.insertedId.toString();
+  await reorderCollectionItems("dance_styles", insertedId, styleToInsert.displayOrder);
   return {
     ...styleToInsert,
-    _id: result.insertedId.toString(),
+    _id: insertedId,
   };
 }
 
@@ -904,6 +1110,9 @@ export async function updateDanceStyle(id: string, data: Partial<DanceStyle>): P
         ...data,
         updatedAt: now,
       };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("dance_styles", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -914,12 +1123,19 @@ export async function updateDanceStyle(id: string, data: Partial<DanceStyle>): P
       ? { $or: [{ _id: new ObjectId(id) }, { _id: id }, { slug: id }] }
       : { $or: [{ _id: id }, { slug: id }] };
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     const result = await db.collection("dance_styles").updateOne(query, {
       $set: {
         ...updateData,
         updatedAt: now,
       },
     });
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("dance_styles", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating dance style:", err);
@@ -936,6 +1152,7 @@ export async function deleteDanceStyle(id: string): Promise<boolean> {
     }
     const initialLen = memoryDanceStyles.length;
     memoryDanceStyles = memoryDanceStyles.filter((s) => s._id !== id && s.slug !== id);
+    await resequenceCollection("dance_styles");
     return memoryDanceStyles.length < initialLen;
   }
 
@@ -950,6 +1167,9 @@ export async function deleteDanceStyle(id: string): Promise<boolean> {
     }
 
     const result = await db.collection("dance_styles").deleteOne(query);
+    if (result.deletedCount > 0) {
+      await resequenceCollection("dance_styles");
+    }
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting dance style:", err);
@@ -965,7 +1185,7 @@ export async function getCurriculumModules(onlyActive = false): Promise<Curricul
   if (!db) {
     let items = memoryCurriculum;
     if (onlyActive) items = items.filter((m) => m.isActive !== false);
-    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...items].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 
   try {
@@ -990,19 +1210,21 @@ export async function getCurriculumModules(onlyActive = false): Promise<Curricul
     const modules = await db
       .collection<CurriculumModule>("curriculum")
       .find(query)
-      .sort({ displayOrder: 1, createdAt: 1 })
       .toArray();
 
-    return modules.map((m) => ({
-      ...m,
-      _id: m._id?.toString(),
-    }));
+    return modules
+      .map((m) => ({
+        ...m,
+        displayOrder: Number(m.displayOrder) || 1,
+        _id: m._id?.toString(),
+      }))
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   } catch (err) {
     console.error("Error fetching curriculum modules:", err);
     resetDbClient();
     let items = memoryCurriculum;
     if (onlyActive) items = items.filter((m) => m.isActive !== false);
-    return items.sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...items].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 }
 
@@ -1013,6 +1235,7 @@ export async function createCurriculumModule(data: Omit<CurriculumModule, "_id">
   if (!db) {
     const newModule: CurriculumModule = {
       ...data,
+      displayOrder: Number(data.displayOrder) || 1,
       _id: `mod-${Date.now()}`,
       createdAt: now,
       updatedAt: now,
@@ -1023,14 +1246,17 @@ export async function createCurriculumModule(data: Omit<CurriculumModule, "_id">
 
   const moduleToInsert = {
     ...data,
+    displayOrder: Number(data.displayOrder) || 1,
     createdAt: now,
     updatedAt: now,
   };
 
   const result = await db.collection("curriculum").insertOne(moduleToInsert as any);
+  const insertedId = result.insertedId.toString();
+  await reorderCollectionItems("curriculum", insertedId, moduleToInsert.displayOrder);
   return {
     ...moduleToInsert,
-    _id: result.insertedId.toString(),
+    _id: insertedId,
   };
 }
 
@@ -1046,6 +1272,9 @@ export async function updateCurriculumModule(id: string, data: Partial<Curriculu
         ...data,
         updatedAt: now,
       };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("curriculum", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -1054,6 +1283,9 @@ export async function updateCurriculumModule(id: string, data: Partial<Curriculu
   try {
     if (!ObjectId.isValid(id)) return false;
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     const result = await db.collection("curriculum").updateOne(
       { _id: new ObjectId(id) },
       {
@@ -1063,6 +1295,10 @@ export async function updateCurriculumModule(id: string, data: Partial<Curriculu
         },
       }
     );
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("curriculum", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating curriculum module:", err);
@@ -1075,12 +1311,16 @@ export async function deleteCurriculumModule(id: string): Promise<boolean> {
   if (!db) {
     const initialLen = memoryCurriculum.length;
     memoryCurriculum = memoryCurriculum.filter((m) => m._id !== id);
+    await resequenceCollection("curriculum");
     return memoryCurriculum.length < initialLen;
   }
 
   try {
     if (!ObjectId.isValid(id)) return false;
     const result = await db.collection("curriculum").deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount > 0) {
+      await resequenceCollection("curriculum");
+    }
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting curriculum module:", err);
@@ -1104,7 +1344,7 @@ export async function getReviews(onlyPublished: boolean = false): Promise<Review
   const db = await getDb();
   if (!db) {
     const list = onlyPublished ? memoryReviews.filter((r) => r.published !== false) : memoryReviews;
-    return [...list].sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...list].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 
   try {
@@ -1131,18 +1371,20 @@ export async function getReviews(onlyPublished: boolean = false): Promise<Review
     const query = onlyPublished ? { published: { $ne: false } } : {};
     const reviews = await collection
       .find(query)
-      .sort({ displayOrder: 1, createdAt: -1 })
       .toArray();
 
-    return reviews.map((r) => ({
-      ...r,
-      _id: r._id?.toString(),
-    }));
+    return reviews
+      .map((r) => ({
+        ...r,
+        displayOrder: Number(r.displayOrder) || 1,
+        _id: r._id?.toString(),
+      }))
+      .sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   } catch (err) {
     console.error("Error fetching reviews:", err);
     resetDbClient();
     const list = onlyPublished ? memoryReviews.filter((r) => r.published !== false) : memoryReviews;
-    return [...list].sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...list].sort((a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
   }
 }
 
@@ -1194,9 +1436,11 @@ export async function createReview(data: Omit<ReviewItem, "_id">): Promise<Revie
 
   try {
     const result = await db.collection("reviews").insertOne(reviewDoc as any);
+    const insertedId = result.insertedId.toString();
+    await reorderCollectionItems("reviews", insertedId, reviewDoc.displayOrder);
     return {
       ...reviewDoc,
-      _id: result.insertedId.toString(),
+      _id: insertedId,
     };
   } catch (err) {
     console.error("Error creating review:", err);
@@ -1212,6 +1456,9 @@ export async function updateReview(id: string, data: Partial<ReviewItem>): Promi
     const idx = memoryReviews.findIndex((r) => r._id === id);
     if (idx !== -1) {
       memoryReviews[idx] = { ...memoryReviews[idx], ...data, updatedAt: now };
+      if (data.displayOrder !== undefined) {
+        await reorderCollectionItems("reviews", id, Number(data.displayOrder) || 1);
+      }
       return true;
     }
     return false;
@@ -1220,6 +1467,9 @@ export async function updateReview(id: string, data: Partial<ReviewItem>): Promi
   try {
     if (!ObjectId.isValid(id)) return false;
     const { _id, ...updateData } = data as any;
+    if (updateData.displayOrder !== undefined) {
+      updateData.displayOrder = Number(updateData.displayOrder) || 1;
+    }
     if (updateData.author && !updateData.avatarLetter) {
       updateData.avatarLetter = updateData.author.trim()[0].toUpperCase();
     }
@@ -1232,6 +1482,10 @@ export async function updateReview(id: string, data: Partial<ReviewItem>): Promi
         },
       }
     );
+
+    if (updateData.displayOrder !== undefined) {
+      await reorderCollectionItems("reviews", id, updateData.displayOrder);
+    }
     return result.matchedCount > 0;
   } catch (err) {
     console.error("Error updating review:", err);
@@ -1244,12 +1498,16 @@ export async function deleteReview(id: string): Promise<boolean> {
   if (!db) {
     const initialLen = memoryReviews.length;
     memoryReviews = memoryReviews.filter((r) => r._id !== id);
+    await resequenceCollection("reviews");
     return memoryReviews.length < initialLen;
   }
 
   try {
     if (!ObjectId.isValid(id)) return false;
     const result = await db.collection("reviews").deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount > 0) {
+      await resequenceCollection("reviews");
+    }
     return result.deletedCount > 0;
   } catch (err) {
     console.error("Error deleting review:", err);

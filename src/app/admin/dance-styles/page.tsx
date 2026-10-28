@@ -24,6 +24,7 @@ import { DanceStyle } from "@/types";
 import { useToast } from "@/context/ToastContext";
 import { adminFetch } from "@/lib/admin-fetch";
 import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export default function AdminDanceStylesPage() {
   const toast = useToast();
@@ -59,8 +60,12 @@ export default function AdminDanceStylesPage() {
       setLoading(true);
       const res = await adminFetch("/api/dance-styles?all=true");
       const data = await res.json();
-      if (data.success) {
-        setStyles(data.data);
+      if (data.success && Array.isArray(data.data)) {
+        setStyles(
+          [...data.data].sort(
+            (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+          )
+        );
       }
     } catch (err) {
       console.error("Failed to load dance styles:", err);
@@ -385,7 +390,7 @@ export default function AdminDanceStylesPage() {
               return (
                 <div
                   key={style._id || style.slug}
-                  className={`group relative bg-neutral-950 border flex flex-col transition-all duration-300 ${
+                  className={`group relative bg-neutral-950 border flex flex-col transition-all duration-300 min-w-0 max-w-full overflow-hidden ${
                     isActive ? "border-neutral-800 hover:border-neutral-700" : "border-neutral-900 opacity-70"
                   }`}
                 >
@@ -437,8 +442,8 @@ export default function AdminDanceStylesPage() {
                       </button>
                     </div>
 
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <h3 className="text-xl font-heading font-light tracking-wide text-white uppercase truncate">
+                    <div className="absolute bottom-3 left-3 right-3 min-w-0">
+                      <h3 className="text-xl font-heading font-light tracking-wide text-white uppercase break-words [overflow-wrap:anywhere]">
                         {style.name}
                       </h3>
                       <p className="text-[11px] font-mono text-dk-yellow/90 truncate">
@@ -448,15 +453,17 @@ export default function AdminDanceStylesPage() {
                   </div>
 
                   {/* Body Info */}
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div className="space-y-3">
-                      <p className="text-xs text-neutral-300 font-medium leading-relaxed line-clamp-2">
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4 min-w-0 max-w-full">
+                    <div className="space-y-3 min-w-0 max-w-full">
+                      <p className="text-xs text-neutral-300 font-medium leading-relaxed line-clamp-2 break-words [overflow-wrap:anywhere]">
                         {style.tagline || "No summary tagline provided."}
                       </p>
 
-                      <p className="text-[11px] text-neutral-400 line-clamp-3 leading-relaxed font-light">
-                        {style.description || "No full description provided."}
-                      </p>
+                      <ExpandableText
+                        text={style.description || "No full description provided."}
+                        limit={120}
+                        className="text-[11px] text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                      />
 
                       {/* Feature Tags */}
                       {Array.isArray(style.features) && style.features.length > 0 && (

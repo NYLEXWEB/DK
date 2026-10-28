@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { FadeUp, RevealImage } from "@/components/ui/Motion";
 import { Button } from "@/components/ui/Button";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 import { getSiteSettings } from "@/lib/db-services";
 
 export const metadata: Metadata = {
@@ -112,26 +113,30 @@ export default async function AboutPage() {
               {/* Mission & Vision Blocks */}
               <div className="space-y-4 pt-6 border-t border-white/[0.08]">
                 <FadeUp delay={0.2}>
-                  <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-yellow/40 transition-all duration-500">
+                  <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-yellow/40 transition-all duration-500 min-w-0 max-w-full">
                     <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-dk-yellow to-transparent" />
                     <span className="editorial-eyebrow text-dk-yellow block mb-2">
                       Our Mission
                     </span>
-                    <p className="text-lg font-heading text-white font-light">
-                      {settings.mission}
-                    </p>
+                    <ExpandableText
+                      text={settings.mission}
+                      limit={200}
+                      className="text-base sm:text-lg font-heading text-white font-light leading-snug break-words [overflow-wrap:anywhere]"
+                    />
                   </div>
                 </FadeUp>
 
                 <FadeUp delay={0.3}>
-                  <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-red/40 transition-all duration-500">
+                  <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] relative overflow-hidden group hover:border-dk-red/40 transition-all duration-500 min-w-0 max-w-full">
                     <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-dk-red to-transparent" />
                     <span className="editorial-eyebrow text-dk-red block mb-2">
                       Our Vision
                     </span>
-                    <p className="text-lg font-heading text-white font-light">
-                      {settings.vision}
-                    </p>
+                    <ExpandableText
+                      text={settings.vision}
+                      limit={200}
+                      className="text-base sm:text-lg font-heading text-white font-light leading-snug break-words [overflow-wrap:anywhere]"
+                    />
                   </div>
                 </FadeUp>
               </div>

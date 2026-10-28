@@ -45,6 +45,15 @@ export const INITIAL_SITE_SETTINGS: SiteSettings = {
     youtube: "https://youtube.com/@dkdancecompany",
     tiktok: "",
   },
+  stats: [
+    { target: 5000, suffix: "+", label: "Students Trained" },
+    { target: 10, suffix: "+", label: "Master Instructors" },
+    { target: 6, suffix: "", label: "Studio Spaces" },
+    { target: 2, suffix: "", label: "Countries (India & UK)" },
+    { target: 100, suffix: "+", label: "Stage Productions" },
+    { target: 12, suffix: "+", label: "Years of Legacy" },
+  ],
+  heroVideoUrl: "/images/videos/8688823-hd_1080_1920_25fps.mp4",
 };
 
 export const INITIAL_BRANCHES: Branch[] = [

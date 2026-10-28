@@ -13,7 +13,9 @@ interface HomeVideoSectionProps {
 }
 
 export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
-  const validVideos = videos.filter((v) => v.type === "video");
+  const validVideos = [...videos.filter((v) => v.type === "video")].sort(
+    (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+  );
 
   // Lightbox Modal state
   const [fullscreenIndex, setFullscreenIndex] = useState<number | null>(null);
@@ -271,7 +273,7 @@ export function HomeVideoSection({ videos = [] }: HomeVideoSectionProps) {
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-heading font-light uppercase tracking-wide text-white group-hover:text-dk-yellow transition-colors line-clamp-2">
+                  <h3 className="text-sm font-heading font-light uppercase tracking-wide text-white group-hover:text-dk-yellow transition-colors line-clamp-2 break-words [overflow-wrap:anywhere]">
                     {video.title}
                   </h3>
                 </div>

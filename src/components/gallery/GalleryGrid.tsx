@@ -40,8 +40,10 @@ export function GalleryGrid({
     setMounted(true);
   }, []);
 
-  // Exclusively display photos (strictly no videos in gallery)
-  const photoOnlyItems = items.filter((item) => item.type !== "video");
+  // Exclusively display photos (strictly no videos in gallery) and sort by displayOrder
+  const photoOnlyItems = [...items.filter((item) => item.type !== "video")].sort(
+    (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+  );
 
   const filteredItems = photoOnlyItems.filter((item) => {
     if (selectedCategory === "All") return true;

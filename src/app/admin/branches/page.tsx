@@ -20,6 +20,7 @@ import { useToast } from "@/context/ToastContext";
 import { UploadButton } from "@/lib/uploadthing";
 import { adminFetch } from "@/lib/admin-fetch";
 import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export default function AdminBranchesPage() {
   const toast = useToast();
@@ -57,8 +58,12 @@ export default function AdminBranchesPage() {
       setLoading(true);
       const res = await adminFetch("/api/branches?all=true");
       const data = await res.json();
-      if (data.success) {
-        setBranches(data.data);
+      if (data.success && Array.isArray(data.data)) {
+        setBranches(
+          [...data.data].sort(
+            (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+          )
+        );
       }
     } catch (err) {
       console.error("Failed to load branches:", err);
@@ -315,20 +320,24 @@ export default function AdminBranchesPage() {
                 </div>
 
                 {/* Info */}
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-500 uppercase mb-1">
-                      <MapPin className="w-3 h-3 text-dk-red" />
-                      <span>{b.city}, {b.country}</span>
+                <div className="p-5 flex-1 flex flex-col justify-between min-w-0 max-w-full">
+                  <div className="min-w-0 max-w-full">
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-500 uppercase mb-1 min-w-0">
+                      <MapPin className="w-3 h-3 text-dk-red shrink-0" />
+                      <span className="break-words [overflow-wrap:anywhere]">{b.city}, {b.country}</span>
                     </div>
-                    <h3 className="text-lg font-heading font-light uppercase text-white mb-2">
+                    <h3 className="text-lg font-heading font-light uppercase text-white mb-2 break-words [overflow-wrap:anywhere]">
                       {b.name}
                     </h3>
-                    <p className="text-xs text-neutral-400 line-clamp-2 mb-3">
-                      {b.description || "Studio branch in " + b.city}
-                    </p>
+                    <div className="mb-3">
+                      <ExpandableText
+                        text={b.description || "Studio branch in " + b.city}
+                        limit={120}
+                        className="text-xs text-neutral-400 break-words [overflow-wrap:anywhere]"
+                      />
+                    </div>
                     {b.address && (
-                      <p className="text-[11px] font-mono text-neutral-500 mb-2 truncate">
+                      <p className="text-[11px] font-mono text-neutral-500 mb-2 break-words [overflow-wrap:anywhere]">
                         Address: {b.address}
                       </p>
                     )}

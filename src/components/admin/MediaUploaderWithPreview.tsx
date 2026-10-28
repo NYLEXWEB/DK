@@ -82,6 +82,12 @@ export function MediaUploaderWithPreview({
       // 2. Upload to server endpoint which handles UploadThing Cloud / Local storage
       const body = new FormData();
       body.append("file", file);
+      if (effectiveMaxMb) {
+        body.append("maxSizeMb", String(effectiveMaxMb));
+      }
+      if (effectiveMaxMb === 15) {
+        body.append("isHero", "true");
+      }
 
       const res = await adminFetch("/api/upload", {
         method: "POST",
@@ -170,7 +176,7 @@ export function MediaUploaderWithPreview({
             ) : (
               <>
                 <Check className="w-3 h-3" />
-                <span>Photo Ready</span>
+                <span>{isVideo ? "Video Ready" : "Photo Ready"}</span>
               </>
             )}
           </span>
@@ -232,7 +238,7 @@ export function MediaUploaderWithPreview({
                     className="px-3 py-1.5 bg-white text-black hover:bg-dk-yellow text-xs font-mono uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                   >
                     <RefreshCw className="w-3 h-3" />
-                    <span>Change Photo</span>
+                    <span>{isVideo ? "Change Video" : "Change Photo"}</span>
                   </button>
                   <button
                     type="button"
@@ -318,40 +324,6 @@ export function MediaUploaderWithPreview({
               )}
             </div>
           </div>
-
-          {/* Copyable / Editable URL Field */}
-          <div className="space-y-1.5 pt-1.5 border-t border-neutral-900">
-            <label className="block text-[10px] font-mono uppercase text-neutral-500">
-              Media Permanent URL:
-            </label>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <input
-                type="text"
-                value={value}
-                onChange={(e) => handleDirectUrlChange(e.target.value)}
-                placeholder="Uploaded URL will appear here"
-                className="flex-1 bg-black border border-neutral-800 px-3 py-2 text-xs text-neutral-300 font-mono focus:outline-none focus:border-dk-yellow truncate min-h-[38px]"
-              />
-              <button
-                type="button"
-                onClick={handleCopyLink}
-                disabled={!value}
-                className="px-4 py-2 bg-neutral-900 border border-neutral-800 hover:border-dk-yellow text-xs font-mono text-neutral-300 uppercase whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer min-h-[38px]"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3 h-3 text-[#25D366]" />
-                    <span className="text-[#25D366]">Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3 h-3" />
-                    <span>Copy URL</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
         </div>
       ) : (
         /* Dropzone / Upload Trigger Button */
@@ -388,20 +360,6 @@ export function MediaUploaderWithPreview({
             >
               Select {mediaType === "video" ? "Video" : "File"} from Computer
             </button>
-          </div>
-
-          {/* Direct URL input fallback */}
-          <div className="pt-1">
-            <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1">
-              Or Enter {mediaType === "video" ? "Video" : "Image"} URL Directly:
-            </label>
-            <input
-              type="url"
-              value={value}
-              onChange={(e) => handleDirectUrlChange(e.target.value)}
-              placeholder={placeholder}
-              className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow font-mono"
-            />
           </div>
         </div>
       )}

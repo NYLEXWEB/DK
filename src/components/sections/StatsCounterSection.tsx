@@ -3,13 +3,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FadeUp } from "@/components/ui/Motion";
 
-interface StatItem {
-  target: number;
-  suffix?: string;
-  label: string;
-}
+import { StatItem } from "@/types";
+import { INITIAL_SITE_SETTINGS } from "@/lib/constants";
 
-const STATS_DATA: StatItem[] = [
+const STATS_DATA: StatItem[] = INITIAL_SITE_SETTINGS.stats || [
   {
     target: 5000,
     suffix: "+",
@@ -97,9 +94,12 @@ function AnimatedCounter({
   );
 }
 
-export function StatsCounterSection() {
+export function StatsCounterSection({ stats }: { stats?: StatItem[] }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+
+  const displayStats =
+    stats && Array.isArray(stats) && stats.length === 6 ? stats : STATS_DATA;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -125,7 +125,7 @@ export function StatsCounterSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-white text-neutral-950 py-24 sm:py-36 lg:py-44 overflow-hidden"
+      className="relative bg-white text-neutral-950 py-20 sm:py-36 lg:py-44 overflow-hidden"
     >
       {/* 1. Top Seamless Merge: Black into White */}
       <div className="absolute inset-x-0 top-0 h-28 sm:h-44 lg:h-52 bg-gradient-to-b from-black via-black/55 via-35% to-transparent pointer-events-none z-10" />
@@ -156,16 +156,16 @@ export function StatsCounterSection() {
         </div>
 
         {/* Minimalist Architectural Grid: 2 Columns on Mobile, 3 Columns on Desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-3">
-          {STATS_DATA.map((item, idx) => {
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-4 sm:gap-y-6">
+          {displayStats.map((item, idx) => {
             return (
               <div
-                key={item.label}
-                className="flex flex-col items-center justify-center py-8 sm:py-14 lg:py-20 px-2.5 sm:px-6 lg:px-8 text-center transition-all duration-300 group"
+                key={`${item.label}-${idx}`}
+                className="flex flex-col items-center justify-center py-6 sm:py-12 lg:py-16 px-2 sm:px-6 lg:px-8 text-center transition-all duration-300 group min-w-0 max-w-full overflow-hidden"
               >
                 <FadeUp delay={idx * 0.05}>
                   {/* Large Minimalist Animated Number in Dark Typography */}
-                  <div className="text-3xl sm:text-5xl lg:text-7xl font-heading font-thin tracking-tight text-neutral-950 group-hover:scale-105 transition-transform duration-500">
+                  <div className="text-2xl sm:text-5xl lg:text-7xl font-heading font-thin tracking-tight text-neutral-950 group-hover:scale-105 transition-transform duration-500 max-w-full break-words [overflow-wrap:anywhere]">
                     <AnimatedCounter
                       target={item.target}
                       suffix={item.suffix}
@@ -174,7 +174,7 @@ export function StatsCounterSection() {
                   </div>
 
                   {/* Clean Uppercase Subtitle */}
-                  <div className="mt-2 sm:mt-3 lg:mt-4 text-[10px] sm:text-xs lg:text-sm font-mono uppercase tracking-[0.15em] sm:tracking-[0.2em] lg:tracking-[0.25em] text-neutral-600 font-light group-hover:text-neutral-900 transition-colors duration-300 max-w-[130px] sm:max-w-none">
+                  <div className="mt-2 sm:mt-3 lg:mt-4 text-[10px] sm:text-xs lg:text-sm font-mono uppercase tracking-[0.12em] sm:tracking-[0.2em] lg:tracking-[0.25em] text-neutral-600 font-light group-hover:text-neutral-900 transition-colors duration-300 max-w-full break-words [overflow-wrap:anywhere] px-1">
                     {item.label}
                   </div>
                 </FadeUp>

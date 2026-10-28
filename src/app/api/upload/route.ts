@@ -45,13 +45,24 @@ export async function POST(req: NextRequest) {
       file.type.startsWith("video/") ||
       Boolean(file.name.match(/\.(mp4|mov|webm|m4v)$/i));
 
-    // Strict file size limits: 50MB for video, 10MB for image
-    const maxBytes = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
-    const limitMb = isVideo ? 50 : 10;
+    if (isVideo && !file.name.match(/\.(mp4|mov|webm|m4v)$/i)) {
+      return NextResponse.json(
+        { error: "Invalid video format. Allowed formats: .mp4, .mov, .webm, .m4v" },
+        { status: 400 }
+      );
+    }
+
+    const requestedMaxMb = formData.get("maxSizeMb") ? Number(formData.get("maxSizeMb")) : undefined;
+    const isHero = formData.get("isHero") === "true";
+
+    // Strict file size limits: 15MB for hero video, 50MB for general video, 10MB for image
+    const limitMb = isHero ? 15 : (requestedMaxMb || (isVideo ? 50 : 10));
+    const maxBytes = limitMb * 1024 * 1024;
+
     if (file.size > maxBytes) {
       return NextResponse.json(
         {
-          error: `${isVideo ? "Video" : "Image"} size exceeds ${limitMb} MB limit. Please select a ${isVideo ? "video" : "photo"} under ${limitMb} MB.`,
+          error: `${isVideo ? "Video" : "Image"} size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the strict ${limitMb} MB limit. Please select a file under ${limitMb} MB.`,
         },
         { status: 400 }
       );

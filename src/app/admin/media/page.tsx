@@ -92,7 +92,11 @@ export default function AdminPhotoLibraryPage() {
       const res = await adminFetch("/api/media?type=image&all=true");
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
-        setPhotos(data.data);
+        setPhotos(
+          [...data.data].sort(
+            (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+          )
+        );
       } else {
         setPhotos([]);
       }
@@ -523,7 +527,7 @@ export default function AdminPhotoLibraryPage() {
             {filteredPhotos.map((item) => (
               <div
                 key={item._id || item.url}
-                className="bg-neutral-950 border border-neutral-800 overflow-hidden flex flex-col justify-between group hover:border-neutral-700 transition-colors"
+                className="bg-neutral-950 border border-neutral-800 overflow-hidden flex flex-col justify-between group hover:border-neutral-700 transition-colors min-w-0 max-w-full"
               >
                 {/* Photo Preview Container */}
                 <div className="relative aspect-[4/3] bg-neutral-900 overflow-hidden">
@@ -580,13 +584,13 @@ export default function AdminPhotoLibraryPage() {
                 </div>
 
                 {/* Details Section */}
-                <div className="p-4 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-sm font-heading font-bold uppercase text-white truncate mb-1">
+                <div className="p-4 flex-1 flex flex-col justify-between min-w-0 max-w-full">
+                  <div className="min-w-0 max-w-full">
+                    <h3 className="text-sm font-heading font-bold uppercase text-white truncate mb-1 break-words [overflow-wrap:anywhere]">
                       {item.title}
                     </h3>
                     {item.description ? (
-                      <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed break-words [overflow-wrap:anywhere]">
                         {item.description}
                       </p>
                     ) : (

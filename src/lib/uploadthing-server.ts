@@ -96,3 +96,82 @@ export async function deleteUploadThingFiles(
 export async function deleteUploadThingFile(keyOrUrl?: string | null): Promise<boolean> {
   return deleteUploadThingFiles([keyOrUrl]);
 }
+
+export interface StorageUsageInfo {
+  totalBytes: number;
+  totalMb: number;
+  totalGb: number;
+  limitBytes: number;
+  limitGb: number;
+  percentageUsed: number;
+  filesUploaded: number;
+  isWarning: boolean; // >= 50% (1 GB)
+  isCritical: boolean; // >= 85% (1.7 GB)
+}
+
+/**
+ * Fetches real-time cloud storage usage from UploadThing.
+ * Free tier limit is 2 GB (2048 MB).
+ * Flags warning when usage >= 1 GB (50%).
+ */
+export async function getUploadThingStorageUsage(): Promise<StorageUsageInfo> {
+  const token = process.env.UPLOADTHING_TOKEN || process.env.UPLOADTHING_SECRET;
+  const DEFAULT_LIMIT_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB
+
+  if (!token) {
+    return {
+      totalBytes: 0,
+      totalMb: 0,
+      totalGb: 0,
+      limitBytes: DEFAULT_LIMIT_BYTES,
+      limitGb: 2,
+      percentageUsed: 0,
+      filesUploaded: 0,
+      isWarning: false,
+      isCritical: false,
+    };
+  }
+
+  try {
+    const utapi = new UTApi({ token });
+    const usage = await utapi.getUsageInfo();
+    const usedBytes = usage.appTotalBytes ?? usage.totalBytes ?? 0;
+    const limitBytes = usage.limitBytes || DEFAULT_LIMIT_BYTES;
+    const totalMb = Number((usedBytes / (1024 * 1024)).toFixed(2));
+    const totalGb = Number((usedBytes / (1024 * 1024 * 1024)).toFixed(3));
+    const limitGb = Number((limitBytes / (1024 * 1024 * 1024)).toFixed(1));
+    const percentageUsed = Math.min(
+      100,
+      Number(((usedBytes / limitBytes) * 100).toFixed(1))
+    );
+
+    return {
+      totalBytes: usedBytes,
+      totalMb,
+      totalGb,
+      limitBytes,
+      limitGb: limitGb || 2,
+      percentageUsed,
+      filesUploaded: usage.filesUploaded ?? 0,
+      isWarning: usedBytes >= 1024 * 1024 * 1024 || percentageUsed >= 50,
+      isCritical: percentageUsed >= 85,
+    };
+  } catch (err) {
+    console.warn(
+      "[UploadThing] Could not fetch live cloud usage info, using fallback:",
+      err
+    );
+    return {
+      totalBytes: 0,
+      totalMb: 0,
+      totalGb: 0,
+      limitBytes: DEFAULT_LIMIT_BYTES,
+      limitGb: 2,
+      percentageUsed: 0,
+      filesUploaded: 0,
+      isWarning: false,
+      isCritical: false,
+    };
+  }
+}
+

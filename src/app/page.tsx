@@ -44,15 +44,15 @@ export default async function HomePage() {
       <Navbar />
       <main className="w-full overflow-x-clip">
         {/* 1. Hero with Fixed Parallax Banner */}
-        <HeroSection />
+        <HeroSection videoUrl={siteSettings.heroVideoUrl} />
 
         {/* Subsequent Sections gliding over the fixed banner */}
         <div className="relative z-10 bg-black shadow-2xl">
           {/* 2. Brand Introduction & Director */}
-          <BrandIntroSection />
+          <BrandIntroSection settings={siteSettings} />
 
           {/* Animated Statistics Counter (3,000+ Students, 10+ Trainers, 6 Studios, 2 Countries) */}
-          <StatsCounterSection />
+          <StatsCounterSection stats={siteSettings.stats} />
 
           {/* 3. Dance Disciplines & Styles */}
           <DanceStylesSection styles={danceStyles} curriculum={curriculum} />

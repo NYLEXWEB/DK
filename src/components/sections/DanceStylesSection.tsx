@@ -8,6 +8,7 @@ import { FadeUp } from "@/components/ui/Motion";
 import { DANCE_STYLES, SPECIAL_TRAINING_MODULES } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { DanceStyle, CurriculumModule } from "@/types";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 interface DanceStylesSectionProps {
   styles?: DanceStyle[];
@@ -20,12 +21,15 @@ export function DanceStylesSection({
 }: DanceStylesSectionProps) {
   const [activeStyleIndex, setActiveStyleIndex] = useState(0);
 
-  const displayStyles =
-    propStyles && propStyles.length > 0 ? propStyles : DANCE_STYLES;
-  const displayCurriculum =
-    propCurriculum && propCurriculum.length > 0
+  const displayStyles = [
+    ...(propStyles && propStyles.length > 0 ? propStyles : DANCE_STYLES),
+  ].sort((a: any, b: any) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
+
+  const displayCurriculum = [
+    ...(propCurriculum && propCurriculum.length > 0
       ? propCurriculum
-      : SPECIAL_TRAINING_MODULES;
+      : SPECIAL_TRAINING_MODULES),
+  ].sort((a: any, b: any) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1));
 
   return (
     <section className="bg-neutral-950 text-white py-28 sm:py-36 relative">
@@ -235,18 +239,22 @@ export function DanceStylesSection({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {displayCurriculum.map((item, idx) => (
               <div
-                key={item.title}
-                className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl"
+                key={`${item.title}-${idx}`}
+                className="p-6 sm:p-7 rounded-2xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl min-w-0 max-w-full overflow-hidden flex flex-col justify-between"
               >
-                <span className="text-[11px] font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors duration-300">
-                  {idx < 9 ? `0${idx + 1}` : idx + 1} // {String((item as any).badge || "CONDITIONING")}
-                </span>
-                <h4 className="text-base font-heading font-light uppercase text-white mb-2">
-                  {item.title}
-                </h4>
-                <p className="text-xs text-neutral-400 leading-relaxed font-light">
-                  {item.desc}
-                </p>
+                <div className="min-w-0 max-w-full">
+                  <span className="text-[11px] font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors duration-300 break-words [overflow-wrap:anywhere]">
+                    {idx < 9 ? `0${idx + 1}` : idx + 1} // {String((item as any).badge || "CONDITIONING")}
+                  </span>
+                  <h4 className="text-base font-heading font-light uppercase text-white mb-2 break-words [overflow-wrap:anywhere]">
+                    {item.title}
+                  </h4>
+                  <ExpandableText
+                    text={item.desc}
+                    limit={130}
+                    className="text-xs text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                  />
+                </div>
               </div>
             ))}
           </div>

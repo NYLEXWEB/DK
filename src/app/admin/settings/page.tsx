@@ -22,6 +22,7 @@ import { SiteSettings } from "@/types";
 import { INITIAL_SITE_SETTINGS } from "@/lib/constants";
 import { useToast } from "@/context/ToastContext";
 import { adminFetch } from "@/lib/admin-fetch";
+import { MediaUploaderWithPreview } from "@/components/admin/MediaUploaderWithPreview";
 
 export default function AdminSettingsPage() {
   const { toast } = useToast();
@@ -47,6 +48,8 @@ export default function AdminSettingsPage() {
   const [savingCreds, setSavingCreds] = useState(false);
   const [credError, setCredError] = useState("");
   const [credSuccess, setCredSuccess] = useState("");
+  const [savingHeroVideo, setSavingHeroVideo] = useState(false);
+  const [savedHeroVideoUrl, setSavedHeroVideoUrl] = useState<string>("");
 
   useEffect(() => {
     async function loadData() {
@@ -59,7 +62,12 @@ export default function AdminSettingsPage() {
 
         const settingsData = await settingsRes.json();
         if (settingsData.success && settingsData.data) {
-          setSettings(settingsData.data);
+          const loaded = settingsData.data;
+          if (!loaded.stats || !Array.isArray(loaded.stats) || loaded.stats.length !== 6) {
+            loaded.stats = INITIAL_SITE_SETTINGS.stats;
+          }
+          setSettings(loaded);
+          setSavedHeroVideoUrl(loaded.heroVideoUrl || "/images/videos/8688823-hd_1080_1920_25fps.mp4");
         }
 
         const credsData = await credsRes.json();
@@ -75,7 +83,7 @@ export default function AdminSettingsPage() {
       }
     }
     loadData();
-  }, [toast]);
+  }, []); // Run only once on mount to prevent toast/state trigger loops
 
   const handleSaveCMS = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,6 +102,7 @@ export default function AdminSettingsPage() {
         throw new Error(errorData.error || "Failed to update settings");
       }
 
+      setSavedHeroVideoUrl(settings.heroVideoUrl || "/images/videos/8688823-hd_1080_1920_25fps.mp4");
       setSuccessMessage("Site settings successfully updated and live.");
       toast.success("Site settings successfully updated and live.");
       setTimeout(() => setSuccessMessage(""), 4000);
@@ -101,6 +110,39 @@ export default function AdminSettingsPage() {
       toast.error(err.message || "Save failed");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveHeroVideo = async (overrideUrl?: string, overrideKey?: string) => {
+    const targetUrl = overrideUrl ?? settings.heroVideoUrl ?? "/images/videos/8688823-hd_1080_1920_25fps.mp4";
+    const targetKey = overrideKey !== undefined ? overrideKey : settings.heroVideoKey;
+
+    setSavingHeroVideo(true);
+    try {
+      const payload = {
+        ...settings,
+        heroVideoUrl: targetUrl,
+        heroVideoKey: targetKey,
+      };
+
+      const res = await adminFetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to update hero video");
+      }
+
+      setSavedHeroVideoUrl(targetUrl);
+      toast.success("Hero background video saved and published live to homepage!");
+    } catch (err: any) {
+      console.error("Save hero video error:", err);
+      toast.error(err.message || "Failed to save hero video");
+    } finally {
+      setSavingHeroVideo(false);
     }
   };
 
@@ -512,57 +554,209 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              {/* Section 2: Online Classes */}
+              {/* Section 2: Hero Background Video (Max 15 MB) */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
-                <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  2. Online Digital Classes
-                </h2>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                    Headline
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.onlineClasses.headline}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        onlineClasses: {
-                          ...settings.onlineClasses,
-                          headline: e.target.value,
-                        },
-                      })
-                    }
-                    className="w-full bg-black border border-neutral-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-dk-yellow"
-                  />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900 pb-3">
+                  <div>
+                    <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow">
+                      2. Hero Background Video
+                    </h2>
+                    <p className="text-[11px] text-neutral-400 font-light mt-0.5">
+                      Change the high-impact looping background video displayed on the public homepage hero banner. Maximum allowed upload size: 15 MB.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono text-dk-yellow uppercase px-2 py-1 bg-dk-yellow/10 border border-dk-yellow/30 self-start sm:self-auto shrink-0 font-bold">
+                    Max 15 MB
+                  </span>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={settings.onlineClasses.description}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        onlineClasses: {
-                          ...settings.onlineClasses,
-                          description: e.target.value,
-                        },
-                      })
-                    }
-                    className="w-full bg-black border border-neutral-800 p-3 text-xs text-white focus:outline-none focus:border-dk-yellow"
+                <div className="pt-2 space-y-3">
+                  <MediaUploaderWithPreview
+                    label="Hero Looping Video (.mp4, .webm, .mov — max 15MB)"
+                    value={settings.heroVideoUrl || "/images/videos/8688823-hd_1080_1920_25fps.mp4"}
+                    fileKey={settings.heroVideoKey}
+                    mediaType="video"
+                    maxSizeMb={15}
+                    placeholder="https://utfs.io/... or /images/videos/..."
+                    onChange={(data) => {
+                      setSettings((prev) => ({
+                        ...prev,
+                        heroVideoUrl: data.url,
+                        heroVideoKey: data.key,
+                      }));
+                      toast.success("Hero video uploaded to cloud! Click 'Save Hero Video Live' below to apply to the homepage.");
+                    }}
+                    onClear={() => {
+                      setSettings((prev) => ({
+                        ...prev,
+                        heroVideoUrl: "/images/videos/8688823-hd_1080_1920_25fps.mp4",
+                        heroVideoKey: undefined,
+                      }));
+                      toast.info("Hero video reset to default showreel. Click 'Save Hero Video Live' to apply.");
+                    }}
                   />
+
+                  {/* Dedicated Action Bar for Hero Video */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-black border border-neutral-800">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {settings.heroVideoUrl !== savedHeroVideoUrl ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-mono uppercase tracking-wider shrink-0 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                          Unsaved Changes
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] text-[10px] font-mono uppercase tracking-wider shrink-0 font-medium">
+                          <Check className="w-3 h-3" />
+                          Live on Homepage
+                        </span>
+                      )}
+                      <span className="text-[11px] font-mono text-neutral-400 truncate max-w-[200px] sm:max-w-md">
+                        {settings.heroVideoUrl || "Default showreel"}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSaveHeroVideo()}
+                      disabled={savingHeroVideo || settings.heroVideoUrl === savedHeroVideoUrl}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[40px] bg-dk-yellow text-black hover:bg-yellow-400 font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
+                    >
+                      {savingHeroVideo ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Saving Video...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-3.5 h-3.5" />
+                          <span>Save Hero Video Live</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Section 3: Contact & Social */}
+              {/* Section 3: DKDC By The Numbers (Milestones & Impact) */}
+              <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900 pb-3">
+                  <div>
+                    <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow">
+                      3. DKDC By The Numbers (Milestones & Impact)
+                    </h2>
+                    <p className="text-[11px] text-neutral-400 font-light mt-0.5">
+                      Customize the 6 headline counter metrics displayed on the homepage. Edit the target numbers, suffixes (+, etc.), and descriptive labels.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono text-neutral-500 uppercase px-2 py-1 bg-neutral-900 border border-neutral-800 self-start sm:self-auto shrink-0">
+                    6 Fixed Metrics
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                  {(settings.stats && settings.stats.length === 6
+                    ? settings.stats
+                    : INITIAL_SITE_SETTINGS.stats || []
+                  ).map((stat, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3.5 bg-black border border-neutral-800 hover:border-neutral-700 transition-colors space-y-3 min-w-0"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-dk-yellow">
+                          Metric #{idx + 1}
+                        </span>
+                        <span className="text-[11px] font-mono font-medium text-white px-2 py-0.5 bg-neutral-900 border border-neutral-800 rounded">
+                          Preview: {stat.target}
+                          {stat.suffix || ""}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                            Target Count
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            required
+                            value={stat.target}
+                            onChange={(e) => {
+                              const updated = [
+                                ...(settings.stats && settings.stats.length === 6
+                                  ? settings.stats
+                                  : INITIAL_SITE_SETTINGS.stats || []),
+                              ];
+                              updated[idx] = {
+                                ...updated[idx],
+                                target: parseInt(e.target.value, 10) || 0,
+                              };
+                              setSettings({ ...settings, stats: updated });
+                            }}
+                            className="w-full bg-neutral-950 border border-neutral-800 px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-dk-yellow"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                            Suffix (e.g. +)
+                          </label>
+                          <input
+                            type="text"
+                            maxLength={8}
+                            value={stat.suffix ?? ""}
+                            onChange={(e) => {
+                              const updated = [
+                                ...(settings.stats && settings.stats.length === 6
+                                  ? settings.stats
+                                  : INITIAL_SITE_SETTINGS.stats || []),
+                              ];
+                              updated[idx] = {
+                                ...updated[idx],
+                                suffix: e.target.value,
+                              };
+                              setSettings({ ...settings, stats: updated });
+                            }}
+                            placeholder="+, %, etc."
+                            className="w-full bg-neutral-950 border border-neutral-800 px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-dk-yellow"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                          Display Label / Title
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={stat.label}
+                          onChange={(e) => {
+                            const updated = [
+                              ...(settings.stats && settings.stats.length === 6
+                                ? settings.stats
+                                : INITIAL_SITE_SETTINGS.stats || []),
+                            ];
+                            updated[idx] = {
+                              ...updated[idx],
+                              label: e.target.value,
+                            };
+                            setSettings({ ...settings, stats: updated });
+                          }}
+                          placeholder="e.g. Students Trained"
+                          className="w-full bg-neutral-950 border border-neutral-800 px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-dk-yellow break-words [overflow-wrap:anywhere]"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Section 4: Contact & Social */}
               <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 space-y-4">
                 <h2 className="text-sm font-mono uppercase tracking-widest text-dk-yellow border-b border-neutral-900 pb-2">
-                  3. Contact & Social Channels
+                  4. Contact & Social Channels
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

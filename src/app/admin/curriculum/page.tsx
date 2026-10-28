@@ -21,6 +21,7 @@ import { Modal } from "@/components/ui/Modal";
 import { CurriculumModule } from "@/types";
 import { useToast } from "@/context/ToastContext";
 import { adminFetch } from "@/lib/admin-fetch";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export default function AdminCurriculumPage() {
   const toast = useToast();
@@ -49,8 +50,12 @@ export default function AdminCurriculumPage() {
       setLoading(true);
       const res = await adminFetch("/api/curriculum?all=true");
       const data = await res.json();
-      if (data.success) {
-        setModules(data.data);
+      if (data.success && Array.isArray(data.data)) {
+        setModules(
+          [...data.data].sort(
+            (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+          )
+        );
       }
     } catch (err) {
       console.error("Failed to load curriculum modules:", err);
@@ -315,18 +320,18 @@ export default function AdminCurriculumPage() {
               return (
                 <div
                   key={mod._id}
-                  className={`group relative bg-neutral-950 border flex flex-col justify-between p-4 sm:p-6 transition-all duration-300 ${
+                  className={`group relative bg-neutral-950 border flex flex-col justify-between p-4 sm:p-6 transition-all duration-300 min-w-0 max-w-full overflow-hidden ${
                     isActive ? "border-neutral-800 hover:border-neutral-700" : "border-neutral-900 opacity-70"
                   }`}
                 >
-                  <div className="space-y-4">
+                  <div className="space-y-4 min-w-0 max-w-full">
                     {/* Header Badges */}
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 bg-dk-yellow/10 border border-dk-yellow/30 text-dk-yellow font-mono text-[10px] uppercase font-bold tracking-wider">
+                    <div className="flex items-center justify-between gap-2 min-w-0">
+                      <div className="flex items-center gap-2 min-w-0 truncate">
+                        <span className="px-2 py-0.5 bg-dk-yellow/10 border border-dk-yellow/30 text-dk-yellow font-mono text-[10px] uppercase font-bold tracking-wider truncate">
                           {mod.badge || "CONDITIONING"}
                         </span>
-                        <span className="px-1.5 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-400 font-mono text-[10px]">
+                        <span className="px-1.5 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-400 font-mono text-[10px] shrink-0">
                           #{mod.displayOrder}
                         </span>
                       </div>
@@ -334,7 +339,7 @@ export default function AdminCurriculumPage() {
                       <button
                         onClick={() => handleToggleActive(mod)}
                         title={isActive ? "Click to set Draft" : "Click to Publish"}
-                        className={`px-2 py-0.5 text-[10px] font-mono uppercase font-semibold flex items-center gap-1.5 transition-colors ${
+                        className={`px-2 py-0.5 text-[10px] font-mono uppercase font-semibold flex items-center gap-1.5 transition-colors shrink-0 ${
                           isActive
                             ? "bg-emerald-950/80 border border-emerald-500/50 text-emerald-400"
                             : "bg-neutral-900/80 border border-neutral-700 text-neutral-400"
@@ -350,13 +355,15 @@ export default function AdminCurriculumPage() {
                     </div>
 
                     {/* Title & Desc */}
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-heading font-light tracking-wide text-white uppercase">
+                    <div className="space-y-2 min-w-0 max-w-full">
+                      <h3 className="text-lg font-heading font-light tracking-wide text-white uppercase break-words [overflow-wrap:anywhere]">
                         {mod.title}
                       </h3>
-                      <p className="text-xs text-neutral-400 leading-relaxed font-light">
-                        {mod.desc}
-                      </p>
+                      <ExpandableText
+                        text={mod.desc}
+                        limit={120}
+                        className="text-xs text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                      />
                     </div>
                   </div>
 

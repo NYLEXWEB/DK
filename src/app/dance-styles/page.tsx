@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { DANCE_STYLES, SPECIAL_TRAINING_MODULES } from "@/lib/constants";
 import { getDanceStyles, getCurriculumModules } from "@/lib/db-services";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 export const revalidate = 60;
 
@@ -23,8 +24,12 @@ export default async function DanceStylesPage() {
     getCurriculumModules(true),
   ]);
 
-  const styles = dbStyles.length > 0 ? dbStyles : DANCE_STYLES;
-  const modules = dbCurriculum.length > 0 ? dbCurriculum : SPECIAL_TRAINING_MODULES;
+  const styles = [...(dbStyles.length > 0 ? dbStyles : DANCE_STYLES)].sort(
+    (a: any, b: any) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+  );
+  const modules = [...(dbCurriculum.length > 0 ? dbCurriculum : SPECIAL_TRAINING_MODULES)].sort(
+    (a: any, b: any) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+  );
 
   return (
     <>
@@ -171,17 +176,21 @@ export default async function DanceStylesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {modules.map((item, idx) => (
-                <FadeUp key={item.title} delay={idx * 0.07}>
-                  <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-dk-yellow/40 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl">
-                    <span className="text-xs font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors">
-                      MODULE {idx < 9 ? `0${idx + 1}` : idx + 1} // {String((item as any).badge || "CONDITIONING")}
-                    </span>
-                    <h3 className="text-xl font-heading font-light uppercase text-white mb-3">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-light">
-                      {item.desc}
-                    </p>
+                <FadeUp key={`${item.title}-${idx}`} delay={idx * 0.07}>
+                  <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-dk-yellow/40 hover:bg-white/[0.04] transition-all duration-500 group shadow-sm hover:shadow-xl min-w-0 max-w-full overflow-hidden flex flex-col justify-between">
+                    <div className="min-w-0 max-w-full">
+                      <span className="text-xs font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors break-words [overflow-wrap:anywhere]">
+                        MODULE {idx < 9 ? `0${idx + 1}` : idx + 1} // {String((item as any).badge || "CONDITIONING")}
+                      </span>
+                      <h3 className="text-xl font-heading font-light uppercase text-white mb-3 break-words [overflow-wrap:anywhere]">
+                        {item.title}
+                      </h3>
+                      <ExpandableText
+                        text={item.desc}
+                        limit={130}
+                        className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
+                      />
+                    </div>
                   </div>
                 </FadeUp>
               ))}

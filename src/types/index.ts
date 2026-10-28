@@ -106,7 +106,16 @@ export interface SiteSettings {
     youtube?: string;
     tiktok?: string;
   };
+  stats?: StatItem[];
+  heroVideoUrl?: string;
+  heroVideoKey?: string;
   updatedAt?: string;
+}
+
+export interface StatItem {
+  target: number;
+  suffix?: string;
+  label: string;
 }
 
 export interface AuthSession {

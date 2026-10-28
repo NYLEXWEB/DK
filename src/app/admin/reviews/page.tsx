@@ -21,6 +21,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ReviewItem } from "@/types";
 import { useToast } from "@/context/ToastContext";
 import { adminFetch } from "@/lib/admin-fetch";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 const GOOGLE_COLORS = [
   "bg-[#EA4335]", // Google Red
@@ -71,8 +72,12 @@ export default function AdminReviewsPage() {
       setLoading(true);
       const res = await adminFetch("/api/reviews?all=true");
       const data = await res.json();
-      if (data.success) {
-        setReviews(data.data);
+      if (data.success && Array.isArray(data.data)) {
+        setReviews(
+          [...data.data].sort(
+            (a, b) => (Number(a.displayOrder) || 1) - (Number(b.displayOrder) || 1)
+          )
+        );
       }
     } catch (err) {
       console.error("Failed to load reviews:", err);
@@ -364,12 +369,12 @@ export default function AdminReviewsPage() {
             {filteredReviews.map((review) => (
               <div
                 key={review._id || review.author}
-                className="bg-neutral-950 border border-neutral-800 overflow-hidden flex flex-col justify-between group hover:border-neutral-700 transition-colors p-5 sm:p-6"
+                className="bg-neutral-950 border border-neutral-800 overflow-hidden flex flex-col justify-between group hover:border-neutral-700 transition-colors p-5 sm:p-6 min-w-0 max-w-full"
               >
-                <div>
+                <div className="min-w-0 max-w-full">
                   {/* Top Bar: Reviewer Info + Live Pill */}
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-start justify-between gap-3 mb-4 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0 ${
                           review.avatarBg || "bg-[#4285F4]"
@@ -377,11 +382,11 @@ export default function AdminReviewsPage() {
                       >
                         {review.avatarLetter || (review.author ? review.author[0].toUpperCase() : "G")}
                       </div>
-                      <div className="min-w-0">
-                        <h3 className="text-sm font-heading font-medium text-white truncate">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-sm font-heading font-medium text-white truncate break-words [overflow-wrap:anywhere]">
                           {review.author}
                         </h3>
-                        <span className="text-[11px] font-mono text-neutral-400 block truncate">
+                        <span className="text-[11px] font-mono text-neutral-400 block truncate break-words [overflow-wrap:anywhere]">
                           {review.badge || "Verified Reviewer"}
                         </span>
                       </div>
@@ -431,9 +436,11 @@ export default function AdminReviewsPage() {
                   </div>
 
                   {/* Review Text */}
-                  <p className="text-neutral-300 text-xs sm:text-sm font-light leading-relaxed line-clamp-4">
-                    "{review.text}"
-                  </p>
+                  <ExpandableText
+                    text={`"${review.text}"`}
+                    limit={150}
+                    className="text-neutral-300 text-xs sm:text-sm font-light leading-relaxed break-words [overflow-wrap:anywhere]"
+                  />
                 </div>
 
                 {/* Bottom Actions */}
