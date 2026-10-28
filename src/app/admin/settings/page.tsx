@@ -48,6 +48,8 @@ export default function AdminSettingsPage() {
   const [savingCreds, setSavingCreds] = useState(false);
   const [credError, setCredError] = useState("");
   const [credSuccess, setCredSuccess] = useState("");
+  const [savingHeroVideo, setSavingHeroVideo] = useState(false);
+  const [savedHeroVideoUrl, setSavedHeroVideoUrl] = useState<string>("");
 
   useEffect(() => {
     async function loadData() {
@@ -65,6 +67,7 @@ export default function AdminSettingsPage() {
             loaded.stats = INITIAL_SITE_SETTINGS.stats;
           }
           setSettings(loaded);
+          setSavedHeroVideoUrl(loaded.heroVideoUrl || "/images/videos/8688823-hd_1080_1920_25fps.mp4");
         }
 
         const credsData = await credsRes.json();
@@ -80,7 +83,7 @@ export default function AdminSettingsPage() {
       }
     }
     loadData();
-  }, [toast]);
+  }, []); // Run only once on mount to prevent toast/state trigger loops
 
   const handleSaveCMS = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +102,7 @@ export default function AdminSettingsPage() {
         throw new Error(errorData.error || "Failed to update settings");
       }
 
+      setSavedHeroVideoUrl(settings.heroVideoUrl || "/images/videos/8688823-hd_1080_1920_25fps.mp4");
       setSuccessMessage("Site settings successfully updated and live.");
       toast.success("Site settings successfully updated and live.");
       setTimeout(() => setSuccessMessage(""), 4000);
@@ -106,6 +110,39 @@ export default function AdminSettingsPage() {
       toast.error(err.message || "Save failed");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveHeroVideo = async (overrideUrl?: string, overrideKey?: string) => {
+    const targetUrl = overrideUrl ?? settings.heroVideoUrl ?? "/images/videos/8688823-hd_1080_1920_25fps.mp4";
+    const targetKey = overrideKey !== undefined ? overrideKey : settings.heroVideoKey;
+
+    setSavingHeroVideo(true);
+    try {
+      const payload = {
+        ...settings,
+        heroVideoUrl: targetUrl,
+        heroVideoKey: targetKey,
+      };
+
+      const res = await adminFetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to update hero video");
+      }
+
+      setSavedHeroVideoUrl(targetUrl);
+      toast.success("Hero background video saved and published live to homepage!");
+    } catch (err: any) {
+      console.error("Save hero video error:", err);
+      toast.error(err.message || "Failed to save hero video");
+    } finally {
+      setSavingHeroVideo(false);
     }
   };
 
@@ -533,7 +570,7 @@ export default function AdminSettingsPage() {
                   </span>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-2 space-y-3">
                   <MediaUploaderWithPreview
                     label="Hero Looping Video (.mp4, .webm, .mov — max 15MB)"
                     value={settings.heroVideoUrl || "/images/videos/8688823-hd_1080_1920_25fps.mp4"}
@@ -542,22 +579,61 @@ export default function AdminSettingsPage() {
                     maxSizeMb={15}
                     placeholder="https://utfs.io/... or /images/videos/..."
                     onChange={(data) => {
-                      setSettings({
-                        ...settings,
+                      setSettings((prev) => ({
+                        ...prev,
                         heroVideoUrl: data.url,
                         heroVideoKey: data.key,
-                      });
-                      toast.success("Hero video selected. Click 'Save All Changes' to apply live to homepage.");
+                      }));
+                      toast.success("Hero video uploaded to cloud! Click 'Save Hero Video Live' below to apply to the homepage.");
                     }}
                     onClear={() => {
-                      setSettings({
-                        ...settings,
+                      setSettings((prev) => ({
+                        ...prev,
                         heroVideoUrl: "/images/videos/8688823-hd_1080_1920_25fps.mp4",
                         heroVideoKey: undefined,
-                      });
-                      toast.info("Hero video reset to default showreel.");
+                      }));
+                      toast.info("Hero video reset to default showreel. Click 'Save Hero Video Live' to apply.");
                     }}
                   />
+
+                  {/* Dedicated Action Bar for Hero Video */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-black border border-neutral-800">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {settings.heroVideoUrl !== savedHeroVideoUrl ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-mono uppercase tracking-wider shrink-0 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                          Unsaved Changes
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] text-[10px] font-mono uppercase tracking-wider shrink-0 font-medium">
+                          <Check className="w-3 h-3" />
+                          Live on Homepage
+                        </span>
+                      )}
+                      <span className="text-[11px] font-mono text-neutral-400 truncate max-w-[200px] sm:max-w-md">
+                        {settings.heroVideoUrl || "Default showreel"}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSaveHeroVideo()}
+                      disabled={savingHeroVideo || settings.heroVideoUrl === savedHeroVideoUrl}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[40px] bg-dk-yellow text-black hover:bg-yellow-400 font-heading font-light text-xs uppercase tracking-widest transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
+                    >
+                      {savingHeroVideo ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Saving Video...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-3.5 h-3.5" />
+                          <span>Save Hero Video Live</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 

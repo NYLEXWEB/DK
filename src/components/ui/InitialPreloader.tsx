@@ -6,12 +6,21 @@ import { usePathname } from "next/navigation";
 
 export function InitialPreloader() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === "undefined") return true;
+    if (window.location.pathname.startsWith("/admin")) return false;
+    // Don't show preloader again if already seen in this session
+    try {
+      return !sessionStorage.getItem("dkdc_intro_seen");
+    } catch {
+      return false;
+    }
+  });
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     // Never show public preloader on admin dashboard/login routes
-    if (pathname.startsWith("/admin")) {
+    if (!isVisible || pathname.startsWith("/admin")) {
       setIsVisible(false);
       return;
     }
@@ -21,18 +30,23 @@ export function InitialPreloader() {
     const dismiss = () => {
       if (isDismissed) return;
       isDismissed = true;
+      try {
+        sessionStorage.setItem("dkdc_intro_seen", "true");
+      } catch {
+        // ignore storage errors
+      }
 
-      // Snappy and responsive: brief 250ms brand presence, then smooth 350ms fade
+      // Snappy and ultra-fast: brief 80ms brand pulse, then smooth 150ms fade
       setTimeout(() => {
         setIsFading(true);
         setTimeout(() => {
           setIsVisible(false);
-        }, 350);
-      }, 250);
+        }, 150);
+      }, 80);
     };
 
     if (typeof document !== "undefined") {
-      if (document.readyState === "complete") {
+      if (document.readyState === "complete" || document.readyState === "interactive") {
         dismiss();
       } else {
         window.addEventListener("load", dismiss, { once: true });
@@ -40,15 +54,15 @@ export function InitialPreloader() {
       }
     }
 
-    // Safety timeout: Maximum 900ms ceiling so the user is never stuck
-    const safetyTimer = setTimeout(dismiss, 900);
+    // Safety timeout: Maximum 350ms ceiling so the user is never stuck
+    const safetyTimer = setTimeout(dismiss, 350);
 
     return () => {
       window.removeEventListener("load", dismiss);
       document.removeEventListener("DOMContentLoaded", dismiss);
       clearTimeout(safetyTimer);
     };
-  }, [pathname]);
+  }, []); // Run ONCE on initial mount, never re-trigger on route changes
 
   if (!isVisible || pathname.startsWith("/admin")) {
     return null;
@@ -57,7 +71,7 @@ export function InitialPreloader() {
   return (
     <div
       aria-hidden="true"
-      className={`fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center select-none transition-opacity duration-350 ease-out ${
+      className={`fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center select-none transition-opacity duration-150 ease-out ${
         isFading ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"
       }`}
     >

@@ -176,7 +176,7 @@ export function MediaUploaderWithPreview({
             ) : (
               <>
                 <Check className="w-3 h-3" />
-                <span>Photo Ready</span>
+                <span>{isVideo ? "Video Ready" : "Photo Ready"}</span>
               </>
             )}
           </span>
@@ -238,7 +238,7 @@ export function MediaUploaderWithPreview({
                     className="px-3 py-1.5 bg-white text-black hover:bg-dk-yellow text-xs font-mono uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                   >
                     <RefreshCw className="w-3 h-3" />
-                    <span>Change Photo</span>
+                    <span>{isVideo ? "Change Video" : "Change Photo"}</span>
                   </button>
                   <button
                     type="button"
