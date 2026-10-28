@@ -81,7 +81,7 @@ export default function AdminReviewsPage() {
       }
     } catch (err) {
       console.error("Failed to load reviews:", err);
-      toast.error("Failed to load Google reviews from database.");
+      toast.error("Failed to load customer reviews. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -345,7 +345,7 @@ export default function AdminReviewsPage() {
           <div className="py-24 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-dk-yellow mb-2" />
             <p className="text-xs font-mono text-neutral-500 uppercase">
-              Loading Google reviews from database...
+              Loading customer reviews...
             </p>
           </div>
         ) : filteredReviews.length === 0 ? (

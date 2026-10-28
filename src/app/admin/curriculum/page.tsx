@@ -59,7 +59,7 @@ export default function AdminCurriculumPage() {
       }
     } catch (err) {
       console.error("Failed to load curriculum modules:", err);
-      toast.error("Failed to load curriculum modules from database.");
+      toast.error("Failed to load training modules. Please try again.");
     } finally {
       setLoading(false);
     }

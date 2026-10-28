@@ -102,7 +102,7 @@ export default function AdminPhotoLibraryPage() {
       }
     } catch (err) {
       console.error("Failed to load photo library:", err);
-      toast.error("Could not load photos from database.", "Fetch Error");
+      toast.error("Could not load gallery photos. Please try again.", "Fetch Error");
     } finally {
       setLoading(false);
     }
@@ -205,7 +205,7 @@ export default function AdminPhotoLibraryPage() {
 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || "Failed to update photo in database.");
+          throw new Error(errData.error || "Failed to update photo.");
         }
 
         toast.success(`"${payload.title}" updated successfully.`, "Photo Updated");
@@ -219,7 +219,7 @@ export default function AdminPhotoLibraryPage() {
 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || "Failed to save photo to database.");
+          throw new Error(errData.error || "Failed to save photo.");
         }
 
         toast.success(`"${payload.title}" saved to photo library and live gallery.`, "Photo Added");
@@ -277,13 +277,13 @@ export default function AdminPhotoLibraryPage() {
       if (res.ok) {
         setPhotos((prev) => prev.filter((p) => p._id !== deleteTarget._id));
         toast.success(
-          `"${deleteTarget.title}" deleted from database and storage.`,
+          `"${deleteTarget.title}" deleted successfully.`,
           "Photo Removed"
         );
         setDeleteTarget(null);
       } else {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Failed to delete photo from database.");
+        throw new Error(errData.error || "Failed to delete photo.");
       }
     } catch (err: any) {
       console.error("Delete photo error:", err);
@@ -496,7 +496,7 @@ export default function AdminPhotoLibraryPage() {
           <div className="py-24 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-dk-yellow mb-3" />
             <p className="text-xs font-mono text-neutral-500 uppercase tracking-widest">
-              Connecting to database & loading photo repository...
+              Loading gallery photos...
             </p>
           </div>
         ) : filteredPhotos.length === 0 ? (
@@ -839,7 +839,7 @@ export default function AdminPhotoLibraryPage() {
               {actionLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Saving to Database...</span>
+                  <span>Saving Photo...</span>
                 </>
               ) : (
                 <span>{editingItem ? "Update Photo" : "Save Photo"}</span>
@@ -853,7 +853,7 @@ export default function AdminPhotoLibraryPage() {
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title="Delete Photo?"
-        message={`Are you sure you want to permanently delete "${deleteTarget?.title}"? This will remove the photo record from the MongoDB database and delete the file from UploadThing storage.`}
+        message={`Are you sure you want to permanently delete "${deleteTarget?.title}"? This photo will be removed from your website and gallery.`}
         confirmText="Delete Photo"
         isDestructive={true}
         isLoading={actionLoading}

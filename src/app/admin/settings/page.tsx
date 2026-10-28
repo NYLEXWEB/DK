@@ -77,7 +77,7 @@ export default function AdminSettingsPage() {
         }
       } catch (err) {
         console.error("Failed to load settings:", err);
-        toast.error("Failed to load configurations from database.");
+        toast.error("Failed to load website settings. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -302,7 +302,7 @@ export default function AdminSettingsPage() {
                 </h2>
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed font-light">
-                Update your administrative login username and password stored securely in your MongoDB Atlas database with bcrypt encryption. Once saved, changes apply across all devices immediately.
+                Update your admin username and password. Once saved, the new credentials take effect immediately across all devices.
               </p>
               <div className="flex items-center gap-3 pt-2 text-xs font-mono flex-wrap">
                 <span className="text-neutral-500 uppercase">Current Username:</span>
@@ -584,7 +584,7 @@ export default function AdminSettingsPage() {
                         heroVideoUrl: data.url,
                         heroVideoKey: data.key,
                       }));
-                      toast.success("Hero video uploaded to cloud! Click 'Save Hero Video Live' below to apply to the homepage.");
+                      toast.success("Hero video uploaded! Click 'Save Hero Video Live' below to apply it to the homepage.");
                     }}
                     onClear={() => {
                       setSettings((prev) => ({

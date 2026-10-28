@@ -69,7 +69,7 @@ export default function AdminDanceStylesPage() {
       }
     } catch (err) {
       console.error("Failed to load dance styles:", err);
-      toast.error("Failed to load dance styles from database.");
+      toast.error("Failed to load dance styles. Please refresh the page.");
     } finally {
       setLoading(false);
     }
@@ -247,7 +247,7 @@ export default function AdminDanceStylesPage() {
           )
         );
         toast.success(
-          `"${deleteTarget.name}" deleted and cloud files cleared.`,
+          `"${deleteTarget.name}" deleted successfully.`,
           "Style Deleted"
         );
         setDeleteTarget(null);
@@ -696,7 +696,7 @@ export default function AdminDanceStylesPage() {
                 {formData.isActive ? "Published (Active on site)" : "Draft (Hidden from site)"}
               </span>
               <span className="text-[10px] font-mono text-neutral-500">
-                Inactive styles are preserved in database but excluded from public homepage.
+                Draft styles stay saved here, but won't be shown to website visitors.
               </span>
             </div>
           </div>
@@ -725,7 +725,7 @@ export default function AdminDanceStylesPage() {
       <ConfirmDialog
         isOpen={Boolean(deleteTarget)}
         title="Delete Dance Style"
-        message={`Are you sure you want to permanently delete "${deleteTarget?.name}"? Any associated cloud cover photos on UploadThing will also be cleaned up.`}
+        message={`Are you sure you want to permanently delete "${deleteTarget?.name}"? Its cover photo and all details will be removed.`}
         confirmText="Permanently Delete"
         isLoading={actionLoading}
         isDestructive={true}

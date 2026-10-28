@@ -107,8 +107,8 @@ export default async function AdminDashboardPage() {
               <div>
                 <p className="text-xs sm:text-sm font-medium">
                   {storageUsage.isCritical
-                    ? "Critical Cloud Storage Alert: Storage is at 85%+ capacity!"
-                    : "Cloud Storage Warning: Storage has reached 50%+ capacity (1 GB threshold)"}
+                    ? "Storage Alert: Media space is almost full (85%+ used)!"
+                    : "Storage Notice: More than half of your media space is used"}
                 </p>
                 <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
                   You have used{" "}
@@ -117,8 +117,8 @@ export default async function AdminDashboardPage() {
                       ? `${storageUsage.totalGb} GB`
                       : `${storageUsage.totalMb} MB`}
                   </span>{" "}
-                  of the 2,048 MB (2 GB) UploadThing free tier limit ({storageUsage.percentageUsed}% used across {storageUsage.filesUploaded} files).
-                  Please delete unused photos or videos to prevent upload failures.
+                  of your 2 GB total media storage space ({storageUsage.percentageUsed}% used across {storageUsage.filesUploaded} photos & videos).
+                  Consider deleting old photos or videos to free up space for new uploads.
                 </p>
               </div>
             </div>
@@ -130,7 +130,7 @@ export default async function AdminDashboardPage() {
                   : "bg-amber-400 text-black border-amber-400 hover:bg-amber-300 font-semibold"
               }`}
             >
-              Clean Up Media →
+              Manage Media Space →
             </Link>
           </div>
         )}
@@ -275,7 +275,7 @@ export default async function AdminDashboardPage() {
           <div className="p-4 sm:p-6 bg-neutral-950 border border-neutral-800 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-xs font-mono uppercase text-neutral-400">
-                Cloud Storage (2 GB)
+                Media Space (2 GB Total)
               </span>
               <HardDrive
                 className={`w-4 h-4 ${

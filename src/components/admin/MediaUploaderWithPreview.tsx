@@ -152,7 +152,7 @@ export function MediaUploaderWithPreview({
       setLocalPreview(null);
       setSelectedFileName(null);
       setSelectedFileSize(null);
-      setUploadError(err.message || "Failed to upload media directly to Cloud Storage. Please try again.");
+      setUploadError(err.message || "Failed to upload media file. Please try again.");
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -197,7 +197,7 @@ export function MediaUploaderWithPreview({
               <>
                 <Loader2 className="w-3 h-3 animate-spin text-dk-yellow" />
                 <span className="text-dk-yellow">
-                  Uploading to Cloud... {uploadProgress > 0 ? `${uploadProgress}%` : ""}
+                  Uploading... {uploadProgress > 0 ? `${uploadProgress}%` : ""}
                 </span>
               </>
             ) : (
@@ -209,7 +209,7 @@ export function MediaUploaderWithPreview({
           </span>
         ) : (
           <span className="text-[10px] font-mono uppercase text-neutral-500">
-            Preview & Cloud Upload
+            File Preview & Upload
           </span>
         )}
       </div>
@@ -295,7 +295,7 @@ export function MediaUploaderWithPreview({
               <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center gap-2.5 z-20 p-4">
                 <Loader2 className="w-6 h-6 animate-spin text-dk-yellow" />
                 <span className="text-xs font-mono uppercase tracking-wider text-white">
-                  Uploading to Cloud Storage... {uploadProgress > 0 ? `${uploadProgress}%` : ""}
+                  Uploading file... {uploadProgress > 0 ? `${uploadProgress}%` : ""}
                 </span>
                 {uploadProgress > 0 && (
                   <div className="w-48 bg-neutral-800 h-1.5 overflow-hidden rounded-full">

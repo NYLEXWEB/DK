@@ -87,7 +87,7 @@ export default function AdminVideosPage() {
       }
     } catch (err) {
       console.error("Failed to load videos:", err);
-      toast.error("Failed to load videos repository from database.");
+      toast.error("Failed to load video library. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -351,7 +351,7 @@ export default function AdminVideosPage() {
           <div className="py-24 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-dk-yellow mb-2" />
             <p className="text-xs font-mono text-neutral-500 uppercase">
-              Loading video showcases from database...
+              Loading performance videos...
             </p>
           </div>
         ) : filteredVideos.length === 0 ? (

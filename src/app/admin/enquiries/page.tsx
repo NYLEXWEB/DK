@@ -41,7 +41,7 @@ export default function AdminEnquiriesPage() {
       }
     } catch (err) {
       console.error("Failed to fetch enquiries:", err);
-      toast.error("Failed to load enquiries from database.");
+      toast.error("Failed to load customer messages. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -553,7 +553,7 @@ export default function AdminEnquiriesPage() {
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title="Delete Enquiry Record?"
-        message={`Delete enquiry from ${deleteTarget?.name}? This record will be permanently purged from the database.`}
+        message={`Delete enquiry from ${deleteTarget?.name}? This message will be permanently removed.`}
         confirmText="Delete Record"
         isDestructive={true}
         isLoading={actionLoading}
