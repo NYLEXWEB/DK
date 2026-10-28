@@ -5,10 +5,27 @@ import bcrypt from "bcryptjs";
 import { AuthSession } from "@/types";
 import { getAdminUser } from "./db-services";
 
-const JWT_SECRET =
-  process.env.ADMIN_JWT_SECRET ||
-  "dkdancecompany_jwt_secret_key_32chars_long!";
-const secretKey = new TextEncoder().encode(JWT_SECRET);
+export function getJwtSecretKey(): Uint8Array | null {
+  const secret = process.env.ADMIN_JWT_SECRET?.trim();
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (secret) {
+    if (isProduction && secret.length < 32) {
+      console.error("[CRITICAL AUTH ERROR] ADMIN_JWT_SECRET must be at least 32 characters long in production.");
+      return null;
+    }
+    return new TextEncoder().encode(secret);
+  }
+
+  // In production, fail closed - never sign or verify tokens with a fallback
+  if (isProduction) {
+    console.error("[CRITICAL AUTH ERROR] ADMIN_JWT_SECRET is missing in production environment variables.");
+    return null;
+  }
+
+  // Local development / testing fallback only
+  return new TextEncoder().encode("dkdancecompany_dev_fallback_secret_32chars!");
+}
 export const COOKIE_NAME = "dkdc_session";
 
 // Rate limiting in-memory store: IP -> attempts timestamp array
@@ -30,6 +47,10 @@ export function checkRateLimit(ip: string, limit = 5, windowMs = 60000): boolean
 }
 
 export async function createSessionToken(username: string): Promise<string> {
+  const secretKey = getJwtSecretKey();
+  if (!secretKey) {
+    throw new Error("Server authentication is misconfigured: ADMIN_JWT_SECRET must be configured in production.");
+  }
   const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 days
   const token = await new SignJWT({
     username,
@@ -44,8 +65,15 @@ export async function createSessionToken(username: string): Promise<string> {
 }
 
 export async function verifySessionToken(token: string): Promise<AuthSession | null> {
+  const secretKey = getJwtSecretKey();
+  if (!secretKey) {
+    return null;
+  }
   try {
     const { payload } = await jwtVerify(token, secretKey);
+    if (!payload?.username || payload.role !== "admin") {
+      return null;
+    }
     return {
       username: payload.username as string,
       role: payload.role as "admin",

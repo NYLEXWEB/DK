@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import { FadeUp } from "@/components/ui/Motion";
+import clsx from "clsx";
 
 import { StatItem } from "@/types";
 import { INITIAL_SITE_SETTINGS } from "@/lib/constants";
@@ -95,133 +97,78 @@ function AnimatedCounter({
 }
 
 export function StatsCounterSection({ stats }: { stats?: StatItem[] }) {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, {
+    margin: "-10% 0px -10% 0px",
+  });
   const [hasAnimated, setHasAnimated] = useState(false);
 
   const displayStats =
     stats && Array.isArray(stats) && stats.length === 6 ? stats : STATS_DATA;
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
-        }
-      },
-      { threshold: 0.15 }
-    );
-
-    const currentElem = sectionRef.current;
-    if (currentElem) {
-      observer.observe(currentElem);
+    if (isInView && !hasAnimated) {
+      setHasAnimated(true);
     }
-
-    return () => {
-      if (currentElem) observer.unobserve(currentElem);
-    };
-  }, [hasAnimated]);
+  }, [isInView, hasAnimated]);
 
   return (
-    <section
+    <motion.section
       ref={sectionRef}
-      className="relative bg-white text-neutral-950 py-24 sm:py-36 lg:py-44 overflow-hidden"
+      animate={{
+        backgroundColor: isInView ? "#ffffff" : "#000000",
+      }}
+      transition={{
+        duration: 0.75,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      className="relative py-20 sm:py-28 lg:py-36 overflow-hidden select-none"
     >
-      {/* 1. Top Liquid Water Flow: Seamless organic wave flowing from Black into White */}
-      <div className="absolute top-0 inset-x-0 w-full overflow-hidden leading-none z-10 pointer-events-none -mt-[1px]">
-        <svg
-          viewBox="0 0 1440 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="relative block w-full h-12 sm:h-20 lg:h-28 text-black"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          {/* Soft secondary water ripple layer with delicate opacity */}
-          <path
-            d="M0 0L1440 0V45C1240 75 1060 25 880 55C700 85 520 35 340 65C180 90 60 70 0 50V0Z"
-            fill="currentColor"
-            opacity="0.25"
-          />
-          {/* Primary deep liquid water wave crest */}
-          <path
-            d="M0 0L1440 0V30C1280 65 1100 15 920 50C740 85 560 30 380 60C200 90 80 40 0 35V0Z"
-            fill="currentColor"
-          />
-          {/* Hairline gold accent reflecting across the wave crest */}
-          <path
-            d="M0 35C80 40 200 90 380 60C560 30 740 85 920 50C1100 15 1280 65 1440 30"
-            stroke="url(#dkdcLiquidWaveGoldTop)"
-            strokeWidth="1.5"
-            strokeOpacity="0.45"
-          />
-          <defs>
-            <linearGradient id="dkdcLiquidWaveGoldTop" x1="0" y1="0" x2="1440" y2="0" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#FFF102" stopOpacity="0" />
-              <stop offset="0.25" stopColor="#FFF102" stopOpacity="0.8" />
-              <stop offset="0.65" stopColor="#EE1D23" stopOpacity="0.5" />
-              <stop offset="1" stopColor="#FFF102" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* 2. Bottom Liquid Water Flow: Seamless organic wave rising from White into Black */}
-      <div className="absolute bottom-0 inset-x-0 w-full overflow-hidden leading-none z-10 pointer-events-none -mb-[1px]">
-        <svg
-          viewBox="0 0 1440 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="relative block w-full h-12 sm:h-20 lg:h-28 text-neutral-950"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          {/* Soft secondary water ripple layer with delicate opacity */}
-          <path
-            d="M0 120L1440 120V75C1260 45 1080 95 900 65C720 35 540 85 360 55C200 30 80 50 0 70V120Z"
-            fill="currentColor"
-            opacity="0.25"
-          />
-          {/* Primary deep liquid water wave crest */}
-          <path
-            d="M0 120L1440 120V90C1260 55 1080 105 900 70C720 35 540 90 360 60C180 30 60 80 0 85V120Z"
-            fill="currentColor"
-          />
-          {/* Hairline gold accent reflecting across the wave crest */}
-          <path
-            d="M0 85C60 80 180 30 360 60C540 90 720 35 900 70C1080 105 1260 55 1440 90"
-            stroke="url(#dkdcLiquidWaveGoldBottom)"
-            strokeWidth="1.5"
-            strokeOpacity="0.45"
-          />
-          <defs>
-            <linearGradient id="dkdcLiquidWaveGoldBottom" x1="0" y1="0" x2="1440" y2="0" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#FFF102" stopOpacity="0" />
-              <stop offset="0.3" stopColor="#FFF102" stopOpacity="0.8" />
-              <stop offset="0.75" stopColor="#EE1D23" stopOpacity="0.5" />
-              <stop offset="1" stopColor="#FFF102" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+      {/* 1. Top Soft Edge Feather (Smoothly merges with BrandIntroSection's black background) */}
+      <div
+        className={clsx(
+          "absolute top-0 left-0 right-0 h-16 sm:h-24 pointer-events-none z-10 transition-opacity duration-700",
+          isInView ? "opacity-100" : "opacity-0"
+        )}
+        style={{
+          background:
+            "linear-gradient(to bottom, #000000 0%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0) 100%)",
+        }}
+        aria-hidden="true"
+      />
 
       {/* Subtle luxury ambient glow in center */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-amber-500/[0.03] blur-[160px] pointer-events-none rounded-full"
+        className={clsx(
+          "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-amber-500/[0.04] blur-[150px] pointer-events-none rounded-full transition-opacity duration-700",
+          isInView ? "opacity-100" : "opacity-0"
+        )}
         aria-hidden="true"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-20">
-        {/* Minimalist Title Tag in Contrasting Dark Tone */}
+        {/* Minimalist Title Tag */}
         <div className="text-center max-w-xl mx-auto mb-10 sm:mb-16 lg:mb-20">
           <FadeUp>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-300/80 shadow-sm mb-4 transition-transform duration-300 hover:scale-105">
+            <div
+              className={clsx(
+                "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border shadow-sm mb-4 transition-all duration-700 hover:scale-105",
+                isInView
+                  ? "bg-neutral-100 border-neutral-300/80 text-neutral-600"
+                  : "bg-neutral-900 border-neutral-800 text-neutral-400"
+              )}
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
-              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.22em] text-neutral-600 font-medium">
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.22em] font-medium">
                 MILESTONES & IMPACT
               </span>
             </div>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-thin uppercase tracking-tight text-neutral-950">
+            <h2
+              className={clsx(
+                "text-2xl sm:text-4xl lg:text-5xl font-heading font-thin uppercase tracking-tight transition-colors duration-700",
+                isInView ? "text-neutral-950" : "text-white"
+              )}
+            >
               DKDC By The Numbers
             </h2>
           </FadeUp>
@@ -236,19 +183,31 @@ export function StatsCounterSection({ stats }: { stats?: StatItem[] }) {
                 className="flex flex-col items-center justify-center py-6 sm:py-10 lg:py-12 px-3 sm:px-6 rounded-2xl transition-all duration-300 group min-w-0 max-w-full overflow-hidden hover:-translate-y-1.5 cursor-default"
               >
                 <FadeUp delay={idx * 0.05}>
-                  {/* Large Minimalist Animated Number in Dark Typography */}
-                  <div className="relative inline-block text-2xl sm:text-5xl lg:text-7xl font-heading font-thin tracking-tight text-neutral-950 group-hover:scale-105 transition-transform duration-300 max-w-full break-words [overflow-wrap:anywhere]">
+                  {/* Large Minimalist Animated Number */}
+                  <div
+                    className={clsx(
+                      "relative inline-block text-2xl sm:text-5xl lg:text-7xl font-heading font-thin tracking-tight group-hover:scale-105 transition-all duration-700 max-w-full break-words [overflow-wrap:anywhere]",
+                      isInView ? "text-neutral-950" : "text-white"
+                    )}
+                  >
                     <AnimatedCounter
                       target={item.target}
                       suffix={item.suffix}
-                      shouldStart={hasAnimated}
+                      shouldStart={hasAnimated || isInView}
                     />
-                    {/* Golden water-flow underline accent that expands on hover */}
+                    {/* Golden underline accent that expands on hover */}
                     <div className="mx-auto mt-2 h-[2px] w-0 bg-gradient-to-r from-dk-yellow via-amber-400 to-dk-red rounded-full group-hover:w-10 sm:group-hover:w-14 transition-all duration-300 ease-out" />
                   </div>
 
                   {/* Clean Uppercase Subtitle */}
-                  <div className="mt-2 sm:mt-3 lg:mt-4 text-[10px] sm:text-xs lg:text-sm font-mono uppercase tracking-[0.12em] sm:tracking-[0.2em] lg:tracking-[0.25em] text-neutral-600 font-light group-hover:text-neutral-950 transition-colors duration-300 max-w-full break-words [overflow-wrap:anywhere] px-1">
+                  <div
+                    className={clsx(
+                      "mt-2 sm:mt-3 lg:mt-4 text-[10px] sm:text-xs lg:text-sm font-mono uppercase tracking-[0.12em] sm:tracking-[0.2em] lg:tracking-[0.25em] font-light transition-colors duration-700 max-w-full break-words [overflow-wrap:anywhere] px-1",
+                      isInView
+                        ? "text-neutral-600 group-hover:text-neutral-950"
+                        : "text-neutral-400 group-hover:text-white"
+                    )}
+                  >
                     {item.label}
                   </div>
                 </FadeUp>
@@ -257,6 +216,19 @@ export function StatsCounterSection({ stats }: { stats?: StatItem[] }) {
           })}
         </div>
       </div>
-    </section>
+
+      {/* 2. Bottom Soft Edge Feather (Smoothly merges with DanceStylesSection's dark background) */}
+      <div
+        className={clsx(
+          "absolute bottom-0 left-0 right-0 h-16 sm:h-24 pointer-events-none z-10 transition-opacity duration-700",
+          isInView ? "opacity-100" : "opacity-0"
+        )}
+        style={{
+          background:
+            "linear-gradient(to top, #0a0a0a 0%, rgba(10,10,10,0.6) 30%, rgba(10,10,10,0) 100%)",
+        }}
+        aria-hidden="true"
+      />
+    </motion.section>
   );
 }

@@ -921,15 +921,34 @@ export interface AdminUserRecord {
 let memoryAdminUser: AdminUserRecord | null = null;
 
 export async function getAdminUser(): Promise<AdminUserRecord> {
-  const defaultUsername = process.env.ADMIN_USERNAME || "admin";
-  const defaultPassword = process.env.ADMIN_PASSWORD || "dkdc@admin2025";
   const db = await getDb();
+  const isProduction = process.env.NODE_ENV === "production";
+  const defaultUsername = process.env.ADMIN_USERNAME?.trim() || "admin";
+  const configuredPassword = process.env.ADMIN_PASSWORD?.trim();
+
+  // Helper to resolve initial password safely
+  const resolveInitialPassword = (): string => {
+    if (configuredPassword) {
+      return configuredPassword;
+    }
+    if (isProduction) {
+      console.error(
+        "[CRITICAL AUTH ERROR] Cannot initialize administrator credentials: ADMIN_PASSWORD environment variable is missing in production."
+      );
+      throw new Error(
+        "Administrator account initialization failed: ADMIN_PASSWORD environment variable is required in production."
+      );
+    }
+    // Local development fallback only
+    return "dkdc@admin2025";
+  };
 
   if (!db) {
     if (!memoryAdminUser) {
+      const initialPassword = resolveInitialPassword();
       memoryAdminUser = {
         username: defaultUsername,
-        passwordHash: bcrypt.hashSync(defaultPassword, 10),
+        passwordHash: bcrypt.hashSync(initialPassword, 10),
         updatedAt: new Date().toISOString(),
       };
     }
@@ -945,10 +964,11 @@ export async function getAdminUser(): Promise<AdminUserRecord> {
       };
     }
 
-    // Initialize default admin user in DB
+    // Initialize default admin user in DB (only if collection is empty)
+    const initialPassword = resolveInitialPassword();
     const initialUser: AdminUserRecord = {
       username: defaultUsername,
-      passwordHash: bcrypt.hashSync(defaultPassword, 10),
+      passwordHash: bcrypt.hashSync(initialPassword, 10),
       updatedAt: new Date().toISOString(),
     };
     const res = await db.collection("admin_users").insertOne(initialUser as any);
@@ -956,13 +976,9 @@ export async function getAdminUser(): Promise<AdminUserRecord> {
       ...initialUser,
       _id: res.insertedId.toString(),
     };
-  } catch (err) {
-    console.error("Error retrieving admin user:", err);
-    return {
-      username: defaultUsername,
-      passwordHash: bcrypt.hashSync(defaultPassword, 10),
-      updatedAt: new Date().toISOString(),
-    };
+  } catch (err: any) {
+    console.error("Error retrieving admin user:", err?.message || err);
+    throw err;
   }
 }
 

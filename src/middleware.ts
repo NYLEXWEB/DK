@@ -2,10 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const COOKIE_NAME = "dkdc_session";
-const JWT_SECRET =
-  process.env.ADMIN_JWT_SECRET ||
-  "dkdancecompany_jwt_secret_key_32chars_long!";
-const secretKey = new TextEncoder().encode(JWT_SECRET);
+function getJwtSecretKey(): Uint8Array | null {
+  const secret = process.env.ADMIN_JWT_SECRET?.trim();
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (secret) {
+    if (isProduction && secret.length < 32) {
+      console.error("[CRITICAL AUTH ERROR] ADMIN_JWT_SECRET must be at least 32 characters long in production.");
+      return null;
+    }
+    return new TextEncoder().encode(secret);
+  }
+
+  if (isProduction) {
+    console.error("[CRITICAL AUTH ERROR] ADMIN_JWT_SECRET is missing in production environment variables.");
+    return null;
+  }
+
+  return new TextEncoder().encode("dkdancecompany_dev_fallback_secret_32chars!");
+}
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -38,12 +53,17 @@ export async function middleware(req: NextRequest) {
     let isAuthenticated = false;
 
     if (token) {
-      try {
-        const { payload } = await jwtVerify(token, secretKey);
-        if (payload?.username && payload?.role === "admin") {
-          isAuthenticated = true;
+      const secretKey = getJwtSecretKey();
+      if (secretKey) {
+        try {
+          const { payload } = await jwtVerify(token, secretKey);
+          if (payload?.username && payload?.role === "admin") {
+            isAuthenticated = true;
+          }
+        } catch {
+          isAuthenticated = false;
         }
-      } catch {
+      } else {
         isAuthenticated = false;
       }
     }
