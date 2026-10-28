@@ -244,7 +244,7 @@ export function DanceStylesSection({
               >
                 <div className="min-w-0 max-w-full">
                   <span className="text-[11px] font-mono text-neutral-500 block mb-3 group-hover:text-dk-yellow transition-colors duration-300 break-words [overflow-wrap:anywhere]">
-                    {idx < 9 ? `0${idx + 1}` : idx + 1} // {String((item as any).badge || "CONDITIONING")}
+                    {idx < 9 ? `0${idx + 1}` : idx + 1}{" // "}{String((item as any).badge || "CONDITIONING")}
                   </span>
                   <h4 className="text-base font-heading font-light uppercase text-white mb-2 break-words [overflow-wrap:anywhere]">
                     {item.title}

@@ -148,7 +148,6 @@ export async function reorderCollectionItems(
     if (bulkOps.length > 0) {
       await db.collection(collectionName).bulkWrite(bulkOps);
     }
-    setServerContentUpdated();
   } catch (err) {
     console.error(`Error in reorderCollectionItems for ${collectionName}:`, err);
   }
@@ -173,7 +172,6 @@ export async function resequenceCollection(
       it.displayOrder = i + 1;
       it.updatedAt = now;
     });
-    setServerContentUpdated();
     return;
   }
 
@@ -200,7 +198,6 @@ export async function resequenceCollection(
     if (bulkOps.length > 0) {
       await db.collection(collectionName).bulkWrite(bulkOps);
     }
-    setServerContentUpdated();
   } catch (err) {
     console.error(`Error in resequenceCollection for ${collectionName}:`, err);
   }
@@ -833,7 +830,6 @@ export async function updateSiteSettings(
       { upsert: true }
     );
     invalidateCache("siteSettings");
-    setServerContentUpdated();
     return true;
   } catch (err) {
     console.error("Error updating site settings:", err);
