@@ -66,8 +66,8 @@ export function WhoCanJoinSection() {
 
   return (
     <section className="bg-neutral-950 text-white py-24 sm:py-32 relative">
-      <div className="max-w-5xl mx-auto px-6 sm:px-8">
-        {/* Header */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-8">
+        
         <div className="max-w-2xl mb-16 sm:mb-20">
           <FadeUp>
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4 transition-transform duration-300 hover:scale-105">
@@ -94,7 +94,7 @@ export function WhoCanJoinSection() {
             return (
               <FadeUp key={item.number} delay={index * 0.05}>
                 <div
-                  className={`group transition-all duration-300 px-3 sm:px-5 -mx-3 sm:-mx-5 rounded-2xl ${
+                  className={`group transition-all duration-300 px-2 sm:px-5 -mx-2 sm:-mx-5 rounded-2xl ${
                     isOpen ? "bg-white/[0.03]" : "hover:bg-white/[0.02]"
                   }`}
                 >
@@ -148,7 +148,7 @@ export function WhoCanJoinSection() {
                         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="pb-7 sm:pb-9 pl-8 sm:pl-12 pr-4 sm:pr-14">
+                        <div className="pb-7 sm:pb-9 pl-4 sm:pl-12 pr-2 sm:pr-14">
                           <p className="text-neutral-300 text-sm sm:text-base font-light leading-relaxed border-l-2 border-dk-yellow/40 pl-4 py-1">
                             {item.answer}
                           </p>

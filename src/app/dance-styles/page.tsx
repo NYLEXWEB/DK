@@ -34,9 +34,9 @@ export default async function DanceStylesPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-black text-white pt-32 pb-24">
-        {/* Header */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
+      <main className="min-h-screen bg-black text-white pt-24 sm:pt-32 pb-24 w-full overflow-x-clip">
+        
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-24">
           <FadeUp>
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
@@ -44,7 +44,7 @@ export default async function DanceStylesPage() {
                 CURRICULUM & DISCIPLINES
               </span>
             </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-4xl xs:text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Dance Styles
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
@@ -56,7 +56,7 @@ export default async function DanceStylesPage() {
         </section>
 
         {/* Detailed Styles Breakdown */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 space-y-32 mb-36">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-32 mb-36">
           {styles.map((style, index) => {
             const isReversed = index % 2 === 1;
 
@@ -155,7 +155,7 @@ export default async function DanceStylesPage() {
 
         {/* Special Training Section */}
         <section className="bg-neutral-950/60 py-28 border-t border-white/[0.08] mb-24 relative">
-          <div className="max-w-7xl mx-auto px-6 sm:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-8">
             <div className="max-w-3xl mb-16">
               <FadeUp>
                 <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">
@@ -198,14 +198,14 @@ export default async function DanceStylesPage() {
           </div>
         </section>
 
-        {/* Bottom CTA */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-20 text-center">
+        
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-20 text-center">
           <FadeUp>
             <div className="p-10 sm:p-16 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] text-center shadow-2xl relative overflow-hidden">
               <h2 className="text-3xl sm:text-5xl font-heading font-light uppercase tracking-tight text-white mb-6">
                 Find the right style for you
               </h2>
-              <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-sm sm:max-w-none mx-auto">
                 <Button href="/contact" variant="accent" size="lg" icon>
                   Book An Audition / Trial
                 </Button>

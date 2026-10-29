@@ -65,7 +65,7 @@ function LoginForm() {
 
   return (
     <div className="max-w-md w-full bg-neutral-950 border border-neutral-800 p-6 sm:p-10 shadow-2xl">
-      {/* Brand Logo */}
+      
       <div className="text-center mb-8">
         <div className="relative w-48 h-14 mx-auto mb-4">
           <Image
@@ -92,7 +92,7 @@ function LoginForm() {
         </div>
       )}
 
-      {/* Login Form */}
+      
       <form onSubmit={handleLogin} className="space-y-5">
         <div>
           <label

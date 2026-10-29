@@ -54,9 +54,9 @@ export default function RulesPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-black text-white pt-32 pb-24">
-        {/* Header */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-20">
+      <main className="min-h-screen bg-black text-white pt-24 sm:pt-32 pb-24 w-full overflow-x-clip">
+        
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-20">
           <FadeUp>
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
@@ -64,7 +64,7 @@ export default function RulesPage() {
                 INSTITUTIONAL STANDARDS
               </span>
             </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-4xl xs:text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Rules & Regulations
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
@@ -76,11 +76,11 @@ export default function RulesPage() {
         </section>
 
         {/* Rules List */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-24">
           <div className="space-y-6">
             {RULES.map((rule, idx) => (
               <FadeUp key={rule.number} delay={idx * 0.05}>
-                <div className="p-8 sm:p-10 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 shadow-sm hover:shadow-xl grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline">
+                <div className="p-6 sm:p-10 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all duration-500 shadow-sm hover:shadow-xl grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline">
                   <div className="md:col-span-2">
                     <span className="font-mono text-xs text-dk-yellow uppercase tracking-widest px-3 py-1 rounded-full bg-dk-yellow/10 border border-dk-yellow/20 inline-block">
                       CLAUSE {rule.number}

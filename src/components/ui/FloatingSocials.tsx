@@ -65,7 +65,7 @@ export function FloatingSocials({
   return (
     <aside
       aria-label="Quick Social Links"
-      className={`fixed bottom-6 right-5 sm:right-6 z-50 flex flex-col items-center gap-3 ${className}`}
+      className={`fixed bottom-4 right-3.5 sm:bottom-6 sm:right-6 z-30 flex flex-col items-center gap-2.5 sm:gap-3 ${className}`}
     >
       {/* YouTube Button */}
       <a
@@ -73,7 +73,7 @@ export function FloatingSocials({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="DK Dance Company on YouTube"
-        className="group relative w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-neutral-900/90 backdrop-blur-xl border border-white/10 text-white flex items-center justify-center shadow-[0_8px_25px_rgba(0,0,0,0.6)] hover:bg-[#FF0000] hover:border-[#FF0000] hover:scale-110 active:scale-95 transition-all duration-300"
+        className="group relative w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-900/90 backdrop-blur-xl border border-white/10 text-white flex items-center justify-center shadow-[0_8px_25px_rgba(0,0,0,0.6)] hover:bg-[#FF0000] hover:border-[#FF0000] hover:scale-110 active:scale-95 transition-all duration-300"
       >
         <span className="sr-only">YouTube</span>
         <svg
@@ -95,7 +95,7 @@ export function FloatingSocials({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="DK Dance Company on Instagram"
-        className="group relative w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-neutral-900/90 backdrop-blur-xl border border-white/10 text-white flex items-center justify-center shadow-[0_8px_25px_rgba(0,0,0,0.6)] hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:border-transparent hover:scale-110 active:scale-95 transition-all duration-300"
+        className="group relative w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-900/90 backdrop-blur-xl border border-white/10 text-white flex items-center justify-center shadow-[0_8px_25px_rgba(0,0,0,0.6)] hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:border-transparent hover:scale-110 active:scale-95 transition-all duration-300"
       >
         <span className="sr-only">Instagram</span>
         <svg
@@ -117,7 +117,7 @@ export function FloatingSocials({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp with DK Dance Company"
-        className="group relative w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:bg-[#20ba59] hover:scale-110 active:scale-95 transition-all duration-300"
+        className="group relative w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:bg-[#20ba59] hover:scale-110 active:scale-95 transition-all duration-300"
       >
         <span className="sr-only">WhatsApp</span>
         <svg

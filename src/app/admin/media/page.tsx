@@ -56,15 +56,15 @@ export default function AdminPhotoLibraryPage() {
   const [photos, setPhotos] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filters & Search
+  
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "live" | "draft">("all");
 
-  // Lightbox preview for full-size inspection
+  
   const [previewPhoto, setPreviewPhoto] = useState<MediaItem | null>(null);
 
-  // Modals state
+  
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MediaItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
@@ -73,7 +73,7 @@ export default function AdminPhotoLibraryPage() {
   const [uploadSuccess, setUploadSuccess] = useState("");
   const [isReplacingFile, setIsReplacingFile] = useState(false);
 
-  // Form State
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",

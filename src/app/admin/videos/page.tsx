@@ -47,8 +47,6 @@ export default function AdminVideosPage() {
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [uploadError, setUploadError] = useState("");
-
-  // Form State (Approximate Duration and Description are removed as requested)
   const [formData, setFormData] = useState<{
     title: string;
     category: MediaCategory;
@@ -510,7 +508,7 @@ export default function AdminVideosPage() {
             </div>
           )}
 
-          {/* 1. PERFORMANCE VIDEO FILE UPLOAD */}
+          
           <MediaUploaderWithPreview
             label="Performance Video File * (Max 50 MB)"
             value={formData.url}
@@ -533,7 +531,7 @@ export default function AdminVideosPage() {
             placeholder="https://... or upload MP4/WebM video"
           />
 
-          {/* 2. TITLE & CATEGORY */}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono uppercase text-neutral-400 mb-1">
@@ -569,7 +567,7 @@ export default function AdminVideosPage() {
             </div>
           </div>
 
-          {/* 3. VIDEO POSTER / THUMBNAIL PHOTO (OPTIONAL) */}
+          
           <MediaUploaderWithPreview
             label="Video Poster / Thumbnail Photo (Optional, Max 10 MB)"
             value={formData.thumbnailUrl}
@@ -587,7 +585,7 @@ export default function AdminVideosPage() {
             placeholder="https://... or upload poster image"
           />
 
-          {/* 4. TOGGLES: Featured on Home & Published */}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-neutral-950 border border-neutral-800">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -624,7 +622,7 @@ export default function AdminVideosPage() {
             </label>
           </div>
 
-          {/* 5. MODAL ACTIONS */}
+          
           <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-4 border-t border-neutral-900">
             <button
               type="button"

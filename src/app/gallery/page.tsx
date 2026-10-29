@@ -24,11 +24,11 @@ export default async function GalleryPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-black text-white pt-32 pb-24">
-        {/* Header */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-12">
+      <main className="min-h-screen bg-black text-white pt-24 sm:pt-32 pb-24 w-full overflow-x-clip">
+        
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-12">
           <FadeUp>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-4xl xs:text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Gallery
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
@@ -44,7 +44,7 @@ export default async function GalleryPage() {
         </section>
 
         {/* Categorized Archive Grid */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="border-t border-white/[0.08] pt-12 mb-10">
             <h2 className="text-2xl sm:text-3xl font-heading font-light uppercase tracking-tight text-white mb-2">
               Browse All Categories

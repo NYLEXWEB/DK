@@ -55,9 +55,9 @@ export default async function BranchDetailPage({
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-black text-white pt-32 pb-24">
+      <main className="min-h-screen bg-black text-white pt-24 sm:pt-32 pb-24 w-full overflow-x-clip">
         {/* Back Link */}
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 mb-8">
           <Link
             href="/branches"
             className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-400 hover:text-white px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md transition-all duration-300"
@@ -68,7 +68,7 @@ export default async function BranchDetailPage({
         </div>
 
         {/* Hero Section of Branch */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-7">
               <FadeUp>
@@ -78,7 +78,7 @@ export default async function BranchDetailPage({
                     {isInternational ? "INTERNATIONAL STUDIO" : "KERALA STUDIO"}
                   </span>
                 </div>
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heading font-extralight sm:font-thin uppercase tracking-tight text-white mb-6">
+                <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-heading font-extralight sm:font-thin uppercase tracking-tight text-white mb-6">
                   {branch.name}
                 </h1>
                 <div className="flex items-center gap-2 text-neutral-400 text-sm font-mono uppercase mb-6">
@@ -150,7 +150,7 @@ export default async function BranchDetailPage({
         </section>
 
         {/* Branch Info Cards */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-24">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             <div className="p-8 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] shadow-xl">
               <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 block mb-2">
@@ -204,7 +204,7 @@ export default async function BranchDetailPage({
         </section>
 
         {/* Enquiry Form Preselected for this Branch */}
-        <section className="max-w-4xl mx-auto px-6 sm:px-8">
+        <section className="max-w-4xl mx-auto px-4 sm:px-8">
           <div className="text-center mb-12">
             <span className="editorial-eyebrow text-dk-yellow block mb-2">
               ADMISSION CONSULTATION

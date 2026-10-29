@@ -28,7 +28,7 @@ export function ClassesFeesSection({ fees }: ClassesFeesSectionProps) {
   return (
     <section className="bg-black text-white py-28 sm:py-36 relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        {/* Header */}
+        
         <div className="max-w-3xl mb-20">
           <FadeUp>
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-4">

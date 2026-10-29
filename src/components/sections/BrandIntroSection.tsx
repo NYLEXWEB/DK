@@ -27,7 +27,7 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
   return (
     <section className="bg-black text-white py-28 sm:py-36 relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        {/* Editorial Eyebrow */}
+        
         <FadeUp>
           <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-8 transition-transform duration-300 hover:scale-105">
             <span className="w-1.5 h-1.5 rounded-full bg-dk-red animate-pulse" />
@@ -125,7 +125,7 @@ export function BrandIntroSection({ settings }: BrandIntroSectionProps) {
               </div>
             </FadeUp>
 
-            {/* Core Training Pillars */}
+            
             <FadeUp delay={0.35}>
               <div className="pt-4 border-t border-white/[0.08]">
                 <span className="text-xs uppercase tracking-widest font-mono text-neutral-500 block mb-3">

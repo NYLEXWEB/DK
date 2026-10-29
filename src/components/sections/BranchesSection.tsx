@@ -35,8 +35,8 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
 
   return (
     <section className="bg-black text-white py-28 sm:py-36 relative">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        {/* Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
           <div>
             <FadeUp>
@@ -146,7 +146,7 @@ export function BranchesSection({ branches, showAll = false }: BranchesSectionPr
                     </div>
 
                     {/* Action Links */}
-                    <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3">
+                    <div className="pt-4 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-2.5">
                       {branch.googleMapsUrl ? (
                         <a
                           href={branch.googleMapsUrl}

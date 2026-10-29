@@ -52,9 +52,9 @@ export default async function AboutPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-black text-white pt-32 pb-24">
+      <main className="min-h-screen bg-black text-white pt-24 sm:pt-32 pb-24 w-full overflow-x-clip">
         {/* Header Section */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-24">
           <FadeUp>
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-dk-yellow animate-pulse" />
@@ -62,7 +62,7 @@ export default async function AboutPage() {
                 THE INSTITUTION
               </span>
             </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
+            <h1 className="text-4xl xs:text-5xl sm:text-7xl lg:text-8xl font-heading font-extralight sm:font-thin uppercase tracking-tight leading-[0.9] text-white max-w-4xl mb-8">
               Movement As An Art Form.
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
@@ -74,7 +74,7 @@ export default async function AboutPage() {
         </section>
 
         {/* Story & Asymmetrical Image */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-32">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-32">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-6 relative aspect-[4/5] bg-neutral-950 overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl">
               <RevealImage className="w-full h-full relative">
@@ -146,7 +146,7 @@ export default async function AboutPage() {
 
         {/* Leadership: Director Dhanesh Krishnan */}
         <section className="bg-neutral-950/60 py-24 border-y border-white/[0.08] mb-32 relative">
-          <div className="max-w-7xl mx-auto px-6 sm:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-7">
                 <FadeUp>
@@ -170,7 +170,7 @@ export default async function AboutPage() {
                     training standards, and artistic direction for every company
                     production.
                   </p>
-                  <div className="flex items-center gap-4 text-xs font-mono text-neutral-400 uppercase px-4 py-2 rounded-full bg-white/[0.02] border border-white/[0.06] inline-flex">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs font-mono text-neutral-400 uppercase px-4 py-2 rounded-2xl sm:rounded-full bg-white/[0.02] border border-white/[0.06] inline-flex">
                     <div>Head Office: Kozhikode, Kerala</div>
                     <div>•</div>
                     <div>Branch: Bournemouth, UK</div>
@@ -198,7 +198,7 @@ export default async function AboutPage() {
         </section>
 
         {/* The 7 Focus Areas of Training */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-32">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-32">
           <div className="max-w-3xl mb-16">
             <FadeUp>
               <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md mb-3">
@@ -236,8 +236,8 @@ export default async function AboutPage() {
           </div>
         </section>
 
-        {/* Bottom CTA */}
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-20">
+        
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-20">
           <FadeUp>
             <div className="p-6 sm:p-16 rounded-3xl glass-panel border border-white/[0.08] bg-white/[0.02] text-center shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-1/2 translate-x-1/2 w-96 h-96 bg-dk-yellow/5 rounded-full blur-3xl pointer-events-none" />

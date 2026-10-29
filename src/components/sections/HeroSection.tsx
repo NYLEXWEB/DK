@@ -13,7 +13,7 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
 
   return (
     <section className="relative min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-white text-neutral-950 pt-28 sm:pt-32 pb-16 sm:pb-20">
-      {/* 1. Background Video Layer - Full & Vibrant */}
+      
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
         <video
           key={activeVideo}
@@ -26,7 +26,7 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
           aria-hidden="true"
         />
 
-        {/* 2. Light & Subtle White Foggy Overlay - Video is Crystal Clear */}
+        
         <div className="absolute inset-0 bg-white/25" />
 
         {/* Left-side gentle contrast feathering so text is 100% readable while dancer remains fully visible */}
@@ -43,8 +43,8 @@ export function HeroSection({ videoUrl }: HeroSectionProps) {
         <div className="absolute inset-x-0 bottom-0 h-32 sm:h-40 bg-gradient-to-t from-black via-black/80 via-40% to-transparent z-[2]" />
       </div>
 
-      {/* 3. Hero Foreground Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full my-auto">
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 w-full my-auto">
         <div className="max-w-2xl lg:max-w-3xl text-left">
           {/* Eyebrow Status Badge */}
           <FadeUp delay={0.1}>

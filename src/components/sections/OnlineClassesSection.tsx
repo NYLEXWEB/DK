@@ -29,7 +29,7 @@ export function OnlineClassesSection({ onlineData }: OnlineClassesSectionProps) 
 
   return (
     <section className="bg-black text-white py-28 sm:py-36 relative">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Content Column */}
           <div className="lg:col-span-7">
@@ -72,7 +72,7 @@ export function OnlineClassesSection({ onlineData }: OnlineClassesSectionProps) 
 
             {/* CTA */}
             <FadeUp delay={0.25}>
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                 <Button href="/contact?mode=online" variant="accent" size="lg" icon>
                   Enquire For Online Classes
                 </Button>

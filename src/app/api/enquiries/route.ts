@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       danceStyle = "All Styles",
       mode = "offline",
       message,
-      // Honeypot field for bot protection
+      
       website_hp,
     } = body;
 

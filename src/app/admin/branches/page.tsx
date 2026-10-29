@@ -27,7 +27,7 @@ export default function AdminBranchesPage() {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal & form states
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Branch | null>(null);
@@ -276,7 +276,7 @@ export default function AdminBranchesPage() {
                 key={b.slug}
                 className="bg-neutral-950 border border-neutral-800 flex flex-col justify-between overflow-hidden group"
               >
-                {/* Branch Visual */}
+                
                 <div className="relative aspect-[16/9] bg-neutral-900 overflow-hidden">
                   {b.imageUrl ? (
                     <Image
@@ -319,7 +319,7 @@ export default function AdminBranchesPage() {
                   </div>
                 </div>
 
-                {/* Info */}
+                
                 <div className="p-5 flex-1 flex flex-col justify-between min-w-0 max-w-full">
                   <div className="min-w-0 max-w-full">
                     <div className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-500 uppercase mb-1 min-w-0">
@@ -354,7 +354,7 @@ export default function AdminBranchesPage() {
                     )}
                   </div>
 
-                  {/* Actions */}
+                  
                   <div className="pt-4 border-t border-neutral-900 flex items-center justify-between">
                     <a
                       href={`/branches/${b.slug}`}
@@ -641,7 +641,7 @@ export default function AdminBranchesPage() {
         </form>
       </Modal>
 
-      {/* Delete Confirmation */}
+      
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title="Delete Branch?"

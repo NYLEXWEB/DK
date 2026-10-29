@@ -141,7 +141,7 @@ export default function AdminEnquiriesPage() {
           })}
         </div>
 
-        {/* Enquiries List */}
+        
         {loading ? (
           <div className="py-24 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-dk-yellow mb-2" />
@@ -160,7 +160,7 @@ export default function AdminEnquiriesPage() {
           </div>
         ) : (
           <div className="bg-neutral-950 border border-neutral-800 overflow-hidden">
-            {/* Desktop Table View */}
+            
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
                 <thead>
@@ -281,7 +281,7 @@ export default function AdminEnquiriesPage() {
               </table>
             </div>
 
-            {/* Mobile Cards View */}
+            
             <div className="md:hidden divide-y divide-neutral-900">
               {filteredEnquiries.map((enq) => {
                 const waUrl = formatWhatsAppUrl(
@@ -549,7 +549,7 @@ export default function AdminEnquiriesPage() {
         </Modal>
       )}
 
-      {/* Delete Confirmation */}
+      
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title="Delete Enquiry Record?"

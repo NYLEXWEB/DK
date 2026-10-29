@@ -468,7 +468,7 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              {/* Submit Button */}
+              
               <div className="flex justify-end pt-4 border-t border-neutral-900">
                 <button
                   type="submit"

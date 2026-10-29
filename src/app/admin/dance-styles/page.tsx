@@ -33,13 +33,13 @@ export default function AdminDanceStylesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterActive, setFilterActive] = useState<"all" | "active" | "inactive">("all");
 
-  // Modal & form states
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStyle, setEditingStyle] = useState<DanceStyle | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DanceStyle | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Form State
+  
   const [formData, setFormData] = useState<Omit<DanceStyle, "_id">>({
     number: "01",
     name: "",
@@ -357,7 +357,7 @@ export default function AdminDanceStylesPage() {
           </div>
         </div>
 
-        {/* Styles Grid */}
+        
         {loading ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3 text-neutral-500">
             <Loader2 className="w-8 h-8 animate-spin text-dk-yellow" />
@@ -452,7 +452,7 @@ export default function AdminDanceStylesPage() {
                     </div>
                   </div>
 
-                  {/* Body Info */}
+                  
                   <div className="p-5 flex-1 flex flex-col justify-between space-y-4 min-w-0 max-w-full">
                     <div className="space-y-3 min-w-0 max-w-full">
                       <p className="text-xs text-neutral-300 font-medium leading-relaxed line-clamp-2 break-words [overflow-wrap:anywhere]">
@@ -465,7 +465,7 @@ export default function AdminDanceStylesPage() {
                         className="text-[11px] text-neutral-400 leading-relaxed font-light break-words [overflow-wrap:anywhere]"
                       />
 
-                      {/* Feature Tags */}
+                      
                       {Array.isArray(style.features) && style.features.length > 0 && (
                         <div className="pt-2 border-t border-neutral-900 flex flex-wrap gap-1.5">
                           {style.features.slice(0, 3).map((feat, idx) => (
@@ -485,7 +485,7 @@ export default function AdminDanceStylesPage() {
                       )}
                     </div>
 
-                    {/* Action Buttons */}
+                    
                     <div className="pt-3 border-t border-neutral-900 flex items-center justify-between gap-2">
                       <button
                         onClick={() => handleOpenEdit(style)}

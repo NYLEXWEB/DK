@@ -381,7 +381,7 @@ export default async function AdminDashboardPage() {
             </div>
           ) : (
             <>
-              {/* Desktop Table View */}
+              
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
@@ -423,7 +423,7 @@ export default async function AdminDashboardPage() {
                 </table>
               </div>
 
-              {/* Mobile Cards View */}
+              
               <div className="md:hidden divide-y divide-neutral-900 -mx-4">
                 {recentEnquiries.map((enq) => (
                   <div key={enq._id} className="p-4 space-y-2">

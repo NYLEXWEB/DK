@@ -283,7 +283,7 @@ export function GoogleReviewsSection({
 
   return (
     <section className="bg-black text-white py-24 sm:py-36 relative">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* Header Block */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16 sm:mb-20">
           <div className="max-w-2xl">

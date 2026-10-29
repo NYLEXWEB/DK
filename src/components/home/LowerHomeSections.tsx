@@ -33,19 +33,19 @@ export async function LowerHomeSections({ settings }: { settings: SiteSettings }
 
   return (
     <>
-      {/* 3. Dance Disciplines & Styles */}
+      
       <DanceStylesSection styles={danceStyles} curriculum={curriculum} />
 
-      {/* 4. Who Can Join */}
+      
       <WhoCanJoinSection />
 
-      {/* 5. Branch Network Presence */}
+      
       <BranchesSection branches={branches} />
 
-      {/* 7. Video Showcase */}
+      
       <HomeVideoSection videos={videos} />
 
-      {/* 8. Visual Gallery Preview */}
+      
       <section className="bg-black text-white py-14 sm:py-20 lg:py-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 mb-8 sm:mb-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -77,16 +77,16 @@ export async function LowerHomeSections({ settings }: { settings: SiteSettings }
         <GalleryMarquee items={mediaItems} />
       </section>
 
-      {/* 8. Online Classes */}
+      
       <OnlineClassesSection onlineData={settings.onlineClasses} />
 
-      {/* 9. Verified Google Reviews Showcase */}
+      
       <GoogleReviewsSection reviews={reviews} />
 
-      {/* 10. Strong Enquiry Call-to-Action */}
+      
       <EnquiryCTASection />
 
-      {/* 10. Global Site Footer */}
+      
       <Footer settings={settings} />
     </>
   );

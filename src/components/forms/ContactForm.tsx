@@ -58,7 +58,7 @@ export function ContactForm({
     danceStyle: "All Styles / General",
     mode: defaultMode,
     message: "",
-    website_hp: "", // Honeypot field
+    website_hp: "",
   });
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -136,7 +136,6 @@ export function ContactForm({
         </div>
       ) : (
         <form onSubmit={handleSubmit} noValidate className="space-y-6">
-          {/* Honeypot field for bot suppression */}
           <div className="hidden" aria-hidden="true">
             <input
               type="text"
@@ -160,7 +159,6 @@ export function ContactForm({
             </div>
           )}
 
-          {/* Row 1: Name & Phone */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label
@@ -203,7 +201,6 @@ export function ContactForm({
             </div>
           </div>
 
-          {/* Row 2: Email & Age */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label
@@ -245,7 +242,6 @@ export function ContactForm({
             </div>
           </div>
 
-          {/* Row 3: Mode & Branch */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label
@@ -306,7 +302,6 @@ export function ContactForm({
             </div>
           </div>
 
-          {/* Row 4: Style Preference */}
           <div>
             <label
               htmlFor="danceStyle"
@@ -333,7 +328,6 @@ export function ContactForm({
             </select>
           </div>
 
-          {/* Row 5: Message */}
           <div>
             <label
               htmlFor="message"
@@ -353,7 +347,6 @@ export function ContactForm({
             />
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={status === "loading"}

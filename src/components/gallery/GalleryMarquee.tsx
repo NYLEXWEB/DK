@@ -159,9 +159,9 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
           <button
             onClick={handleClose}
             aria-label="Close photo preview"
-            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100010] inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-neutral-900/95 hover:bg-dk-yellow hover:text-black text-white border-2 border-white/20 hover:border-dk-yellow text-xs sm:text-sm font-heading font-semibold uppercase tracking-widest transition-all duration-200 cursor-pointer active:scale-95"
+            className="fixed top-3 right-3 sm:top-6 sm:right-6 z-[100010] inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-3 rounded-full bg-neutral-900/95 hover:bg-dk-yellow hover:text-black text-white border-2 border-white/20 hover:border-dk-yellow text-xs sm:text-sm font-heading font-semibold uppercase tracking-widest transition-all duration-200 cursor-pointer active:scale-95"
           >
-            <X className="w-5 h-5 stroke-[2.5]" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
             <span>Close</span>
           </button>
 
@@ -174,9 +174,9 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
                   handlePrev();
                 }}
                 aria-label="Previous photo"
-                className="fixed left-3 sm:left-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+                className="fixed left-2 sm:left-6 top-1/2 -translate-y-1/2 z-[100005] w-9 h-9 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
               >
-                <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8" />
+                <ChevronLeft className="w-5 h-5 sm:w-8 sm:h-8" />
               </button>
               <button
                 onClick={(e) => {
@@ -184,9 +184,9 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
                   handleNext();
                 }}
                 aria-label="Next photo"
-                className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-[100005] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+                className="fixed right-2 sm:right-6 top-1/2 -translate-y-1/2 z-[100005] w-9 h-9 sm:w-16 sm:h-16 rounded-full bg-neutral-900/90 border border-neutral-700 text-neutral-200 hover:text-black hover:bg-dk-yellow hover:border-dk-yellow flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
               >
-                <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8" />
+                <ChevronRight className="w-5 h-5 sm:w-8 sm:h-8" />
               </button>
             </>
           )}
@@ -196,7 +196,7 @@ export function GalleryMarquee({ items }: GalleryMarqueeProps) {
             className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative w-full max-h-[75vh] h-[75vh] flex items-center justify-center overflow-hidden border border-white/10 rounded-2xl bg-black">
+            <div className="relative w-full max-h-[65vh] sm:max-h-[75vh] h-[60vh] sm:h-[75vh] flex items-center justify-center overflow-hidden border border-white/10 rounded-2xl bg-black">
               <Image
                 src={activeItem.url}
                 alt={activeItem.title}

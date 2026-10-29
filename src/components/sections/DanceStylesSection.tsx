@@ -33,8 +33,8 @@ export function DanceStylesSection({
 
   return (
     <section className="bg-neutral-950 text-white py-28 sm:py-36 relative">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        {/* Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
           <div>
             <FadeUp>

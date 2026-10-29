@@ -30,13 +30,13 @@ export default function AdminCurriculumPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterActive, setFilterActive] = useState<"all" | "active" | "inactive">("all");
 
-  // Modal & form states
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<CurriculumModule | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CurriculumModule | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Form State
+  
   const [formData, setFormData] = useState<Omit<CurriculumModule, "_id">>({
     title: "",
     desc: "",
@@ -287,7 +287,7 @@ export default function AdminCurriculumPage() {
           </div>
         </div>
 
-        {/* Modules Grid */}
+        
         {loading ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3 text-neutral-500">
             <Loader2 className="w-8 h-8 animate-spin text-dk-yellow" />
@@ -325,7 +325,7 @@ export default function AdminCurriculumPage() {
                   }`}
                 >
                   <div className="space-y-4 min-w-0 max-w-full">
-                    {/* Header Badges */}
+                    
                     <div className="flex items-center justify-between gap-2 min-w-0">
                       <div className="flex items-center gap-2 min-w-0 truncate">
                         <span className="px-2 py-0.5 bg-dk-yellow/10 border border-dk-yellow/30 text-dk-yellow font-mono text-[10px] uppercase font-bold tracking-wider truncate">
@@ -354,7 +354,7 @@ export default function AdminCurriculumPage() {
                       </button>
                     </div>
 
-                    {/* Title & Desc */}
+                    
                     <div className="space-y-2 min-w-0 max-w-full">
                       <h3 className="text-lg font-heading font-light tracking-wide text-white uppercase break-words [overflow-wrap:anywhere]">
                         {mod.title}
@@ -367,7 +367,7 @@ export default function AdminCurriculumPage() {
                     </div>
                   </div>
 
-                  {/* Actions */}
+                  
                   <div className="pt-5 mt-6 border-t border-neutral-900 flex items-center justify-between gap-2">
                     <button
                       onClick={() => handleOpenEdit(mod)}
