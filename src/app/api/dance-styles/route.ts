@@ -68,6 +68,8 @@ export async function POST(req: NextRequest) {
 
     revalidatePath("/");
     revalidatePath("/dance-styles");
+    revalidatePath("/contact");
+    revalidatePath("/online-classes");
     return NextResponse.json(
       { success: true, data: newStyle },
       { status: 201 }

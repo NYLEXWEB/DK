@@ -9,7 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { FadeUp, RevealImage } from "@/components/ui/Motion";
-import { getBranchBySlug, getBranches } from "@/lib/db-services";
+import { getBranchBySlug, getBranches, getDanceStyles } from "@/lib/db-services";
 import { GoogleMapsPinIcon } from "@/components/sections/BranchesSection";
 
 export async function generateMetadata({
@@ -40,9 +40,10 @@ export default async function BranchDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [branch, allBranches] = await Promise.all([
+  const [branch, allBranches, danceStyles] = await Promise.all([
     getBranchBySlug(slug),
     getBranches(),
+    getDanceStyles(true),
   ]);
 
   if (!branch) {
@@ -216,7 +217,7 @@ export default async function BranchDetailPage({
             </p>
           </div>
 
-          <ContactForm branches={allBranches} defaultBranch={branch.name} />
+          <ContactForm branches={allBranches} danceStyles={danceStyles} defaultBranch={branch.name} />
         </section>
       </main>
 

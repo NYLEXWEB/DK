@@ -129,7 +129,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className={`${inter.className} bg-black text-white font-light tracking-[-0.01em] antialiased selection:bg-[#FFF102] selection:text-black min-h-screen flex flex-col justify-between`}>
+      <body className={`${inter.className} bg-black text-white font-light tracking-[-0.01em] antialiased selection:bg-[#FFF102] selection:text-black min-h-screen flex flex-col justify-between overflow-x-hidden w-full relative`}>
         <ToastProvider>
           <LoadingScreen />
           {children}

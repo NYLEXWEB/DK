@@ -68,10 +68,10 @@ export function Navbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-neutral-950/90 backdrop-blur-2xl border-b border-white/[0.08] py-4 sm:py-4.5 px-6 sm:px-10 lg:px-14 text-white"
+            ? "bg-neutral-950/90 backdrop-blur-2xl border-b border-white/[0.08] py-3.5 sm:py-4.5 px-4 sm:px-8 lg:px-14 text-white"
             : isLightHero
-            ? "bg-transparent py-6 sm:py-7 px-6 sm:px-10 lg:px-14 text-neutral-900"
-            : "bg-transparent py-6 sm:py-7 px-6 sm:px-10 lg:px-14 text-white"
+            ? "bg-transparent py-4 sm:py-6 px-4 sm:px-8 lg:px-14 text-neutral-900"
+            : "bg-transparent py-4 sm:py-6 px-4 sm:px-8 lg:px-14 text-white"
         }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -105,7 +105,7 @@ export function Navbar() {
               aria-label="DK Dance Company Homepage"
             >
               <div
-                className={`relative w-44 sm:w-56 md:w-64 h-11 sm:h-14 transition-all duration-300 group-hover:scale-[1.03] active:scale-[0.98] ${
+                className={`relative w-36 xs:w-44 sm:w-56 md:w-64 h-9 xs:h-11 sm:h-14 transition-all duration-300 group-hover:scale-[1.03] active:scale-[0.98] ${
                   isScrolled
                     ? "filter drop-shadow-[0_0_1px_rgba(255,255,255,0.9)]"
                     : ""
@@ -117,7 +117,7 @@ export function Navbar() {
                   fill
                   priority
                   className="object-contain object-left"
-                  sizes="(max-width: 640px) 176px, (max-width: 768px) 224px, 256px"
+                  sizes="(max-width: 640px) 160px, (max-width: 768px) 224px, 256px"
                 />
               </div>
             </Link>
@@ -197,7 +197,7 @@ export function Navbar() {
 
       {/* Mobile Drawer Menu */}
       <div
-        className={`fixed inset-0 z-40 bg-neutral-950/95 backdrop-blur-3xl flex flex-col justify-between px-6 sm:px-10 pt-24 pb-8 overflow-y-auto overscroll-contain transition-all duration-500 lg:hidden text-white ${
+        className={`fixed inset-0 h-[100dvh] w-full z-40 bg-neutral-950/95 backdrop-blur-3xl flex flex-col justify-between px-5 sm:px-10 pt-20 sm:pt-24 pb-8 overflow-y-auto overscroll-contain transition-all duration-500 lg:hidden text-white ${
           mobileMenuOpen
             ? "opacity-100 pointer-events-auto translate-y-0"
             : "opacity-0 pointer-events-none -translate-y-4"

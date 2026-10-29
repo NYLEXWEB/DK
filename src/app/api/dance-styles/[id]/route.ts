@@ -43,6 +43,8 @@ export async function PATCH(
 
     revalidatePath("/");
     revalidatePath("/dance-styles");
+    revalidatePath("/contact");
+    revalidatePath("/online-classes");
     return NextResponse.json({ success: true, message: "Dance style updated" });
   } catch (error) {
     console.error("Error in PATCH /api/dance-styles/[id]:", error);
@@ -74,6 +76,8 @@ export async function DELETE(
 
     revalidatePath("/");
     revalidatePath("/dance-styles");
+    revalidatePath("/contact");
+    revalidatePath("/online-classes");
     return NextResponse.json({ success: true, message: "Dance style deleted" });
   } catch (error) {
     console.error("Error in DELETE /api/dance-styles/[id]:", error);

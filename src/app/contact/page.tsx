@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { FadeUp } from "@/components/ui/Motion";
-import { getBranches, getSiteSettings } from "@/lib/db-services";
+import { getBranches, getSiteSettings, getDanceStyles } from "@/lib/db-services";
 
 export const metadata: Metadata = {
   title: "Contact & Admissions | DK Dance Company Kozhikode & UK",
@@ -15,9 +15,10 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const [branches, settings] = await Promise.all([
+  const [branches, settings, danceStyles] = await Promise.all([
     getBranches(),
     getSiteSettings(),
+    getDanceStyles(true),
   ]);
 
   return (
@@ -141,7 +142,7 @@ export default async function ContactPage() {
                     Submit Admission Enquiry
                   </h2>
                 </div>
-                <ContactForm branches={branches} />
+                <ContactForm branches={branches} danceStyles={danceStyles} />
               </FadeUp>
             </div>
           </div>

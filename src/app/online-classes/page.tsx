@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { FadeUp, RevealImage } from "@/components/ui/Motion";
-import { getSiteSettings, getBranches } from "@/lib/db-services";
+import { getSiteSettings, getBranches, getDanceStyles } from "@/lib/db-services";
 
 export const metadata: Metadata = {
   title: "Online Dance Classes Worldwide | DK Dance Company",
@@ -16,9 +16,10 @@ export const metadata: Metadata = {
 };
 
 export default async function OnlineClassesPage() {
-  const [settings, branches] = await Promise.all([
+  const [settings, branches, danceStyles] = await Promise.all([
     getSiteSettings(),
     getBranches(),
+    getDanceStyles(true),
   ]);
 
   const onlineData = settings.onlineClasses;
@@ -135,7 +136,7 @@ export default async function OnlineClassesPage() {
             </p>
           </div>
 
-          <ContactForm branches={branches} defaultMode="online" />
+          <ContactForm branches={branches} danceStyles={danceStyles} defaultMode="online" />
         </section>
       </main>
 

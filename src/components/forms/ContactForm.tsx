@@ -1,23 +1,54 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CheckCircle2, AlertCircle, Loader2, ArrowRight } from "lucide-react";
-import { Branch } from "@/types";
+import { Branch, DanceStyle } from "@/types";
 import { DANCE_STYLES } from "@/lib/constants";
 import { useToast } from "@/context/ToastContext";
 
 interface ContactFormProps {
   branches?: Branch[];
+  danceStyles?: DanceStyle[];
   defaultBranch?: string;
   defaultMode?: "offline" | "online";
 }
 
 export function ContactForm({
   branches = [],
+  danceStyles = [],
   defaultBranch = "",
   defaultMode = "offline",
 }: ContactFormProps) {
   const { toast } = useToast();
+  const [stylesList, setStylesList] = useState<DanceStyle[]>(
+    danceStyles && danceStyles.length > 0 ? danceStyles : []
+  );
+
+  useEffect(() => {
+    if (danceStyles && danceStyles.length > 0) {
+      setStylesList(danceStyles);
+      return;
+    }
+
+    let isMounted = true;
+    fetch("/api/dance-styles")
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setStylesList(data.data);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load dance styles for enquiry form:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [danceStyles]);
+
+  const effectiveStyles = stylesList.length > 0 ? stylesList : DANCE_STYLES;
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -292,8 +323,8 @@ export function ContactForm({
               className="w-full rounded-2xl bg-neutral-900 border border-white/[0.08] px-4 py-3.5 text-sm text-white focus:outline-none focus:border-dk-yellow/50 transition-all duration-300 font-light"
             >
               <option value="All Styles / General">All Styles / General Training</option>
-              {DANCE_STYLES.map((style) => (
-                <option key={style.slug} value={style.name}>
+              {effectiveStyles.map((style) => (
+                <option key={style.slug || (style as any)._id || style.name} value={style.name}>
                   {style.name}
                 </option>
               ))}
